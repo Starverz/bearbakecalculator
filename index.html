@@ -1,0 +1,3366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dessert Cost Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light-border.css" />
+
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-pink': {
+                            50: '#fef2f6',
+                            100: '#fce7f0',
+                            200: '#f9bed7',
+                            300: '#f596be',
+                            400: '#f06da4',
+                            500: '#e9448b',
+                            600: '#d52770',
+                            700: '#b41d5a',
+                            800: '#961a4a',
+                            900: '#801a40',
+                        },
+                        'brand-indigo': {
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* General Body & Animation Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* External Library Customization */
+        .ts-control {
+            border-radius: 0.5rem;
+            border-color: #D1D5DB;
+            padding: 0.5rem 0.75rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .ts-control:focus,
+        .ts-control.focus {
+            border-color: #e9448b;
+            box-shadow: 0 0 0 3px rgba(233, 68, 139, 0.2);
+        }
+
+        .ts-dropdown {
+            background-color: white;
+            z-index: 20;
+        }
+
+        .tippy-box[data-theme~='light-border'] {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tippy-box[data-theme~='light-border'] .tippy-content {
+            padding: 0.5rem;
+        }
+
+        /* Custom Components */
+        .recipe-item-row {
+            position: relative;
+        }
+
+        .recipe-item-row.is-active {
+            z-index: 100;
+        }
+
+        .breakdown-container {
+            transition: max-height 0.4s ease-in-out;
+        }
+
+        .breakdown-container.is-collapsed {
+            max-height: 280px;
+            overflow-y: auto;
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            scrollbar-width: thin;
+            scrollbar-color: #e9448b #F9FAFB;
+        }
+
+        .breakdown-container.is-collapsed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .breakdown-container.is-collapsed::-webkit-scrollbar-track {
+            background: #F9FAFB;
+        }
+
+        .breakdown-container.is-collapsed::-webkit-scrollbar-thumb {
+            background-color: #f9bed7;
+            border-radius: 10px;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+
+        .calendar-header,
+        .calendar-day {
+            padding: 8px 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .calendar-header {
+            font-weight: 600;
+            color: #4B5563;
+        }
+
+        .calendar-day {
+            cursor: pointer;
+            border-radius: 9999px;
+            transition: background-color 0.2s;
+        }
+
+        .calendar-day:hover:not(.not-current-month) {
+            background-color: #fef2f6;
+        }
+
+        .calendar-day.selected {
+            background-color: #e9448b;
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 0 4px;
+        }
+
+        .calendar-nav button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #d52770;
+        }
+
+        .calendar-day.has-recipe {
+            background-color: #fce7f0;
+            border: 1px solid #f9bed7;
+            position: relative;
+            font-weight: bold;
+        }
+
+        .team-card-details {
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out, border 0.5s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-top-width: 0px;
+        }
+
+        .team-card-details.expanded {
+            max-height: 2000px;
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-top-width: 1px;
+        }
+
+        .recipe-book-item .recipe-book-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+
+        .recipe-book-item.is-expanded .recipe-book-content {
+            max-height: 2500px;
+            /* A large value to accommodate long recipes */
+        }
+
+        .recipe-book-item .collapse-recipe-btn {
+            margin-bottom: -1.5rem;
+            /* Pulls button down to cover padding */
+            padding-bottom: 0.3rem;
+            padding-top: 0.3rem;
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+            margin-left: -1.5rem;
+            margin-right: -1.5rem;
+            width: calc(100% + 3rem);
+        }
+
+        .recipe-book-item.is-expanded .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Full Production Planner */
+        .full-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-auto-rows: minmax(100px, auto);
+            border-left: 1px solid #E5E7EB;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .full-calendar-header {
+            text-align: center;
+            font-weight: 900;
+            font-size: 0.75rem;
+            color: #4B5563;
+            padding: 0.5rem 0;
+            border-right: 1px solid #E5E7EB;
+            border-bottom: 1px solid #E5E7EB;
+            background-color: #F9FAFB;
+        }
+
+        .full-calendar-day {
+            padding: 0.5rem;
+            border-right: 1px solid #E5E7EB;
+            border-bottom: 1px solid #E5E7EB;
+            position: relative;
+            font-size: 0.875rem;
+        }
+
+        .full-calendar-day.not-current-month {
+            background-color: #F9FAFB;
+        }
+
+        .full-calendar-day .day-number {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .full-calendar-day.not-current-month .day-number {
+            color: #9CA3AF;
+        }
+
+        .full-calendar-day.has-events {
+            background-color: #fef2f6;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .full-calendar-day.has-events:hover {
+            background-color: #f9bed7;
+        }
+
+        .planner-recipe-item {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+            margin-top: 2px;
+            word-break: break-word;
+        }
+
+        .planner-event-list {
+            margin-top: 0.5rem;
+        }
+
+        .planner-more-items-btn {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #b41d5a;
+            text-align: center;
+            margin-top: 4px;
+            padding: 2px;
+            border-radius: 4px;
+            background-color: #fce7f0;
+        }
+
+        /* Utility and Custom Editor Styles */
+        .focus-ring {
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .focus-ring:focus {
+            outline: none;
+            border-color: #e9448b;
+            box-shadow: 0 0 0 3px rgba(233, 68, 139, 0.2);
+        }
+
+        .ql-textbox {
+            background-color: #d52770;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 4px 12px;
+            margin: 0 2px;
+            display: inline-block;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .ql-snow .ql-formats button.ql-textbox .ql-stroke {
+            fill: none;
+            stroke: #444;
+            stroke-width: 2;
+            stroke-linecap: square;
+            stroke-linejoin: round;
+        }
+
+        .category-filter-btn.active {
+            background-color: #d52770;
+            color: white;
+            font-weight: 600;
+            border-color: #ffffff;
+        }
+
+        /* Homepage-specific styles */
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #f9bed7;
+            box-shadow: 0 10px 25px -5px rgba(233, 68, 139, 0.15);
+        }
+
+        .stats-card {
+            background: linear-gradient(145deg, #fef2f6, #fce7f0);
+            border: 1px solid #f9bed7;
+        }
+
+        .cta-button {
+            background: linear-gradient(to right, #e9448b, #d52770);
+            box-shadow: 0 4px 6px rgba(233, 68, 139, 0.3);
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(to right, #d52770, #b41d5a);
+            box-shadow: 0 6px 8px rgba(233, 68, 139, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .secondary-button {
+            background: linear-gradient(to right, #f9fafb, #f3f4f6);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .secondary-button:hover {
+            background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex antialiased">
+
+    <aside class="w-64 h-screen bg-brand-pink-600 text-white flex flex-col p-4 sticky top-0">
+        <div class="flex items-center gap-3 px-3 mb-10">
+            <svg class="w-8 h-8 text-brand-pink-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A3.375 3.375 0 006.375 8.25v2.25H17.625v-2.25A3.375 3.375 0 0012 4.875z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75v6.75h6.75v-6.75H12z" />
+            </svg>
+            <h1 class="text-2xl font-bold">BearBake</h1>
+        </div>
+        <nav>
+            <ul class="space-y-2">
+                <li><a href="#" id="nav-home"
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Home</span></a>
+                </li>
+
+                <li><a href="#" id="nav-recipes"
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Recipes</span></a>
+                </li>
+                <li><a href="#" id="nav-ingredients"
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Ingredients</span></a>
+                </li>
+                <li><a href="#" id="nav-budget"
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Production
+                            & Budget</span></a></li>
+                <li><a href="#" id="nav-settings"
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Settings</span></a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8 lg:p-10">
+
+        <!-- Redesigned Homepage -->
+        <div id="home-page">
+            <div class="max-w-6xl mx-auto">
+                <!-- Hero Section -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-visible mb-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="p-8 lg:p-12 order-2 md:order-1">
+                            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Bake Smarter,<br>Not Harder
+                                with <span class="text-brand-pink-600">BearBake Calculator</span></h1>
+                            <p class="text-lg text-gray-600 mb-8">Calculate costs, maximize profits, and streamline your
+                                baking business with our all-in-one dessert management platform.</p>
+                            <div class="flex flex-wrap gap-4">
+                                <button id="home-to-recipes-btn"
+                                    class="cta-button py-3 px-8 text-white font-semibold rounded-lg transition-all duration-200">
+                                    Get Started
+                                </button>
+                                <button id="home-to-ingredients-btn"
+                                    class="secondary-button py-3 px-8 text-gray-800 font-semibold rounded-lg transition-all duration-200">
+                                    Explore Features
+                                </button>
+                            </div>
+                        </div>
+                        <div class="order-1 md:order-2 p-8 relative">
+                            <div class="w-[300px] h-[380px]"></div>
+
+                            <div class="absolute inset-0 flex justify-end items-end">
+                                <div class="relative w-[700px] h-[490px] float -mt-10">
+                                    <img src="https://cdn.jsdelivr.net/gh/Starverz/my-svg-assets/Bake%20Bear%20Mascot-01.svg"
+                                        alt="Bake Bear Mascot" class="w-full h-full">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div class="stats-card rounded-xl p-6 text-center">
+                        <div class="text-3xl font-bold text-brand-pink-600 mb-2">100%</div>
+                        <p class="text-gray-700">Control your cost & profit with ease</p>
+                    </div>
+                    <div class="stats-card rounded-xl p-6 text-center">
+                        <div class="text-3xl font-bold text-brand-pink-600 mb-2">10x</div>
+                        <p class="text-gray-700">Faster cost calculation</p>
+                    </div>
+                    <div class="stats-card rounded-xl p-6 text-center">
+                        <div class="text-3xl font-bold text-brand-pink-600 mb-2">100%</div>
+                        <p class="text-gray-700">Recipes calculated instantaneously</p>
+                    </div>
+                </div>
+
+                <!-- Features Section -->
+                <div class="mb-16">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Everything You Need to Succeed</h2>
+                    <p class="text-gray-600 text-center max-w-2xl mx-auto mb-12">Our comprehensive tools help you manage
+                        every aspect of your dessert business in one place.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="feature-card bg-white rounded-xl p-6">
+                            <div class="w-12 h-12 rounded-full bg-brand-pink-100 flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-pink-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Recipe Costing</h3>
+                            <p class="text-gray-600">Calculate exact costs for every dessert with automatic ingredient
+                                pricing.</p>
+                        </div>
+
+                        <div class="feature-card bg-white rounded-xl p-6">
+                            <div class="w-12 h-12 rounded-full bg-brand-pink-100 flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-pink-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Profit Analysis</h3>
+                            <p class="text-gray-600">Set profit margins and instantly see your selling price
+                                recommendations.</p>
+                        </div>
+
+                        <div class="feature-card bg-white rounded-xl p-6">
+                            <div class="w-12 h-12 rounded-full bg-brand-pink-100 flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-pink-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Production Planning</h3>
+                            <p class="text-gray-600">Schedule production, manage teams, and optimize your baking
+                                workflow.</p>
+                        </div>
+
+                        <div class="feature-card bg-white rounded-xl p-6">
+                            <div class="w-12 h-12 rounded-full bg-brand-pink-100 flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-pink-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Ingredient Library</h3>
+                            <p class="text-gray-600">Track all your ingredients with current prices and unit
+                                conversions.</p>
+                        </div>
+
+                        <div class="feature-card bg-white rounded-xl p-6">
+                            <div class="w-12 h-12 rounded-full bg-brand-pink-100 flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-pink-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Data Security</h3>
+                            <p class="text-gray-600">Your data stays private with local storage and easy backup options.
+                            </p>
+                        </div>
+
+                        <div class="feature-card bg-white rounded-xl p-6">
+                            <div class="w-12 h-12 rounded-full bg-brand-pink-100 flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-pink-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Recipe Book</h3>
+                            <p class="text-gray-600">Create beautiful recipe books with ingredients and preparation
+                                steps.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA Section -->
+                <div class="bg-brand-pink-600 rounded-2xl p-10 text-center text-white">
+                    <h2 class="text-3xl font-bold mb-4">Ready to Transform Your Baking Business?</h2>
+                    <p class="text-brand-pink-100 max-w-2xl mx-auto mb-8">Join thousands of bakers who are already
+                        saving time and increasing profits with BearBake Calculator.</p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button id="home-to-recipes-btn-2"
+                            class="bg-white text-brand-pink-600 py-3 px-8 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-all duration-200">
+                            Start Calculating Now
+                        </button>
+                        <button id="home-to-ingredients-btn-2"
+                            class="bg-transparent border-2 border-white text-white py-3 px-8 font-semibold rounded-lg hover:bg-white hover:text-brand-pink-600 transition-all duration-200">
+                            Take a Tour
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="budget-page" class="hidden">
+            <div class="max-w-7xl mx-auto space-y-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Production & Financials</h2>
+                    <p class="text-gray-500 mt-1">A complete overview of your production schedule and team financials.
+                    </p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b">
+                        <h3 class="text-lg font-semibold text-gray-800">Monthly Production Planner</h3>
+                    </div>
+                    <div id="production-planner-container" class="p-6"></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Team Financials</h3>
+                                <p class="text-sm text-gray-500">Manage your teams and their specific budgets.</p>
+                            </div>
+                            <button id="open-add-team-modal-btn"
+                                class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-all duration-200 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="w-5 h-5">
+                                    <path
+                                        d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                                </svg>
+                                Add Team
+                            </button>
+                        </div>
+                    </div>
+                    <div id="team-list" class="p-6 bg-gray-50">
+                        <p class="text-center text-gray-500">No teams created yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-page" class="hidden">
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Settings</h2>
+                    <p class="text-gray-500 mt-1">Manage your application data.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b">
+                        <h3 class="text-lg font-semibold text-gray-800">Data Management</h3>
+                        <p class="text-sm text-gray-500">Export a backup of your data, or import data from a file.</p>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-700">Export All Data</p>
+                                <p class="text-sm text-gray-500">Save a JSON file of all your recipes, ingredients, and
+                                    teams.</p>
+                            </div>
+                            <button id="export-data-btn"
+                                class="py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-sm hover:bg-gray-700 transition-all duration-200">Export</button>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t">
+                            <div>
+                                <p class="font-medium text-gray-700">Import Data</p>
+                                <p class="text-sm text-gray-500">Load data from a JSON backup file. This will overwrite
+                                    current data.</p>
+                            </div>
+                            <button id="import-data-btn"
+                                class="py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-sm hover:bg-gray-700 transition-all duration-200">Import</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-red-300">
+                    <div class="p-6 border-b border-red-300">
+                        <h3 class="text-lg font-semibold text-red-800">Danger Zone</h3>
+                    </div>
+                    <div class="p-6 flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-red-700">Reset All Data</p>
+                            <p class="text-sm text-gray-500">This will permanently delete all recipes, ingredients, and
+                                teams.</p>
+                        </div>
+                        <button id="reset-data-btn"
+                            class="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-sm hover:bg-red-700 transition-all duration-200">Reset
+                            Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ingredients-page" class="hidden">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800">Ingredient Library</h2>
+                        <p class="text-gray-500 mt-1">Manage your inventory of raw materials.</p>
+                    </div>
+                    <button id="open-add-ingredient-modal-btn"
+                        class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-all duration-200 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path
+                                d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                        </svg>
+                        Add Ingredient
+                    </button>
+                </div>
+                <div class="mb-6 flex flex-wrap gap-4">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="ingredient-search-input" placeholder="Search by name..."
+                            class="w-full p-2 pl-10 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <select id="ingredient-sort-select"
+                        class="p-2 border border-gray-300 rounded-lg focus-ring bg-white">
+                        <option value="latest">Sort by: Latest</option>
+                        <option value="oldest">Sort by: Oldest</option>
+                        <option value="name-az">Name: A-Z</option>
+                        <option value="name-za">Name: Z-A</option>
+                        <option value="price-desc">Cost: High to Low</option>
+                        <option value="price-asc">Cost: Low to High</option>
+                        <option value="weight-desc">Amount: High to Low</option>
+                        <option value="weight-asc">Amount: Low to High</option>
+                    </select>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div id="ingredient-list" class="overflow-x-auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="recipes-page">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800">Your Recipes</h2>
+                        <p class="text-gray-500 mt-1">Manage and calculate costs for your recipes.</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button id="view-recipe-book-btn"
+                            class="py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-sm hover:bg-gray-700 transition-all duration-200 flex items-center gap-2">
+                            View Recipe Book
+                        </button>
+                        <button id="open-add-recipe-modal-btn"
+                            class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-all duration-200 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path
+                                    d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                            </svg>
+                            Add Recipe
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-6 flex flex-wrap gap-4">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="recipe-search-input" placeholder="Search by title..."
+                            class="w-full p-2 pl-10 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <select id="recipe-sort-select"
+                        class="p-2 border border-gray-300 rounded-lg focus-ring bg-white w-52">
+                        <option value="latest">Sort by: Latest</option>
+                        <option value="oldest">Sort by: Oldest</option>
+                        <option value="title-az">Title: A-Z</option>
+                        <option value="title-za">Title: Z-A</option>
+                        <option value="cost-desc">Total Cost: High to Low</option>
+                        <option value="cost-asc">Total Cost: Low to High</option>
+                    </select>
+                </div>
+
+                <div id="recipe-category-filters" class="flex flex-wrap gap-2 mb-6"></div>
+
+                <div class="space-y-6" id="recipe-list-display"></div>
+            </div>
+        </div>
+
+        <div id="recipe-book-page" class="hidden">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800">Your Recipe Book</h2>
+                        <p class="text-gray-500 mt-1">A collection of your recipes with preparation instructions.</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button id="back-to-recipes-btn"
+                            class="py-2 px-4 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">
+                            &larr; Back to Recipe Costs
+                        </button>
+                        <button id="manage-categories-btn"
+                            class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-all duration-200">
+                            Manage Categories
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-6 flex flex-wrap gap-4">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="recipe-book-search-input" placeholder="Search by title..."
+                            class="w-full p-2 pl-10 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <select id="recipe-book-sort-select"
+                        class="p-2 border border-gray-300 rounded-lg focus-ring bg-white w-52">
+                        <option value="latest">Sort by: Latest</option>
+                        <option value="oldest">Sort by: Oldest</option>
+                        <option value="title-az">Title: A-Z</option>
+                        <option value="title-za">Title: Z-A</option>
+                    </select>
+                </div>
+                <div id="recipe-book-category-filters" class="flex flex-wrap gap-2 mb-6"></div>
+
+                <div id="recipe-book-list" class="space-y-8"></div>
+                <div id="recipe-book-pagination" class="mt-8 flex justify-center items-center space-x-2"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="add-ingredient-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Add New Ingredient</h3>
+            <form id="add-ingredient-form" class="space-y-4">
+                <div>
+                    <label for="add-name" class="block text-sm font-medium text-gray-700 mb-1">Ingredient Name</label>
+                    <input type="text" id="add-name" required
+                        class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="add-price" class="block text-sm font-medium text-gray-700 mb-1">Price (RM)</label>
+                        <input type="number" id="add-price" step="0.01" min="0" required
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <div>
+                        <label for="add-weight" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                        <input type="number" id="add-weight" step="0.01" min="0" required
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <div>
+                        <label for="add-unit" class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                        <select id="add-unit" required
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring bg-white">
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                            <option value="l">l</option>
+                            <option value="ml">ml</option>
+                            <option value="pcs">pcs</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end items-center pt-6 mt-4 border-t space-x-4">
+                    <button type="button" id="add-ingredient-modal-cancel-btn"
+                        class="py-2 px-4 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit"
+                        class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700">Add
+                        Ingredient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[95vh]">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Edit Ingredient</h3>
+            </div>
+            <form id="edit-form" class="p-6 space-y-5 overflow-y-auto">
+                <div><label for="edit-name" class="block text-sm font-medium text-gray-700 mb-1">Ingredient
+                        Name</label><input type="text" id="edit-name" required
+                        class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div><label for="edit-price" class="block text-sm font-medium text-gray-700 mb-1">Price
+                            (RM)</label><input type="number" id="edit-price" step="0.01" min="0" required
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
+                    <div><label for="edit-weight"
+                            class="block text-sm font-medium text-gray-700 mb-1">Amount</label><input type="number"
+                            id="edit-weight" step="0.01" min="0" required
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
+                    <div><label for="edit-unit" class="block text-sm font-medium text-gray-700 mb-1">Unit</label><select
+                            id="edit-unit" required
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring bg-white">
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                            <option value="l">l</option>
+                            <option value="ml">ml</option>
+                            <option value="pcs">pcs</option>
+                        </select></div>
+                </div>
+                <div class="pt-4 border-t">
+                    <h4 class="font-semibold text-gray-800 mb-1">Unit Conversions</h4>
+                    <p class="text-sm text-gray-500 mb-3">Define custom volumetric measurements (e.g., 1 cup = 120g).
+                    </p>
+                    <div id="edit-conversions-list" class="space-y-2"></div>
+                    <button type="button" id="add-conversion-btn"
+                        class="mt-2 text-sm font-semibold text-brand-pink-600 hover:text-brand-pink-800">+ Add
+                        Conversion</button>
+                </div>
+                <div class="pt-4 border-t space-y-4">
+                    <div><label for="edit-supplier" class="block text-sm font-medium text-gray-700 mb-1">Supplier Name
+                            <span class="text-gray-400">(Optional)</span></label><input type="text" id="edit-supplier"
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
+                    <div><label for="edit-notes" class="block text-sm font-medium text-gray-700 mb-1">Notes <span
+                                class="text-gray-400">(Optional)</span></label><textarea id="edit-notes" rows="3"
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></textarea></div>
+                </div>
+            </form>
+            <div class="flex justify-between items-center p-6 border-t bg-gray-50 rounded-b-xl mt-auto">
+                <button type="button" id="modal-delete-btn"
+                    class="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-sm hover:bg-red-700">Delete</button>
+                <div class="space-x-4">
+                    <button type="button" id="modal-cancel-btn"
+                        class="py-2 px-4 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" form="edit-form" id="modal-done-btn"
+                        class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700">Save
+                        Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-recipe-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Create New Recipe</h3>
+            </div>
+            <form id="recipe-form" class="p-6 space-y-6 overflow-y-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div>
+                        <label for="recipe-title" class="block text-sm font-medium text-gray-700 mb-1">Recipe
+                            Title</label>
+                        <input type="text" id="recipe-title" required
+                            class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <div>
+                        <label for="recipe-category"
+                            class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select id="recipe-category"
+                            class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white"></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Yields</label>
+                    <select id="recipe-yield-type"
+                        class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white mb-2">
+                        <option value="quantity">By Quantity (e.g., 12 pcs)</option>
+                        <option value="size">By Pan Size (e.g., 8-inch Loaf)</option>
+                    </select>
+                    <div id="yield-quantity-fields">
+                        <div class="grid grid-cols-3 gap-2"><input type="number" id="recipe-servings-value" min="1"
+                                placeholder="e.g., 12"
+                                class="col-span-2 w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><select
+                                id="recipe-servings-unit"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg bg-white focus-ring">
+                                <option value="pcs">pcs</option>
+                                <option value="Slice">Slice</option>
+                                <option value="Cup">Cup</option>
+                                <option value="Cookie">Cookie</option>
+                            </select></div>
+                    </div>
+                    <div id="yield-size-fields" class="hidden space-y-2">
+                        <select id="recipe-pan-shape"
+                            class="w-full p-2.5 border border-gray-300 rounded-lg bg-white focus-ring">
+                            <option value="rectangular">Rectangular / Square</option>
+                            <option value="round">Round</option>
+                        </select>
+                        <div id="pan-shape-rectangular" class="grid grid-cols-3 gap-2"><input type="number" step="0.1"
+                                id="recipe-pan-length" placeholder="Length (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><input type="number"
+                                step="0.1" id="recipe-pan-width" placeholder="Width (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><input type="number"
+                                step="0.1" id="recipe-pan-height" placeholder="Height (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
+                        <div id="pan-shape-round" class="hidden grid grid-cols-2 gap-2"><input type="number" step="0.1"
+                                id="recipe-pan-diameter" placeholder="Diameter (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><input type="number"
+                                step="0.1" id="recipe-pan-height-round" placeholder="Height (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
+                        <div class="grid grid-cols-3 gap-2 pt-1"><input type="number" min="1" value="1"
+                                id="recipe-pan-quantity"
+                                class="col-span-1 w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><select
+                                id="recipe-pan-unit"
+                                class="col-span-2 w-full p-2.5 border border-gray-300 rounded-lg bg-white focus-ring">
+                                <option value="Loaf">Loaf</option>
+                                <option value="Cake">Cake</option>
+                                <option value="Tart">Tart</option>
+                            </select></div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-base font-semibold text-gray-800 border-b pb-2 mb-4">Ingredients & Costs</h4>
+                    <div id="recipe-ingredients-list" class="space-y-3"></div>
+                    <div class="mt-4 flex items-center gap-3"><button type="button" id="add-library-ingredient-btn"
+                            class="py-2 px-4 bg-brand-pink-50 text-brand-pink-700 font-semibold rounded-lg text-sm hover:bg-brand-pink-100 transition-colors">+
+                            Add from Library</button><button type="button" id="add-open-item-btn"
+                            class="py-2 px-4 bg-gray-100 text-gray-700 font-semibold rounded-lg text-sm hover:bg-gray-200 transition-colors">+
+                            Add Open Item</button></div>
+                </div>
+                <div>
+                    <h4 class="text-base font-semibold text-gray-800 border-b pb-2 mb-4">Profit Calculation</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div><label for="profit-type"
+                                class="block text-sm font-medium text-gray-700 mb-1">Method</label><select
+                                id="profit-type"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white">
+                                <option value="percent">Percent (%)</option>
+                                <option value="multiplier">Multiplier (x)</option>
+                            </select></div>
+                        <div><label for="profit-value"
+                                class="block text-sm font-medium text-gray-700 mb-1">Value</label><input type="number"
+                                id="profit-value" step="0.01" min="0" placeholder="e.g., 100" required
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
+                    </div>
+                </div>
+            </form>
+            <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl mt-auto">
+                <div class="flex gap-4"><button type="button" id="add-recipe-modal-cancel-btn"
+                        class="py-2.5 px-6 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button><button
+                        type="submit" form="recipe-form"
+                        class="py-2.5 px-6 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Add
+                        Recipe</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-recipe-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Edit Recipe</h3>
+            </div>
+            <form id="edit-recipe-form" class="p-6 space-y-6 overflow-y-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div>
+                        <label for="edit-recipe-title" class="block text-sm font-medium text-gray-700 mb-1">Recipe
+                            Title</label>
+                        <input type="text" id="edit-recipe-title" required
+                            class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <div>
+                        <label for="edit-recipe-category"
+                            class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select id="edit-recipe-category"
+                            class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white"></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Yields</label>
+                    <select id="edit-recipe-yield-type"
+                        class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white mb-2">
+                        <option value="quantity">By Quantity (e.g., 12 pcs)</option>
+                        <option value="size">By Pan Size (e.g., 8-inch Loaf)</option>
+                    </select>
+                    <div id="edit-yield-quantity-fields">
+                        <div class="grid grid-cols-3 gap-2"><input type="number" id="edit-recipe-servings-value" min="1"
+                                class="col-span-2 w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><select
+                                id="edit-recipe-servings-unit"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white">
+                                <option value="pcs">pcs</option>
+                                <option value="Slice">Slice</option>
+                                <option value="Cup">Cup</option>
+                                <option value="Cookie">Cookie</option>
+                            </select></div>
+                    </div>
+                    <div id="edit-yield-size-fields" class="hidden space-y-2">
+                        <select id="edit-recipe-pan-shape"
+                            class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white">
+                            <option value="rectangular">Rectangular / Square</option>
+                            <option value="round">Round</option>
+                        </select>
+                        <div id="edit-pan-shape-rectangular" class="grid grid-cols-3 gap-2"><input type="number"
+                                step="0.1" id="edit-recipe-pan-length" placeholder="Length (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><input type="number"
+                                step="0.1" id="edit-recipe-pan-width" placeholder="Width (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><input type="number"
+                                step="0.1" id="edit-recipe-pan-height" placeholder="Height (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
+                        <div id="edit-pan-shape-round" class="hidden grid grid-cols-2 gap-2"><input type="number"
+                                step="0.1" id="edit-recipe-pan-diameter" placeholder="Diameter (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><input type="number"
+                                step="0.1" id="edit-recipe-pan-height-round" placeholder="Height (in)"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
+                        <div class="grid grid-cols-3 gap-2 pt-1"><input type="number" min="1"
+                                id="edit-recipe-pan-quantity"
+                                class="col-span-1 w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><select
+                                id="edit-recipe-pan-unit"
+                                class="col-span-2 w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white">
+                                <option value="Loaf">Loaf</option>
+                                <option value="Cake">Cake</option>
+                                <option value="Tart">Tart</option>
+                            </select></div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-base font-semibold text-gray-800 border-b pb-2 mb-4">Ingredients & Costs</h4>
+                    <div id="edit-recipe-ingredients-list" class="space-y-3"></div>
+                    <div class="mt-4 flex items-center gap-3"><button type="button" id="edit-add-library-ingredient-btn"
+                            class="py-2 px-4 bg-brand-pink-50 text-brand-pink-700 font-semibold rounded-lg text-sm hover:bg-brand-pink-100 transition-colors">+
+                            Add from Library</button><button type="button" id="edit-add-open-item-btn"
+                            class="py-2 px-4 bg-gray-100 text-gray-700 font-semibold rounded-lg text-sm hover:bg-gray-200 transition-colors">+
+                            Add Open Item</button></div>
+                </div>
+                <div>
+                    <h4 class="text-base font-semibold text-gray-800 border-b pb-2 mb-4">Profit Calculation</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div><label for="edit-profit-type"
+                                class="block text-sm font-medium text-gray-700 mb-1">Method</label><select
+                                id="edit-profit-type"
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white">
+                                <option value="percent">Percent (%)</option>
+                                <option value="multiplier">Multiplier (x)</option>
+                            </select></div>
+                        <div><label for="edit-profit-value"
+                                class="block text-sm font-medium text-gray-700 mb-1">Value</label><input type="number"
+                                id="edit-profit-value" step="0.01" min="0" required
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
+                    </div>
+                </div>
+            </form>
+            <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl mt-auto">
+                <div class="flex gap-4"><button type="button" id="edit-recipe-modal-cancel-btn"
+                        class="py-2.5 px-6 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button><button
+                        type="submit" form="edit-recipe-form"
+                        class="py-2.5 px-6 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Save
+                        Changes</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-team-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] flex flex-col">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Add New Team</h3>
+            </div>
+            <form id="team-form" class="flex-1 flex flex-col overflow-hidden">
+                <div class="p-6 space-y-6 overflow-y-auto">
+                    <div>
+                        <label for="team-name" class="block text-sm font-medium text-gray-700 mb-1">Team Name</label>
+                        <input type="text" id="team-name"
+                            class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <div>
+                        <h4 class="text-base font-semibold text-gray-800 border-b pb-2 mb-4">Manage Staff</h4>
+                        <div id="staff-list" class="space-y-3"></div>
+                        <button type="button" id="add-staff-btn"
+                            class="mt-3 text-sm font-semibold text-brand-pink-600 hover:text-brand-pink-800">+ Add Staff
+                            Member</button>
+                    </div>
+                    <div>
+                        <h4 class="text-base font-semibold text-gray-800 border-b pb-2 mb-4">Production Schedule</h4>
+                        <div id="team-recipe-list" class="space-y-3"></div>
+                        <button type="button" id="add-team-recipe-btn"
+                            class="mt-3 text-sm font-semibold text-brand-pink-600 hover:text-brand-pink-800">+ Add
+                            Recipe to Schedule</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <h4 class="text-base font-semibold text-gray-800 border-b pb-2 mb-4">Live Financial Summary</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                            <div><strong>Total Production Days:</strong> <span id="summary-total-days">0</span></div>
+                            <div><strong>Total Labor Cost:</strong> <span id="summary-total-salary">RM 0.00</span></div>
+                            <div class="col-span-2">
+                                <h5 class="font-semibold text-gray-700 mt-3 mb-2">Per-Piece Costing Breakdown</h5>
+                                <div id="summary-recipe-spending" class="space-y-2">
+                                    <p class="text-xs text-gray-500">Select recipes and schedule dates to see the
+                                        breakdown.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl mt-auto">
+                    <div class="flex gap-4">
+                        <button type="button" id="add-team-modal-cancel-btn"
+                            class="py-2.5 px-6 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancel</button>
+                        <button type="submit"
+                            class="py-2.5 px-6 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700">Create
+                            Team</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="manage-categories-modal"
+        class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Manage Categories</h3>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <label for="new-category-name" class="block text-sm font-medium text-gray-700 mb-1">Add New
+                        Category</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="new-category-name" placeholder="e.g., Cakes, Cookies"
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
+                        <button id="add-category-btn"
+                            class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700">Add</button>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-base font-medium text-gray-800 mb-2">Registered Categories</h4>
+                    <div id="category-list-in-modal" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                </div>
+            </div>
+            <div class="flex justify-end items-center p-4 border-t bg-gray-50">
+                <button type="button" id="close-categories-modal-btn"
+                    class="py-2 px-5 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="preparation-editor-modal"
+        class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="p-5 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Edit Preparation Steps for <span id="editor-recipe-title"
+                        class="text-brand-pink-600"></span></h3>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto">
+                <div id="quill-editor" style="height: 400px;"></div>
+            </div>
+            <div class="flex justify-end items-center p-4 border-t bg-gray-50">
+                <div class="flex gap-4">
+                    <button type="button" id="editor-cancel-btn"
+                        class="py-2 px-5 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="button" id="editor-save-btn"
+                        class="py-2 px-5 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700">Save
+                        Instructions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="planner-day-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800" id="planner-modal-title">Production Details</h3>
+                <button id="planner-modal-close-btn" class="p-1 rounded-full hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                        class="w-5 h-5 text-gray-600">
+                        <path
+                            d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                    </svg>
+                </button>
+            </div>
+            <div id="planner-modal-body" class="p-6 space-y-4 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <input type="file" id="import-file-input" class="hidden" accept=".json">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- PAGE & NAVIGATION ELEMENTS ---
+            const navHome = document.getElementById('nav-home');
+            const navRecipes = document.getElementById('nav-recipes');
+            const navIngredients = document.getElementById('nav-ingredients');
+            const navBudget = document.getElementById('nav-budget');
+            const navSettings = document.getElementById('nav-settings');
+            const ingredientsPage = document.getElementById('ingredients-page');
+            const recipesPage = document.getElementById('recipes-page');
+            const budgetPage = document.getElementById('budget-page');
+            const settingsPage = document.getElementById('settings-page');
+            const homePage = document.getElementById('home-page');
+            const homeToRecipesBtn = document.getElementById('home-to-recipes-btn');
+            const homeToIngredientsBtn = document.getElementById('home-to-ingredients-btn');
+            // --- FIX START ---
+            const homeToRecipesBtn2 = document.getElementById('home-to-recipes-btn-2');
+            const homeToIngredientsBtn2 = document.getElementById('home-to-ingredients-btn-2');
+            // --- FIX END ---
+
+            // --- INGREDIENT PAGE ELEMENTS ---
+            const ingredientListDiv = document.getElementById('ingredient-list');
+            const openAddIngredientModalBtn = document.getElementById('open-add-ingredient-modal-btn');
+            const addIngredientModal = document.getElementById('add-ingredient-modal');
+            const addIngredientForm = document.getElementById('add-ingredient-form');
+            const addIngredientModalCancelBtn = document.getElementById('add-ingredient-modal-cancel-btn');
+            const ingredientSearchInput = document.getElementById('ingredient-search-input');
+            const ingredientSortSelect = document.getElementById('ingredient-sort-select');
+            const editModal = document.getElementById('edit-modal');
+            const editForm = document.getElementById('edit-form');
+            const editNameInput = document.getElementById('edit-name'), editPriceInput = document.getElementById('edit-price'), editWeightInput = document.getElementById('edit-weight'), editUnitInput = document.getElementById('edit-unit'), editSupplierInput = document.getElementById('edit-supplier'), editNotesInput = document.getElementById('edit-notes');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn'), modalDeleteBtn = document.getElementById('modal-delete-btn');
+            const conversionsListDiv = document.getElementById('edit-conversions-list'), addConversionBtn = document.getElementById('add-conversion-btn');
+
+            // --- RECIPE PAGE ELEMENTS ---
+            const recipeListDisplay = document.getElementById('recipe-list-display');
+            const recipeForm = document.getElementById('recipe-form');
+            const recipeIngredientsList = document.getElementById('recipe-ingredients-list');
+            const addLibraryIngredientBtn = document.getElementById('add-library-ingredient-btn');
+            const addOpenItemBtn = document.getElementById('add-open-item-btn');
+            const openAddRecipeModalBtn = document.getElementById('open-add-recipe-modal-btn');
+            const addRecipeModal = document.getElementById('add-recipe-modal');
+            const addRecipeModalCancelBtn = document.getElementById('add-recipe-modal-cancel-btn');
+            const recipeSearchInput = document.getElementById('recipe-search-input');
+            const recipeSortSelect = document.getElementById('recipe-sort-select');
+            const editRecipeModal = document.getElementById('edit-recipe-modal');
+            const editRecipeForm = document.getElementById('edit-recipe-form');
+            const editRecipeIngredientsList = document.getElementById('edit-recipe-ingredients-list');
+            const editAddLibraryIngredientBtn = document.getElementById('edit-add-library-ingredient-btn');
+            const editAddOpenItemBtn = document.getElementById('edit-add-open-item-btn');
+            const editRecipeModalCancelBtn = document.getElementById('edit-recipe-modal-cancel-btn');
+
+            // --- RECIPE BOOK ELEMENTS ---
+            const recipeBookPage = document.getElementById('recipe-book-page');
+            const viewRecipeBookBtn = document.getElementById('view-recipe-book-btn');
+            const backToRecipesBtn = document.getElementById('back-to-recipes-btn');
+            const recipeBookList = document.getElementById('recipe-book-list');
+            const preparationEditorModal = document.getElementById('preparation-editor-modal');
+            const editorRecipeTitle = document.getElementById('editor-recipe-title');
+            const editorCancelBtn = document.getElementById('editor-cancel-btn');
+            const editorSaveBtn = document.getElementById('editor-save-btn');
+            const manageCategoriesBtn = document.getElementById('manage-categories-btn');
+            const manageCategoriesModal = document.getElementById('manage-categories-modal');
+            const newCategoryNameInput = document.getElementById('new-category-name');
+            const addCategoryBtn = document.getElementById('add-category-btn');
+            const categoryListInModal = document.getElementById('category-list-in-modal');
+            const closeCategoriesModalBtn = document.getElementById('close-categories-modal-btn');
+            const recipeBookSearchInput = document.getElementById('recipe-book-search-input');
+            const recipeBookSortSelect = document.getElementById('recipe-book-sort-select');
+            const recipeBookPagination = document.getElementById('recipe-book-pagination');
+            const categoryFiltersContainer = document.getElementById('recipe-book-category-filters');
+            const recipeCategoryFiltersContainer = document.getElementById('recipe-category-filters');
+
+            // --- BUDGET PAGE ELEMENTS ---
+            const openAddTeamModalBtn = document.getElementById('open-add-team-modal-btn');
+            const addTeamModal = document.getElementById('add-team-modal');
+            const addTeamModalCancelBtn = document.getElementById('add-team-modal-cancel-btn');
+            const addStaffBtn = document.getElementById('add-staff-btn');
+            const staffList = document.getElementById('staff-list');
+            const addTeamRecipeBtn = document.getElementById('add-team-recipe-btn');
+            const teamRecipeList = document.getElementById('team-recipe-list');
+            const teamForm = document.getElementById('team-form');
+            const productionPlannerContainer = document.getElementById('production-planner-container');
+
+            // --- SETTINGS PAGE ELEMENTS ---
+            const exportDataBtn = document.getElementById('export-data-btn');
+            const importDataBtn = document.getElementById('import-data-btn');
+            const importFileInput = document.getElementById('import-file-input');
+            const resetDataBtn = document.getElementById('reset-data-btn');
+
+            // --- DATA & STATE ---
+            let ingredients = JSON.parse(localStorage.getItem('ingredients')) || [];
+            let recipes = JSON.parse(localStorage.getItem('recipes')) || [];
+            let teams = JSON.parse(localStorage.getItem('teams')) || [];
+            let categories = JSON.parse(localStorage.getItem('categories')) || [];
+            let currentlyEditingId = null;
+            let recipeTomSelectInstances = {};
+            let currentlyEditingRecipeId = null;
+            let editRecipeTomSelectInstances = {};
+            let currentlyEditingTeamId = null;
+            let plannerDate = new Date();
+            let recipeBookCurrentPage = 1;
+            const RECIPES_PER_PAGE = 20;
+
+            const saveIngredients = () => { try { localStorage.setItem('ingredients', JSON.stringify(ingredients)); } catch (e) { console.error('Error saving ingredients:', e); alert('Warning: Could not save ingredients. Storage might be full or restricted.'); } };
+            const saveRecipes = () => { try { localStorage.setItem('recipes', JSON.stringify(recipes)); } catch (e) { console.error('Error saving recipes:', e); alert('Warning: Could not save recipes. Storage might be full or restricted.'); } };
+            const saveTeams = () => { try { localStorage.setItem('teams', JSON.stringify(teams)); } catch (e) { console.error('Error saving teams:', e); alert('Warning: Could not save teams. Storage might be full or restricted.'); } };
+            const saveCategories = () => { try { localStorage.setItem('categories', JSON.stringify(categories)); } catch (e) { console.error('Error saving categories:', e); alert('Warning: Could not save categories. Storage might be full or restricted.'); } };
+
+            // =================================================================
+            // SETTINGS & DATA MANAGEMENT (No changes here)
+            // =================================================================
+            const rerenderAll = () => {
+                renderIngredients();
+                renderRecipes();
+                renderTeams();
+                renderFullProductionCalendar();
+                renderCategoryFilters();
+                renderRecipeBook();
+                renderRecipePageCategoryFilters(); // This makes the new buttons show up
+            };
+
+            exportDataBtn.addEventListener('click', () => {
+                const dataToExport = {
+                    ingredients,
+                    recipes,
+                    teams,
+                    categories,
+                    exportedAt: new Date().toISOString()
+                };
+                const jsonString = JSON.stringify(dataToExport, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `dessertcost_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            });
+
+            importDataBtn.addEventListener('click', () => {
+                importFileInput.click();
+            });
+
+            importFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        if (importedData.ingredients && importedData.recipes && importedData.teams && importedData.categories) {
+                            if (confirm('Importing this file will overwrite all current data. Are you sure?')) {
+                                ingredients = importedData.ingredients;
+                                recipes = importedData.recipes;
+                                teams = importedData.teams;
+                                categories = importedData.categories;
+                                saveIngredients();
+                                saveRecipes();
+                                saveTeams();
+                                saveCategories();
+                                rerenderAll();
+                                alert('Data imported successfully!');
+                            }
+                        } else {
+                            alert('Invalid file format.');
+                        }
+                    } catch (error) {
+                        alert('Error reading or parsing file.');
+                        console.error("Import error:", error);
+                    } finally {
+                        e.target.value = null;
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            resetDataBtn.addEventListener('click', () => {
+                if (confirm('⚠️ WARNING: This will delete ALL data permanently. This action cannot be undone. Are you absolutely sure?')) {
+                    ingredients = [];
+                    recipes = [];
+                    teams = [];
+                    categories = [];
+                    saveIngredients();
+                    saveRecipes();
+                    saveTeams();
+                    saveCategories();
+                    rerenderAll();
+                    alert('All data has been reset.');
+                }
+            });
+
+            // =================================================================
+            // FULL PRODUCTION PLANNER FUNCTIONS
+            // =================================================================
+
+            const renderFullProductionCalendar = () => {
+                productionPlannerContainer.innerHTML = '';
+
+                const schedule = new Map();
+                const teamColors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-yellow-500', 'bg-red-500', 'bg-indigo-500'];
+                teams.forEach(team => {
+                    team.recipes.forEach(teamRecipe => {
+                        const recipe = recipes.find(r => r.id === teamRecipe.recipeId);
+                        if (!recipe) return;
+
+                        teamRecipe.cookDates.forEach(date => {
+                            if (!schedule.has(date)) {
+                                schedule.set(date, []);
+                            }
+                            schedule.get(date).push({
+                                teamName: team.name,
+                                teamId: team.id,
+                                recipeTitle: recipe.title,
+                                quantity: teamRecipe.qtyPerDay
+                            });
+                        });
+                    });
+                });
+
+                const year = plannerDate.getFullYear();
+                const month = plannerDate.getMonth();
+                const monthName = plannerDate.toLocaleString('default', { month: 'long' });
+                const firstDayOfMonth = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+                const header = document.createElement('div');
+                header.className = 'flex justify-between items-center mb-4';
+                header.innerHTML = `
+            <button id="planner-prev-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-gray-600"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
+            </button>
+            <h4 class="text-lg font-bold text-gray-800">${monthName} ${year}</h4>
+            <button id="planner-next-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-gray-600"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+            </button>
+        `;
+                productionPlannerContainer.appendChild(header);
+
+                const calendarGrid = document.createElement('div');
+                calendarGrid.className = 'full-calendar';
+
+                ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].forEach(day => {
+                    calendarGrid.innerHTML += `<div class="full-calendar-header">${day}</div>`;
+                });
+
+                for (let i = 0; i < firstDayOfMonth; i++) {
+                    const dayNum = daysInPrevMonth - firstDayOfMonth + i + 1;
+                    calendarGrid.innerHTML += `<div class="full-calendar-day not-current-month"><span class="day-number">${dayNum}</span></div>`;
+                }
+
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'full-calendar-day';
+                    dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+
+                    if (schedule.has(dateStr)) {
+                        dayDiv.classList.add('has-events');
+                        dayDiv.dataset.date = dateStr;
+
+                        const eventsForDay = schedule.get(dateStr);
+                        const MAX_ITEMS_VISIBLE = 2;
+                        let itemsRendered = 0;
+                        let totalItems = eventsForDay.length;
+
+                        const eventContainer = document.createElement('div');
+                        let eventListHTML = '<div class="planner-event-list">';
+                        for (const event of eventsForDay) {
+                            if (itemsRendered < MAX_ITEMS_VISIBLE) {
+                                const teamColor = teamColors[event.teamId % teamColors.length];
+                                eventListHTML += `<div class="planner-recipe-item ${teamColor} !mt-1">${event.recipeTitle} ${event.quantity}pcs</div>`;
+                                itemsRendered++;
+                            } else {
+                                break;
+                            }
+                        }
+                        eventListHTML += '</div>';
+
+                        const remainingItems = totalItems - itemsRendered;
+                        if (remainingItems > 0) {
+                            eventListHTML += `<div class="planner-more-items-btn">+ ${remainingItems} more</div>`;
+                        }
+                        eventContainer.innerHTML = eventListHTML;
+                        dayDiv.appendChild(eventContainer);
+                    }
+                    calendarGrid.appendChild(dayDiv);
+                }
+
+                const lastDayOfMonth = new Date(year, month, daysInMonth).getDay();
+                let nextMonthDay = 1;
+                for (let i = lastDayOfMonth + 1; i < 7; i++) {
+                    calendarGrid.innerHTML += `<div class="full-calendar-day not-current-month"><span class="day-number">${nextMonthDay++}</span></div>`;
+                }
+
+                calendarGrid.addEventListener('click', (e) => {
+                    const dayCell = e.target.closest('.full-calendar-day.has-events');
+                    if (dayCell) {
+                        const dateStr = dayCell.dataset.date;
+                        const eventsForDay = schedule.get(dateStr);
+                        if (eventsForDay) {
+                            openPlannerDayModal(dateStr, eventsForDay, teamColors);
+                        }
+                    }
+                });
+
+                productionPlannerContainer.appendChild(calendarGrid);
+
+                document.getElementById('planner-prev-month').addEventListener('click', () => {
+                    plannerDate.setMonth(plannerDate.getMonth() - 1);
+                    renderFullProductionCalendar();
+                });
+                document.getElementById('planner-next-month').addEventListener('click', () => {
+                    plannerDate.setMonth(plannerDate.getMonth() + 1);
+                    renderFullProductionCalendar();
+                });
+
+                if (schedule.size > 0) {
+                    const summaryContainer = document.createElement('div');
+                    summaryContainer.className = 'mt-8 pt-6 border-t border-gray-200';
+                    summaryContainer.innerHTML = '<h4 class="text-base font-semibold text-gray-800 mb-4">Production Summary for the Month</h4>';
+
+                    const summaryList = document.createElement('div');
+                    summaryList.className = 'space-y-4 text-sm';
+
+                    const sortedDates = [...schedule.keys()].sort();
+
+                    sortedDates.forEach(dateStr => {
+                        const events = schedule.get(dateStr);
+                        const date = new Date(dateStr + 'T00:00:00');
+                        const dayNumber = date.getDate();
+                        const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+
+                        const dayEntryContainer = document.createElement('div');
+                        dayEntryContainer.innerHTML = `<h5 class="font-semibold text-brand-pink-900 bg-brand-pink-100 px-3 py-1 rounded-md inline-block">${dayNumber} (${dayOfWeek})</h5>`;
+
+                        const eventsByTeam = events.reduce((acc, event) => {
+                            if (!acc[event.teamName]) {
+                                acc[event.teamName] = [];
+                            }
+                            acc[event.teamName].push(event);
+                            return acc;
+                        }, {});
+
+                        const teamsContainer = document.createElement('div');
+                        teamsContainer.className = 'pl-4 mt-1 space-y-2';
+
+                        for (const teamName in eventsByTeam) {
+                            const teamEvents = eventsByTeam[teamName];
+                            const recipesString = teamEvents.map(event =>
+                                `${event.recipeTitle} (${event.quantity}pcs)`
+                            ).join(' | ');
+
+                            const teamEntry = document.createElement('div');
+                            teamEntry.innerHTML = `
+                        <p class="font-semibold text-gray-800">${teamName}</p>
+                        <p class="pl-2 text-gray-600">${recipesString}</p>
+                    `;
+                            teamsContainer.appendChild(teamEntry);
+                        }
+
+                        dayEntryContainer.appendChild(teamsContainer);
+                        summaryList.appendChild(dayEntryContainer);
+                    });
+
+                    summaryContainer.appendChild(summaryList);
+                    productionPlannerContainer.appendChild(summaryContainer);
+                }
+            };
+
+            const openPlannerDayModal = (dateStr, events, teamColors) => {
+                const modal = document.getElementById('planner-day-modal');
+                const modalTitle = document.getElementById('planner-modal-title');
+                const modalBody = document.getElementById('planner-modal-body');
+                const modalCloseBtn = document.getElementById('planner-modal-close-btn');
+
+                const date = new Date(dateStr + 'T00:00:00');
+                modalTitle.textContent = `Production for ${date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+
+                const eventsByTeam = events.reduce((acc, event) => {
+                    if (!acc[event.teamName]) {
+                        acc[event.teamName] = { teamId: event.teamId, recipes: [] };
+                    }
+                    acc[event.teamName].recipes.push(event);
+                    return acc;
+                }, {});
+
+                modalBody.innerHTML = '';
+                for (const teamName in eventsByTeam) {
+                    const teamInfo = eventsByTeam[teamName];
+                    const teamColor = teamColors[teamInfo.teamId % teamColors.length];
+
+                    let teamHTML = `<div class="mb-3"><h4 class="font-bold text-gray-800">${teamName}</h4><div class="mt-1 space-y-1">`;
+                    teamInfo.recipes.forEach(event => {
+                        teamHTML += `
+                    <div class="flex items-center gap-0.5 py-1 px-0.5 rounded-md bg-gray-50 border">
+                        <span class="w-3 h-3 rounded-full ${teamColor}"></span>
+                        <span class="flex-1 font-medium text-sm text-gray-700 whitespace-nowrap">${event.recipeTitle}</span>
+                        <span class="text-sm font-semibold text-brand-pink-700 whitespace-nowrap">${event.quantity} pcs</span>
+                    </div>
+                `;
+                    });
+                    teamHTML += `</div></div>`;
+                    modalBody.innerHTML += teamHTML;
+                }
+
+                modal.classList.remove('hidden');
+
+                const closeModal = () => modal.classList.add('hidden');
+                modalCloseBtn.onclick = closeModal;
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                };
+            };
+
+            // =================================================================
+            // BUDGET PAGE FUNCTIONS
+            // =================================================================
+            const calculateTeamData = (team) => {
+                // 1. Calculate unique production days
+                const allCookDays = new Set();
+                team.recipes.forEach(r => {
+                    if (Array.isArray(r.cookDates)) {
+                        r.cookDates.forEach(d => allCookDays.add(d));
+                    }
+                });
+                const totalProductionDays = allCookDays.size;
+
+                // 2. Calculate total labor cost
+                let totalDailySalaryRate = 0;
+                team.staff.forEach(staff => {
+                    const salary = staff.salary || 0;
+                    const durationValue = staff.duration_value || 1;
+                    const durationType = staff.duration_type || 'day';
+                    let dailyRate = 0;
+                    if (durationType === 'day') {
+                        dailyRate = salary / durationValue;
+                    } else if (durationType === 'week') {
+                        dailyRate = salary / (durationValue * 7);
+                    } else if (durationType === 'month') {
+                        dailyRate = salary / (durationValue * 30); // Approximation
+                    }
+                    totalDailySalaryRate += dailyRate;
+                });
+                const totalLaborCost = totalDailySalaryRate * totalProductionDays;
+
+                // 3. Calculate total ingredient cost and projected revenue
+                let totalIngredientCost = 0;
+                let projectedRevenue = 0;
+                const recipeBreakdowns = team.recipes.map(teamRecipe => {
+                    const recipe = recipes.find(r => r.id === teamRecipe.recipeId);
+                    if (!recipe) return null;
+
+                    const qtyPerDay = teamRecipe.qtyPerDay || 0;
+                    const recipeCookDays = Array.isArray(teamRecipe.cookDates) ? teamRecipe.cookDates.length : 0;
+                    const totalQty = qtyPerDay * recipeCookDays;
+
+                    const recipeCosts = calculateRecipeCost(recipe);
+                    const servingsPerBatch = (recipe.servings.type === 'quantity' ? recipe.servings.value : recipe.servings.quantity) || 1;
+
+                    if (servingsPerBatch > 0) {
+                        const batchesNeeded = totalQty / servingsPerBatch;
+                        totalIngredientCost += recipeCosts.totalCost * batchesNeeded;
+                        projectedRevenue += recipeCosts.finalPrice * batchesNeeded;
+                    }
+
+                    const salaryCostPerRecipeRun = totalDailySalaryRate * recipeCookDays;
+                    const salaryCostPerPc = totalQty > 0 ? salaryCostPerRecipeRun / totalQty : 0;
+                    const ingredientCostPerPc = recipeCosts.costPerServing;
+                    const totalCostPerPc = ingredientCostPerPc + salaryCostPerPc;
+
+                    return {
+                        title: recipe.title,
+                        totalCostPerPc: totalCostPerPc.toFixed(2)
+                    };
+                }).filter(b => b !== null);
+
+                // 4. Calculate final numbers
+                const totalProductionCost = totalLaborCost + totalIngredientCost;
+                const projectedProfit = projectedRevenue - totalProductionCost;
+
+                // 5. Return all the new data
+                return {
+                    totalProductionDays,
+                    totalLaborCost,
+                    totalIngredientCost,
+                    totalProductionCost,
+                    projectedRevenue,
+                    projectedProfit,
+                    recipeBreakdowns
+                };
+            };
+
+            const renderProductionCalendar = (container, team) => {
+                container.innerHTML = '';
+                const schedule = {};
+                team.recipes.forEach(teamRecipe => {
+                    const recipe = recipes.find(r => r.id === teamRecipe.recipeId);
+                    if (!recipe) return;
+                    teamRecipe.cookDates.forEach(date => {
+                        if (!schedule[date]) schedule[date] = [];
+                        schedule[date].push({
+                            title: recipe.title,
+                            quantity: teamRecipe.qtyPerDay
+                        });
+                    });
+                });
+
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const grid = document.createElement('div');
+                grid.className = 'calendar';
+                'S,M,T,W,T,F,S'.split(',').forEach(day => {
+                    grid.innerHTML += `<div class="calendar-header">${day}</div>`;
+                });
+                for (let i = 0; i < firstDay; i++) { grid.innerHTML += '<div></div>'; }
+
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'calendar-day';
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+
+                    if (schedule[dateStr]) {
+                        dayDiv.classList.add('has-recipe');
+                        dayDiv.innerHTML = `<span>${i}</span>`;
+                        tippy(dayDiv, {
+                            content: schedule[dateStr].map(event => `<div>- ${event.title} (${event.quantity}pcs)</div>`).join(''),
+                            allowHTML: true,
+                            theme: 'light-border'
+                        });
+                    } else {
+                        dayDiv.textContent = i;
+                    }
+                    grid.appendChild(dayDiv);
+                }
+                container.innerHTML = `
+            <div class="calendar-nav !mb-2">
+                <span class="font-semibold text-sm">${currentDate.toLocaleString('default', { month: 'long' })} ${year}</span>
+            </div>
+        `;
+                container.appendChild(grid);
+            };
+
+            const renderTeams = () => {
+                const teamListDiv = document.getElementById('team-list');
+                teamListDiv.innerHTML = '';
+                if (teams.length === 0) {
+                    teamListDiv.innerHTML = `<p class="text-center text-gray-500">No teams created yet.</p>`;
+                    return;
+                }
+
+                const teamsContainer = document.createElement('div');
+                teamsContainer.className = 'space-y-4';
+
+                teams.forEach(team => {
+                    const teamData = calculateTeamData(team);
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden';
+                    card.innerHTML = `
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-800">${team.name}</h4>
+                            <p class="text-sm text-gray-500">${team.staff.length} staff members &bull; ${team.recipes.length} recipes</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button title="Edit Team" class="edit-team-btn p-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-md" data-team-id="${team.id}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
+                            </button>
+                            <button class="font-semibold text-sm text-brand-pink-600 toggle-team-details py-1.5 px-3 rounded-md hover:bg-brand-pink-50" data-team-id="${team.id}">Details</button>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center border-t pt-4">
+                        <div><p class="text-xs text-gray-500">Labor Cost</p><p class="font-bold text-gray-800 text-lg">RM ${teamData.totalLaborCost.toFixed(2)}</p></div>
+                        <div><p class="text-xs text-gray-500">Ingredient Cost</p><p class="font-bold text-gray-800 text-lg">RM ${teamData.totalIngredientCost.toFixed(2)}</p></div>
+                        <div><p class="text-xs text-gray-500">Projected Revenue</p><p class="font-bold text-blue-600 text-lg">RM ${teamData.projectedRevenue.toFixed(2)}</p></div>
+                        <div><p class="text-xs text-gray-500">Projected Profit</p><p class="font-bold text-green-600 text-lg">RM ${teamData.projectedProfit.toFixed(2)}</p></div>
+                    </div>
+                </div>
+                <div class="team-card-details bg-gray-50/70 px-5" data-details-for="${team.id}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h5 class="font-semibold mb-2 text-gray-700">Costing per Piece</h5>
+                            <div class="space-y-2">
+                                ${teamData.recipeBreakdowns.length > 0 ? teamData.recipeBreakdowns.map(rb => `
+                                    <div class="text-xs p-2 bg-white rounded-md border">
+                                        <p class="font-bold text-gray-800">${rb.title}</p>
+                                        <p>Total Cost (Ingredients + Labor): <strong class="text-brand-pink-700">RM ${rb.totalCostPerPc} per pc</strong></p>
+                                    </div>
+                                `).join('') : '<p class="text-xs text-gray-500">No recipes scheduled.</p>'}
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold mb-2 text-gray-700">Production Schedule (${teamData.totalProductionDays} days)</h5>
+                            <div class="production-calendar-container bg-white p-2 rounded-lg border"></div>
+                            <div class="mt-4 text-right">
+                                <button class="delete-team-btn py-2 px-4 bg-red-600 text-white font-semibold rounded-lg text-sm hover:bg-red-700" data-team-id="${team.id}">Delete Team</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                    teamsContainer.appendChild(card);
+                });
+                teamListDiv.appendChild(teamsContainer);
+            };
+
+
+            const openEditTeamModal = (teamId) => {
+                const teamToEdit = teams.find(t => t.id === teamId);
+                if (!teamToEdit) return;
+
+                currentlyEditingTeamId = teamId;
+
+                addTeamModal.querySelector('h3').textContent = 'Edit Team';
+                teamForm.querySelector('button[type="submit"]').textContent = 'Save Changes';
+                document.getElementById('team-name').value = teamToEdit.name;
+                staffList.innerHTML = '';
+                teamRecipeList.innerHTML = '';
+
+                teamToEdit.staff.forEach(staffMember => addStaffRow(staffMember));
+                teamToEdit.recipes.forEach(recipeItem => addTeamRecipeRow(recipeItem));
+
+                addTeamModal.classList.remove('hidden');
+                updateBudgetSummary();
+            };
+
+            const openAddTeamModal = () => {
+                currentlyEditingTeamId = null;
+                addTeamModal.querySelector('h3').textContent = 'Add New Team';
+                teamForm.querySelector('button[type="submit"]').textContent = 'Create Team';
+
+                teamForm.reset();
+                staffList.innerHTML = '';
+                teamRecipeList.innerHTML = '';
+                if (staffList.children.length === 0) addStaffRow();
+                if (teamRecipeList.children.length === 0) addTeamRecipeRow();
+
+                addTeamModal.classList.remove('hidden');
+                updateBudgetSummary();
+            };
+
+            const closeAddTeamModal = () => {
+                addTeamModal.classList.add('hidden');
+                currentlyEditingTeamId = null;
+            };
+
+            const addStaffRow = (staff = {}) => {
+                const div = document.createElement('div');
+                div.className = 'p-3 rounded-lg bg-gray-50 staff-row border';
+                div.innerHTML = `
+            <div class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-between">
+                <input type="text" placeholder="Staff Name" class="staff-name p-2 border rounded-lg flex-grow md:flex-grow-0 md:w-64 focus-ring" value="${staff.name || ''}">
+                <div class="flex items-center gap-2 flex-grow justify-end">
+                    <span class="text-sm text-gray-600">RM</span>
+                    <input type="number" placeholder="e.g., 1500" class="staff-salary p-2 border rounded-lg w-24 focus-ring" value="${staff.salary || ''}">
+                    <span class="text-sm text-gray-600">per</span>
+                    <input type="number" value="${staff.duration_value || 1}" min="1" class="staff-duration-value p-2 border rounded-lg w-16 text-center focus-ring">
+                    <select class="staff-duration-type p-2 border rounded-lg bg-gray-100 focus-ring">
+                        <option value="day" ${staff.duration_type === 'day' ? 'selected' : ''}>Day(s)</option>
+                        <option value="week" ${staff.duration_type === 'week' ? 'selected' : ''}>Week(s)</option>
+                        <option value="month" ${staff.duration_type === 'month' ? 'selected' : ''}>Month(s)</option>
+                    </select>
+                </div>
+                <button type="button" class="remove-staff-btn text-red-500 font-semibold text-xs p-1 rounded hover:bg-red-50">REMOVE</button>
+            </div>
+        `;
+                staffList.appendChild(div);
+            };
+
+            const addTeamRecipeRow = (teamRecipe = {}) => {
+                const div = document.createElement('div');
+                div.className = 'p-3 rounded-lg bg-gray-50 team-recipe-row border';
+                const recipeOptions = recipes.map(r => `<option value="${r.id}" ${teamRecipe.recipeId == r.id ? 'selected' : ''}>${r.title}</option>`).join('');
+                if (!recipeOptions) {
+                    div.innerHTML = `<p class="text-sm text-red-500">No recipes found. Please go to the 'Recipes' page to create one first.</p>`;
+                    teamRecipeList.appendChild(div);
+                    return;
+                }
+
+                const selectedDates = teamRecipe.cookDates || [];
+                div.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+                <select class="team-recipe-select p-2.5 border rounded-lg focus-ring bg-white">${recipeOptions}</select>
+                <input type="number" placeholder="Quantity per day" value="${teamRecipe.qtyPerDay || 30}" class="team-recipe-qty p-2.5 border rounded-lg focus-ring">
+                <input type="text" readonly placeholder="Click to select dates" class="team-recipe-dates p-2.5 border rounded-lg bg-white cursor-pointer focus-ring" 
+                        data-selected-dates='${JSON.stringify(selectedDates)}' value="${selectedDates.length} day(s) selected">
+            </div>
+            <div class="flex justify-between items-center">
+                <div class="calendar-container hidden mt-2 p-2 bg-white border rounded-lg shadow-sm w-full max-w-xs"></div>
+                <button type="button" class="remove-team-recipe-btn text-red-500 text-xs font-semibold mt-1 px-1 hover:bg-red-50 rounded">REMOVE</button>
+            </div>
+        `;
+                teamRecipeList.appendChild(div);
+
+                const dateInput = div.querySelector('.team-recipe-dates');
+                const calendarContainer = div.querySelector('.calendar-container');
+
+                dateInput.addEventListener('click', () => {
+                    const isHidden = calendarContainer.classList.contains('hidden');
+                    document.querySelectorAll('.calendar-container').forEach(c => c.classList.add('hidden'));
+                    if (isHidden) {
+                        calendarContainer.classList.remove('hidden');
+                        const currentDates = JSON.parse(dateInput.dataset.selectedDates || '[]');
+                        renderCalendar(calendarContainer, new Date(), currentDates);
+                    }
+                });
+            };
+
+            const renderCalendar = (container, currentDate, selectedDates) => {
+                container.innerHTML = '';
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                const nav = document.createElement('div');
+                nav.className = 'calendar-nav';
+                nav.innerHTML = `
+            <button type="button" class="prev-month">&lt;</button>
+            <span class="font-semibold">${currentDate.toLocaleString('default', { month: 'long' })} ${year}</span>
+            <button type="button" class="next-month">&gt;</button>
+        `;
+                container.appendChild(nav);
+
+                const grid = document.createElement('div');
+                grid.className = 'calendar';
+                'S,M,T,W,T,F,S'.split(',').forEach(day => {
+                    grid.innerHTML += `<div class="calendar-header">${day}</div>`;
+                });
+
+
+                for (let i = 0; i < firstDay; i++) {
+                    grid.innerHTML += '<div></div>';
+                }
+
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'calendar-day';
+                    dayDiv.textContent = i;
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    dayDiv.dataset.date = dateStr;
+                    if (selectedDates.includes(dateStr)) {
+                        dayDiv.classList.add('selected');
+                    }
+                    grid.appendChild(dayDiv);
+                }
+                container.appendChild(grid);
+
+                container.querySelector('.prev-month').addEventListener('click', () => {
+                    currentDate.setMonth(month - 1);
+                    renderCalendar(container, currentDate, selectedDates);
+                });
+                container.querySelector('.next-month').addEventListener('click', () => {
+                    currentDate.setMonth(month + 1);
+                    renderCalendar(container, currentDate, selectedDates);
+                });
+
+                container.querySelectorAll('.calendar-day').forEach(day => {
+                    day.addEventListener('click', () => {
+                        day.classList.toggle('selected');
+                        const date = day.dataset.date;
+                        if (selectedDates.includes(date)) {
+                            selectedDates.splice(selectedDates.indexOf(date), 1);
+                        } else {
+                            selectedDates.push(date);
+                        }
+                        const dateInput = container.closest('.team-recipe-row').querySelector('.team-recipe-dates');
+                        dateInput.value = `${selectedDates.length} day(s) selected`;
+                        dateInput.dataset.selectedDates = JSON.stringify(selectedDates);
+                        updateBudgetSummary();
+                    });
+                });
+            };
+
+            const updateBudgetSummary = () => {
+                const tempTeam = { staff: [], recipes: [] };
+                document.querySelectorAll('.staff-row').forEach(row => {
+                    tempTeam.staff.push({
+                        salary: parseFloat(row.querySelector('.staff-salary').value) || 0,
+                        duration_value: parseInt(row.querySelector('.staff-duration-value').value) || 1,
+                        duration_type: row.querySelector('.staff-duration-type').value
+                    });
+                });
+                document.querySelectorAll('.team-recipe-row').forEach(row => {
+                    const recipeId = row.querySelector('.team-recipe-select')?.value;
+                    if (!recipeId) return;
+                    tempTeam.recipes.push({
+                        recipeId: parseInt(recipeId),
+                        qtyPerDay: parseInt(row.querySelector('.team-recipe-qty').value) || 0,
+                        cookDates: JSON.parse(row.querySelector('.team-recipe-dates').dataset.selectedDates || '[]')
+                    });
+                });
+
+                const summaryData = calculateTeamData(tempTeam);
+
+                document.getElementById('summary-total-days').textContent = summaryData.totalProductionDays;
+                document.getElementById('summary-total-salary').textContent = `RM ${summaryData.totalLaborCost.toFixed(2)}`;
+
+                const spendingDiv = document.getElementById('summary-recipe-spending');
+                spendingDiv.innerHTML = '';
+
+                if (summaryData.recipeBreakdowns.length > 0) {
+                    summaryData.recipeBreakdowns.forEach(rb => {
+                        spendingDiv.innerHTML += `
+                        <div class="text-xs p-2 bg-white rounded-md border">
+                            <p class="font-bold">${rb.title}</p>
+                            <p>Total Cost (Ingredients + Labor): <strong class="text-brand-pink-700">RM ${rb.totalCostPerPc} per pc</strong></p>
+                        </div>
+                    `;
+                    });
+                }
+
+                if (spendingDiv.innerHTML === '') {
+                    spendingDiv.innerHTML = '<p class="text-xs text-gray-500">Assign recipes and select cook dates to see breakdown.</p>';
+                }
+            };
+
+            // =================================================================
+            // INGREDIENT PAGE FUNCTIONS
+            // =================================================================
+            const renderIngredients = () => {
+                ingredientListDiv.innerHTML = '';
+                let processedIngredients = [...ingredients];
+                const searchTerm = ingredientSearchInput.value.toLowerCase();
+                if (searchTerm) {
+                    processedIngredients = processedIngredients.filter(ing => ing.name.toLowerCase().includes(searchTerm));
+                }
+                const sortBy = ingredientSortSelect.value;
+                processedIngredients.sort((a, b) => {
+                    switch (sortBy) {
+                        case 'name-az': return a.name.localeCompare(b.name);
+                        case 'name-za': return b.name.localeCompare(a.name);
+                        case 'price-desc': return b.price - a.price;
+                        case 'price-asc': return a.price - b.price;
+                        case 'weight-desc': return b.weight - a.weight;
+                        case 'weight-asc': return a.weight - b.weight;
+                        case 'oldest': return new Date(a.dateAdded) - new Date(b.dateAdded);
+                        case 'latest': default: return new Date(b.dateAdded) - new Date(a.dateAdded);
+                    }
+                });
+                if (processedIngredients.length === 0) {
+                    ingredientListDiv.innerHTML = `<p class="text-center text-gray-500 py-10 px-6">No ingredients found.</p>`;
+                    return;
+                }
+                const table = document.createElement('table');
+                table.className = 'w-full text-sm text-left text-gray-600';
+                table.innerHTML = `<thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Purchase Cost</th><th class="px-6 py-3">Cost per unit</th><th class="px-6 py-3 text-right">Actions</th></tr></thead><tbody></tbody>`;
+                const tbody = table.querySelector('tbody');
+                processedIngredients.forEach(ingredient => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'bg-white border-b hover:bg-gray-50';
+                    let baseUnit = '', costPerUnit = 0, totalAmountInBaseUnit = 0;
+                    switch (ingredient.unit) {
+                        case 'kg': totalAmountInBaseUnit = ingredient.weight * 1000; baseUnit = 'g'; break;
+                        case 'l': totalAmountInBaseUnit = ingredient.weight * 1000; baseUnit = 'ml'; break;
+                        default: totalAmountInBaseUnit = ingredient.weight; baseUnit = ingredient.unit;
+                    }
+                    if (totalAmountInBaseUnit > 0) costPerUnit = ingredient.price / totalAmountInBaseUnit;
+                    tr.innerHTML = `<td class="px-6 py-4 font-medium text-gray-900">${ingredient.name}</td><td class="px-6 py-4">RM ${ingredient.price.toFixed(2)} for ${ingredient.weight} ${ingredient.unit}</td><td class="px-6 py-4 font-semibold text-green-600">RM ${costPerUnit.toFixed(5)} / ${baseUnit}</td><td class="px-6 py-4 flex space-x-4 justify-end"><button class="edit-btn font-medium text-brand-indigo-700 hover:underline" data-id="${ingredient.id}">Edit</button><button class="delete-btn font-medium text-red-600 hover:underline" data-id="${ingredient.id}">Delete</button></td>`;
+                    tbody.appendChild(tr);
+                });
+                ingredientListDiv.appendChild(table);
+            };
+            const appendConversionInput = (unitName = 'tsp', grams = '') => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center space-x-2 conversion-row';
+                const predefinedUnits = ['tsp', 'tbsp', 'cup'];
+                const optionsHTML = predefinedUnits.map(unit => `<option value="${unit}" ${unit === unitName ? 'selected' : ''}>${unit}</option>`).join('');
+                div.innerHTML = `<span class="font-mono text-sm">1</span><select class="conversion-unit-name w-full p-1.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring">${optionsHTML}</select><span class="font-mono text-sm">=</span><input type="number" placeholder="grams" value="${grams}" step="0.01" class="conversion-grams w-24 p-1.5 border border-gray-300 rounded-lg text-sm focus-ring"><span class="text-sm">g</span><button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button>`;
+                conversionsListDiv.appendChild(div);
+            };
+            const openEditModal = (id) => {
+                const ingredientToEdit = ingredients.find(ing => ing.id === id);
+                if (!ingredientToEdit) return;
+                currentlyEditingId = id;
+                editNameInput.value = ingredientToEdit.name;
+                editPriceInput.value = ingredientToEdit.price.toFixed(2);
+                editWeightInput.value = ingredientToEdit.weight;
+                editUnitInput.value = ingredientToEdit.unit;
+                editSupplierInput.value = ingredientToEdit.supplier || '';
+                editNotesInput.value = ingredientToEdit.notes || '';
+                conversionsListDiv.innerHTML = '';
+                if (ingredientToEdit.conversions && ingredientToEdit.conversions.length > 0) {
+                    ingredientToEdit.conversions.forEach(conv => appendConversionInput(conv.unitName, conv.grams));
+                }
+                editModal.classList.remove('hidden');
+            };
+            const closeEditModal = () => { currentlyEditingId = null; editModal.classList.add('hidden'); };
+            const openAddIngredientModal = () => addIngredientModal.classList.remove('hidden');
+            const closeAddIngredientModal = () => {
+                addIngredientForm.reset();
+                addIngredientModal.classList.add('hidden');
+            }
+            const addIngredient = (e) => {
+                try {
+                    e.preventDefault();
+                    const name = document.getElementById('add-name').value.trim();
+                    const price = parseFloat(document.getElementById('add-price').value);
+                    const weight = parseFloat(document.getElementById('add-weight').value);
+                    const unit = document.getElementById('add-unit').value;
+                    if (!name || isNaN(price) || isNaN(weight) || price <= 0 || weight <= 0) { alert('Invalid values.'); return; }
+                    const newIngredient = { id: Date.now(), name, price, weight, unit, supplier: '', notes: '', conversions: [], dateAdded: new Date().toISOString() };
+                    ingredients.push(newIngredient);
+                    saveIngredients();
+                    renderIngredients();
+                    closeAddIngredientModal();
+                } catch (err) {
+                    console.error('Error in addIngredient:', err);
+                    alert('An unexpected error occurred while adding the ingredient. Please check the console for details.');
+                }
+            };
+
+            // =================================================================
+            // RECIPE PAGE FUNCTIONS
+            // =================================================================
+            const setupYieldUI = (modalType) => {
+                const prefix = modalType === 'add' ? '' : 'edit-';
+                const yieldTypeSelect = document.getElementById(`${prefix}recipe-yield-type`);
+                const quantityFields = document.getElementById(`${prefix}yield-quantity-fields`);
+                const sizeFields = document.getElementById(`${prefix}yield-size-fields`);
+                const panShapeSelect = document.getElementById(`${prefix}recipe-pan-shape`);
+                const rectangularFields = document.getElementById(`${prefix}pan-shape-rectangular`);
+                const roundFields = document.getElementById(`${prefix}pan-shape-round`);
+
+                if (!yieldTypeSelect) return;
+
+                const updatePanels = () => {
+                    if (yieldTypeSelect.value === 'quantity') {
+                        quantityFields.classList.remove('hidden');
+                        sizeFields.classList.add('hidden');
+                    } else {
+                        quantityFields.classList.add('hidden');
+                        sizeFields.classList.remove('hidden');
+                    }
+                };
+
+                const updateShapes = () => {
+                    if (panShapeSelect.value === 'rectangular') {
+                        rectangularFields.classList.remove('hidden');
+                        roundFields.classList.add('hidden');
+                    } else {
+                        rectangularFields.classList.add('hidden');
+                        roundFields.classList.remove('hidden');
+                    }
+                };
+
+                yieldTypeSelect.addEventListener('change', updatePanels);
+                panShapeSelect.addEventListener('change', updateShapes);
+
+                updatePanels();
+                updateShapes();
+            };
+
+            const openAddRecipeModal = () => {
+                addRecipeModal.classList.remove('hidden');
+                const categorySelect = document.getElementById('recipe-category');
+                populateCategoryDropdown(categorySelect);
+            };
+            const closeAddRecipeModal = () => {
+                Object.values(recipeTomSelectInstances).forEach(instance => instance.destroy());
+                recipeTomSelectInstances = {};
+                recipeForm.reset();
+                recipeIngredientsList.innerHTML = '';
+                addRecipeModal.classList.add('hidden');
+            }
+
+            const createIngredientOptions = () => {
+                const ingredientOptions = ingredients.map(ing => `<option value="${ing.id}">${ing.name}</option>`).join('');
+                return `<option value="">Select an ingredient...</option>${ingredientOptions}`;
+            };
+
+            const createUnitOptions = (ingredientId) => { const ingredient = ingredients.find(ing => ing.id === parseInt(ingredientId)); if (!ingredient) return ''; let units = []; if (['kg', 'g'].includes(ingredient.unit)) units.push('g', 'kg'); else if (['l', 'ml'].includes(ingredient.unit)) units.push('ml', 'l'); else units.push(ingredient.unit); if (ingredient.conversions) { ingredient.conversions.forEach(conv => units.push(conv.unitName)); } return [...new Set(units)].map(u => `<option value="${u}">${u}</option>`).join(''); };
+
+            const addLibraryIngredientRow = () => {
+                const div = document.createElement('div');
+                const rowId = `row-${Date.now()}`;
+                div.id = rowId;
+                div.className = 'grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-gray-50 fade-in recipe-item-row';
+                div.dataset.type = 'library';
+                div.innerHTML = `
+            <div class="col-span-5"><select class="ingredient-select w-full" required></select></div>
+            <div class="col-span-3"><input type="number" step="0.01" placeholder="Amount" class="amount-input w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
+            <div class="col-span-3"><select class="unit-select w-full p-2.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring" required disabled><option value="">Unit</option></select></div>
+            <div class="col-span-1 text-right"><button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button></div>
+        `;
+                recipeIngredientsList.appendChild(div);
+
+                const ingredientSelect = div.querySelector('.ingredient-select');
+                const unitSelect = div.querySelector('.unit-select');
+
+                const tomInstance = new TomSelect(ingredientSelect, {
+                    create: false,
+                    placeholder: 'Search for an ingredient...',
+                    plugins: ['dropdown_input'],
+                    options: ingredients.map(ing => ({ value: ing.id, text: ing.name })),
+                    onFocus: () => {
+                        ingredientSelect.closest('.recipe-item-row').classList.add('is-active');
+                    },
+                    onBlur: () => {
+                        ingredientSelect.closest('.recipe-item-row').classList.remove('is-active');
+                    }
+                });
+                recipeTomSelectInstances[rowId] = tomInstance;
+
+                tomInstance.on('change', (value) => {
+                    unitSelect.innerHTML = createUnitOptions(value);
+                    if (value) {
+                        unitSelect.disabled = false;
+                    } else {
+                        unitSelect.disabled = true;
+                    }
+                });
+            };
+
+            const addOpenItemRow = () => { const div = document.createElement('div'); div.className = 'grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-gray-50 fade-in recipe-item-row'; div.dataset.type = 'open'; div.innerHTML = ` <div class="col-span-11"> <input type="text" placeholder="e.g., Water, Pinch of Salt" class="open-item-name w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required> </div> <div class="col-span-1 text-right"> <button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button> </div> `; recipeIngredientsList.appendChild(div); };
+
+            const formatAmount = (num) => {
+                if (num === 0) return 0;
+                return parseFloat(num.toFixed(2));
+            };
+
+            const calculateVolume = (servings) => {
+                if (servings.type !== 'size' || !servings.shape) return 0;
+                const height = servings.height;
+                if (servings.shape === 'round') {
+                    const radius = (servings.diameter || 0) / 2;
+                    return Math.PI * Math.pow(radius, 2) * height;
+                }
+                if (servings.shape === 'rectangular') {
+                    return (servings.length || 0) * (servings.width || 0) * height;
+                }
+                return 0;
+            };
+
+            const calculateRecipeCost = (recipe) => {
+                let totalCost = 0;
+                const breakdown = recipe.items.map(item => {
+                    if (item.type === 'open') {
+                        return { name: item.name, cost: 0, detail: '' };
+                    }
+                    const ingredient = ingredients.find(ing => ing.id === item.ingredientId);
+                    if (!ingredient) {
+                        return { name: 'Unknown Ingredient', cost: 0, detail: 'Ingredient not found' };
+                    }
+
+                    let costPerBaseUnit = 0, baseUnit = ingredient.unit, purchaseAmountInBaseUnit = ingredient.weight;
+                    if (ingredient.unit === 'kg') { purchaseAmountInBaseUnit = ingredient.weight * 1000; baseUnit = 'g'; }
+                    else if (ingredient.unit === 'l') { purchaseAmountInBaseUnit = ingredient.weight * 1000; baseUnit = 'ml'; }
+                    if (purchaseAmountInBaseUnit > 0) { costPerBaseUnit = ingredient.price / purchaseAmountInBaseUnit; }
+
+                    let requiredAmountInBaseUnit = item.amount;
+                    let detail = `${formatAmount(item.amount)} ${item.unit}`;
+
+                    if (item.unit === 'kg') {
+                        requiredAmountInBaseUnit = item.amount * 1000;
+                    } else if (item.unit === 'l') {
+                        requiredAmountInBaseUnit = item.amount * 1000;
+                    } else if (item.unit !== baseUnit) {
+                        const conversion = ingredient.conversions.find(c => c.unitName === item.unit);
+                        if (conversion) {
+                            requiredAmountInBaseUnit = item.amount * conversion.grams;
+                            detail = `${formatAmount(item.amount)} ${item.unit} (${conversion.grams}g/ea)`;
+                        } else {
+                            return { name: ingredient.name, cost: 0, detail: `Conversion for '${item.unit}' not defined` };
+                        }
+                    }
+                    const itemCost = requiredAmountInBaseUnit * costPerBaseUnit;
+                    totalCost += itemCost;
+                    return { name: ingredient.name, cost: itemCost, detail: detail };
+                });
+
+                let finalPrice = totalCost, profitDetail = '';
+                if (recipe.profit.type === 'percent') {
+                    const profitAmount = totalCost * (recipe.profit.value / 100);
+                    finalPrice += profitAmount;
+                    profitDetail = `+ ${recipe.profit.value}% (RM ${profitAmount.toFixed(2)})`;
+                } else if (recipe.profit.type === 'multiplier') {
+                    finalPrice = totalCost * recipe.profit.value;
+                    profitDetail = `x ${recipe.profit.value}`;
+                }
+
+                const servingsValue = recipe.servings.type === 'quantity' ? recipe.servings.value : (recipe.servings.quantity || 1);
+                const costPerServing = servingsValue > 0 ? totalCost / servingsValue : 0;
+                const pricePerServing = servingsValue > 0 ? finalPrice / servingsValue : 0;
+
+                return { totalCost, finalPrice, pricePerServing, costPerServing, breakdown, profitDetail };
+            };
+
+            const displayScaledRecipe = (cardElement, recipeId, newPrimaryDimension) => {
+                const originalRecipe = recipes.find(r => r.id === recipeId);
+                if (!originalRecipe || isNaN(newPrimaryDimension) || newPrimaryDimension <= 0) return;
+
+                let scalingFactor = 1;
+                const scaledRecipe = JSON.parse(JSON.stringify(originalRecipe));
+
+                if (originalRecipe.servings.type === 'size') {
+                    const originalVolume = calculateVolume(originalRecipe.servings);
+                    const targetServings = { ...originalRecipe.servings };
+
+                    if (targetServings.shape === 'round') {
+                        targetServings.diameter = newPrimaryDimension;
+                    } else {
+                        const ratio = targetServings.width / targetServings.length;
+                        targetServings.length = newPrimaryDimension;
+                        targetServings.width = newPrimaryDimension * ratio;
+                    }
+                    const targetVolume = calculateVolume(targetServings);
+                    if (originalVolume > 0) scalingFactor = targetVolume / originalVolume;
+
+                    scaledRecipe.servings = targetServings;
+
+                } else {
+                    const originalServings = originalRecipe.servings.value;
+                    scalingFactor = newPrimaryDimension / originalServings;
+                    scaledRecipe.servings.value = newPrimaryDimension;
+                }
+
+                scaledRecipe.items = originalRecipe.items.map(item => {
+                    if (item.type === 'library') {
+                        return { ...item, amount: item.amount * scalingFactor };
+                    }
+                    return item;
+                });
+
+                const calc = calculateRecipeCost(scaledRecipe);
+
+                const breakdownTbody = cardElement.querySelector('.grid > div:first-child table tbody');
+                breakdownTbody.innerHTML = calc.breakdown.map(item => `
+            <tr class="border-b">
+                <td class="py-2 pr-4 text-gray-700">${item.name} <span class="text-xs text-brand-indigo-700 font-medium">(${item.detail})</span></td>
+                <td class="py-2 pl-4 text-right font-mono">${item.cost > 0 ? `RM ${item.cost.toFixed(2)}` : '-'}</td>
+            </tr>`).join('');
+
+                const summaryTbody = cardElement.querySelector('.summary-table-body');
+
+                let finalPriceServingsText = '';
+                if (scaledRecipe.servings.type === 'size') {
+                    const { shape, length, width, diameter, unit } = scaledRecipe.servings;
+                    finalPriceServingsText = shape === 'round' ? `${formatAmount(diameter)}"` : `${formatAmount(length)}"x${formatAmount(width)}" ${unit}`;
+                } else {
+                    finalPriceServingsText = `${scaledRecipe.servings.value} ${scaledRecipe.servings.unit}`;
+                }
+
+                summaryTbody.innerHTML = `
+            <tr><td class="py-1 pr-2">Total Ingredient Cost</td><td class="py-1 pl-2 text-right font-bold">RM ${calc.totalCost.toFixed(2)}</td></tr>
+            <tr><td class="py-1 pr-2 text-gray-600">Cost per Serving</td><td class="py-1 pl-2 text-right text-gray-800 font-mono">RM ${calc.costPerServing.toFixed(2)}</td></tr>
+            <tr><td class="py-1 pr-2">Profit</td><td class="py-1 pl-2 text-right">${calc.profitDetail}</td></tr>
+            <tr class="border-t-2 border-gray-300"><td class="pt-2 pr-2 text-lg font-bold text-brand-pink-700">Final Price (${finalPriceServingsText})</td><td class="pt-2 pl-2 text-right text-lg font-bold text-brand-pink-700">RM ${calc.finalPrice.toFixed(2)}</td></tr>
+            <tr><td class="py-1 pr-2 text-green-700 font-semibold">Sell Price per Serving</td><td class="py-1 pl-2 text-right text-green-700 font-semibold">RM ${calc.pricePerServing.toFixed(2)}</td></tr>
+        `;
+
+                cardElement.querySelector('.scale-btn').classList.add('hidden');
+                cardElement.querySelector('.reset-btn').classList.remove('hidden');
+            };
+
+            const renderRecipes = (activeCategoryId = 'all') => {
+                recipeListDisplay.innerHTML = '';
+
+                // 1. Group recipes by their category
+                const categorizedRecipes = recipes.reduce((acc, recipe) => {
+                    const categoryId = recipe.categoryId || 0; // Default to "Uncategorized"
+                    if (!acc[categoryId]) {
+                        acc[categoryId] = [];
+                    }
+                    acc[categoryId].push({ ...recipe, calculatedCost: calculateRecipeCost(recipe).totalCost });
+                    return acc;
+                }, {});
+
+                const allCategories = [{ id: 0, name: 'Uncategorized' }, ...categories];
+
+                // 2. Loop through each category to display it
+                allCategories.forEach(category => {
+                    // If a filter is active, skip categories that don't match
+                    // THIS IS THE CORRECTED LINE:
+                    if (activeCategoryId !== 'all' && category.id !== parseInt(activeCategoryId, 10)) return;
+
+                    let recipesInCategory = categorizedRecipes[category.id] || [];
+                    if (recipesInCategory.length === 0) return;
+
+                    // 3. Apply search and sort to the recipes within this category
+                    const searchTerm = recipeSearchInput.value.toLowerCase();
+                    if (searchTerm) {
+                        recipesInCategory = recipesInCategory.filter(recipe => recipe.title.toLowerCase().includes(searchTerm));
+                    }
+                    const sortBy = recipeSortSelect.value;
+                    recipesInCategory.sort((a, b) => {
+                        switch (sortBy) {
+                            case 'title-az': return a.title.localeCompare(b.title);
+                            case 'title-za': return b.title.localeCompare(a.title);
+                            case 'cost-desc': return b.calculatedCost - a.calculatedCost;
+                            case 'cost-asc': return a.calculatedCost - b.calculatedCost;
+                            case 'oldest': return a.id - b.id;
+                            case 'latest': default: return b.id - a.id;
+                        }
+                    });
+
+                    if (recipesInCategory.length === 0) return;
+
+                    // 4. Create the HTML for the category section and its recipe cards
+                    const categorySection = document.createElement('div');
+                    categorySection.className = "space-y-6 mb-8";
+                    categorySection.innerHTML = `<h3 class="text-2xl font-bold border-b-2 pb-2">${category.name}</h3>`;
+
+                    recipesInCategory.forEach(recipe => {
+                        const calc = calculateRecipeCost(recipe);
+                        const recipeCard = document.createElement('div');
+                        recipeCard.className = 'bg-white rounded-xl shadow-sm border border-gray-200 p-6';
+                        const breakdownHTML = calc.breakdown.map(item => ` <tr class="border-b last:border-b-0 border-gray-100"> <td class="py-2 pr-4 text-gray-700">${item.name} ${item.detail ? `<span class="text-xs text-gray-500">(${item.detail})</span>` : ''}</td> <td class="py-2 pl-4 text-right font-mono">${item.cost > 0 ? `RM ${item.cost.toFixed(2)}` : '-'}</td> </tr> `).join('');
+
+                        let yieldText = '';
+                        let finalPriceServingsText = '';
+                        if (recipe.servings.type === 'size') {
+                            const { quantity, shape, length, width, diameter, unit } = recipe.servings;
+                            const dimensionText = shape === 'round' ? `${diameter}" Round` : `${length}" x ${width}"`;
+                            yieldText = `${quantity} x ${dimensionText} ${unit}`;
+                            finalPriceServingsText = `${quantity} ${unit}`;
+                        } else {
+                            yieldText = `${recipe.servings.value} ${recipe.servings.unit}`;
+                            finalPriceServingsText = `${recipe.servings.value} ${recipe.servings.unit}`;
+                        }
+
+                        const isLongList = calc.breakdown.length > 6;
+                        const containerClasses = `breakdown-container ${isLongList ? 'is-collapsed' : ''}`;
+                        const toggleButtonHTML = isLongList ? `<button class="toggle-scroll-btn mt-2 text-sm font-semibold text-brand-pink-600 hover:text-brand-pink-800" data-id="${recipe.id}">See More</button>` : '';
+
+                        recipeCard.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">${recipe.title}</h3>
+                        <p class="text-sm text-gray-500">Yields: ${yieldText}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="edit-recipe-btn font-medium text-brand-indigo-700 hover:underline" data-id="${recipe.id}">Edit</button>
+                        <span class="text-gray-300">|</span>
+                        <button class="delete-recipe-btn font-medium text-red-600 hover:underline" data-id="${recipe.id}">Delete</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2 border-b pb-1">Cost Breakdown</h4>
+                        <div class="${containerClasses}"><table class="w-full text-sm"><tbody>${breakdownHTML}</tbody></table></div>
+                        ${toggleButtonHTML}
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 border">
+                        <h4 class="font-semibold text-gray-700 mb-2 border-b pb-1">Summary</h4>
+                        <table class="w-full text-sm">
+                            <tbody class="summary-table-body">
+                                <tr><td class="py-1 pr-2">Total Ingredient Cost</td><td class="py-1 pl-2 text-right font-bold text-gray-800">RM ${calc.totalCost.toFixed(2)}</td></tr>
+                                <tr><td class="py-1 pr-2 text-gray-600">Cost per Serving</td><td class="py-1 pl-2 text-right text-gray-800 font-mono">RM ${calc.costPerServing.toFixed(2)}</td></tr>
+                                <tr><td class="py-1 pr-2">Profit</td><td class="py-1 pl-2 text-right">${calc.profitDetail}</td></tr>
+                                <tr class="border-t-2 border-gray-300"><td class="pt-2 pr-2 text-lg font-bold text-brand-pink-700">Final Price (${finalPriceServingsText})</td><td class="pt-2 pl-2 text-right text-lg font-bold text-brand-pink-700">RM ${calc.finalPrice.toFixed(2)}</td></tr>
+                                <tr><td class="py-1 pr-2 text-green-700 font-semibold">Sell Price per Serving</td><td class="py-1 pl-2 text-right text-green-700 font-semibold">RM ${calc.pricePerServing.toFixed(2)}</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Scale Recipe to:</label>
+                            <div class="flex gap-2">
+                                <input type="number" min="1" placeholder="${recipe.servings.type === 'size' ? 'New Diameter/Length' : 'New Yield'}" class="scale-input w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}">
+                                <button class="scale-btn py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg text-sm hover:bg-gray-700" data-id="${recipe.id}">Scale</button>
+                                <button class="reset-btn hidden py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg text-sm hover:bg-gray-300" data-id="${recipe.id}">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                        categorySection.appendChild(recipeCard);
+                    });
+                    recipeListDisplay.appendChild(categorySection);
+                });
+
+                if (recipeListDisplay.innerHTML.trim() === '') {
+                    recipeListDisplay.innerHTML = `<div class="bg-white rounded-xl shadow-sm border border-gray-200"><p class="text-center text-gray-500 py-10 px-6">No recipes found.</p></div>`;
+                }
+            };
+
+            const addEditLibraryIngredientRow = (item) => {
+                const div = document.createElement('div');
+                const rowId = `edit-row-${Date.now()}`;
+                div.id = rowId;
+                div.className = 'grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-gray-50 fade-in recipe-item-row';
+                div.dataset.type = 'library';
+                div.innerHTML = `
+            <div class="col-span-5"><select class="ingredient-select w-full" required></select></div>
+            <div class="col-span-3"><input type="number" step="0.01" value="${item.amount || ''}" class="amount-input w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
+            <div class="col-span-3"><select class="unit-select w-full p-2.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring" required>${createUnitOptions(item.ingredientId)}</select></div>
+            <div class="col-span-1 text-right"><button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button></div>
+        `;
+                editRecipeIngredientsList.appendChild(div);
+
+                const ingredientSelect = div.querySelector('.ingredient-select');
+                const unitSelect = div.querySelector('.unit-select');
+                unitSelect.value = item.unit;
+
+                const tomInstance = new TomSelect(ingredientSelect, {
+                    plugins: ['dropdown_input'],
+                    options: ingredients.map(ing => ({ value: ing.id, text: ing.name })),
+                    onFocus: () => {
+                        ingredientSelect.closest('.recipe-item-row').classList.add('is-active');
+                    },
+                    onBlur: () => {
+                        ingredientSelect.closest('.recipe-item-row').classList.remove('is-active');
+                    }
+                });
+                editRecipeTomSelectInstances[rowId] = tomInstance;
+                if (item.ingredientId) {
+                    tomInstance.setValue(item.ingredientId);
+                }
+
+                tomInstance.on('change', (value) => {
+                    unitSelect.innerHTML = createUnitOptions(value);
+                    if (value) unitSelect.disabled = false; else unitSelect.disabled = true;
+                });
+            };
+
+            const addEditOpenItemRow = (item) => {
+                const div = document.createElement('div');
+                div.className = 'grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-gray-50 fade-in recipe-item-row';
+                div.dataset.type = 'open';
+                div.innerHTML = `
+            <div class="col-span-11"><input type="text" value="${item.name || ''}" class="open-item-name w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
+            <div class="col-span-1 text-right"><button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button></div>
+        `;
+                editRecipeIngredientsList.appendChild(div);
+            };
+
+            const openEditRecipeModal = (recipeId) => {
+                const recipeToEdit = recipes.find(r => r.id === recipeId);
+                if (!recipeToEdit) return;
+                currentlyEditingRecipeId = recipeId;
+
+                // --- Basic Info ---
+                document.getElementById('edit-recipe-title').value = recipeToEdit.title;
+
+                // --- Populate Category Dropdown ---
+                const categorySelect = document.getElementById('edit-recipe-category');
+                populateCategoryDropdown(categorySelect, recipeToEdit.categoryId);
+
+                // --- Yields Section ---
+                const { servings } = recipeToEdit;
+                const yieldTypeSelect = document.getElementById('edit-recipe-yield-type');
+                yieldTypeSelect.value = servings.type || 'quantity';
+
+                if (servings.type === 'size') {
+                    document.getElementById('edit-recipe-pan-shape').value = servings.shape;
+                    document.getElementById('edit-recipe-pan-quantity').value = servings.quantity;
+                    document.getElementById('edit-recipe-pan-unit').value = servings.unit;
+                    document.getElementById('edit-recipe-pan-length').value = servings.length || '';
+                    document.getElementById('edit-recipe-pan-width').value = servings.width || '';
+                    document.getElementById('edit-recipe-pan-height').value = servings.shape === 'rectangular' ? servings.height : '';
+                    document.getElementById('edit-recipe-pan-diameter').value = servings.diameter || '';
+                    document.getElementById('edit-recipe-pan-height-round').value = servings.shape === 'round' ? servings.height : '';
+                } else {
+                    document.getElementById('edit-recipe-servings-value').value = servings.value;
+                    document.getElementById('edit-recipe-servings-unit').value = servings.unit;
+                }
+                setupYieldUI('edit');
+
+                // --- Profit Calculation ---
+                document.getElementById('edit-profit-type').value = recipeToEdit.profit.type;
+                document.getElementById('edit-profit-value').value = recipeToEdit.profit.value;
+
+                // --- Ingredients List ---
+                editRecipeIngredientsList.innerHTML = '';
+                recipeToEdit.items.forEach(item => {
+                    if (item.type === 'library') {
+                        addEditLibraryIngredientRow(item);
+                    } else {
+                        addEditOpenItemRow(item);
+                    }
+                });
+
+                editRecipeModal.classList.remove('hidden');
+            };
+
+            const closeEditRecipeModal = () => {
+                Object.values(editRecipeTomSelectInstances).forEach(instance => instance.destroy());
+                editRecipeTomSelectInstances = {};
+                editRecipeForm.reset();
+                editRecipeIngredientsList.innerHTML = '';
+                currentlyEditingRecipeId = null;
+                editRecipeModal.classList.add('hidden');
+            };
+
+            // =================================================================
+            // RECIPE BOOK & CATEGORY FUNCTIONS
+            // =================================================================
+            const renderRecipePageCategoryFilters = () => {
+                recipeCategoryFiltersContainer.innerHTML = '';
+                let buttonsHTML = `<button class="category-filter-btn active py-2 px-4 border rounded-lg transition-colors text-sm" data-id="all">All</button>`;
+
+                categories.forEach(cat => {
+                    buttonsHTML += `<button class="category-filter-btn py-2 px-4 border rounded-lg transition-colors text-sm" data-id="${cat.id}">${cat.name}</button>`;
+                });
+                recipeCategoryFiltersContainer.innerHTML = buttonsHTML;
+            };
+
+            const Font = Quill.import('formats/font');
+            Font.whitelist = ['sans-serif', 'serif', 'monospace'];
+            Quill.register(Font, true);
+
+            const colorPalette = ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2'];
+
+            let Inline = Quill.import('blots/inline');
+            class TextBoxBlot extends Inline {
+                static create() {
+                    return super.create();
+                }
+                static formats() {
+                    return true;
+                }
+            }
+            TextBoxBlot.blotName = 'textbox';
+            TextBoxBlot.tagName = 'SPAN';
+            TextBoxBlot.className = 'ql-textbox';
+            Quill.register(TextBoxBlot);
+
+            const icons = Quill.import('ui/icons');
+            icons['textbox'] = `<svg viewBox="0 0 18 18"><rect class="ql-stroke" x="2" y="4" width="14" height="10" rx="1"></rect><line class="ql-stroke" x1="5" x2="13" y1="9" y2="9"></line></svg>`;
+
+            let quillEditor = null;
+            let currentlyEditingPrepId = null;
+
+            const renderCategoryFilters = () => {
+                categoryFiltersContainer.innerHTML = '';
+                let buttonsHTML = `<button class="category-filter-btn active py-2 px-4 border rounded-lg transition-colors text-sm" data-id="all">All</button>`;
+
+                categories.forEach(cat => {
+                    buttonsHTML += `<button class="category-filter-btn py-2 px-4 border rounded-lg transition-colors text-sm" data-id="${cat.id}">${cat.name}</button>`;
+                });
+
+                categoryFiltersContainer.innerHTML = buttonsHTML;
+            };
+
+            const renderRecipeBook = (activeCategoryId = 'all') => {
+                recipeBookList.innerHTML = '';
+                recipeBookPagination.innerHTML = '';
+
+                const categorizedRecipes = recipes.reduce((acc, recipe) => {
+                    const categoryId = recipe.categoryId || 0;
+                    if (!acc[categoryId]) {
+                        acc[categoryId] = [];
+                    }
+                    acc[categoryId].push(recipe);
+                    return acc;
+                }, {});
+
+                const allCategories = [{ id: 0, name: 'Uncategorized' }, ...categories];
+
+                allCategories.forEach(category => {
+                    if (activeCategoryId !== 'all' && category.id != activeCategoryId) return;
+
+                    let recipesInCategory = categorizedRecipes[category.id] || [];
+                    if (recipesInCategory.length === 0) return;
+
+                    const searchTerm = recipeBookSearchInput.value.toLowerCase();
+                    if (searchTerm) {
+                        recipesInCategory = recipesInCategory.filter(r => r.title.toLowerCase().includes(searchTerm));
+                    }
+                    const sortBy = recipeBookSortSelect.value;
+                    recipesInCategory.sort((a, b) => {
+                        switch (sortBy) {
+                            case 'title-az': return a.title.localeCompare(b.title);
+                            case 'title-za': return b.title.localeCompare(a.title);
+                            case 'oldest': return a.id - b.id;
+                            case 'latest': default: return b.id - a.id;
+                        }
+                    });
+
+                    if (recipesInCategory.length === 0) return;
+
+                    const categorySection = document.createElement('div');
+                    categorySection.className = "space-y-3";
+                    categorySection.innerHTML = `<h3 class="text-2xl font-bold text-brand-indigo-900 border-b-2 border-brand-indigo-200 pb-2 mb-4">${category.name}</h3>`;
+
+                    recipesInCategory.forEach(recipe => {
+                        const servingsInfo = recipe.servings.type === 'quantity' ? `${recipe.servings.value} ${recipe.servings.unit}` : `${recipe.servings.quantity} x ${recipe.servings.shape === 'round' ? `${recipe.servings.diameter}" Round` : `${recipe.servings.length}" x ${recipe.servings.width}"`} ${recipe.servings.unit}`;
+
+                        // --- Auto-balancing logic for ingredients list ---
+                        const totalItems = recipe.items.length;
+                        const splitIndex = Math.ceil(totalItems / 2); // Ensures the left column gets the extra item if the total is odd
+
+                        // Helper function to generate a list item to avoid repeating code
+                        const generateListItem = (item) => {
+                            if (item.type === 'library') {
+                                const ingredient = ingredients.find(ing => ing.id === item.ingredientId);
+                                return ingredient ? `<li>${ingredient.name} - ${item.amount} ${item.unit}</li>` : '';
+                            }
+                            return `<li>${item.name}</li>`;
+                        };
+
+                        const leftColumnHtml = recipe.items.slice(0, splitIndex).map(generateListItem).join('');
+                        const rightColumnHtml = recipe.items.slice(splitIndex).map(generateListItem).join('');
+
+                        const itemWrapper = document.createElement('div');
+                        itemWrapper.className = 'recipe-book-item bg-white rounded-xl shadow-sm border border-gray-200';
+
+                        itemWrapper.innerHTML = `
+                    <div class="recipe-book-trigger flex justify-between items-center p-4 cursor-pointer">
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-800">${recipe.title}</h4>
+                            <p class="text-sm text-gray-500">Yields: ${servingsInfo}</p>
+                        </div>
+                        <div class="p-2 rounded-full hover:bg-gray-100">
+                            <svg class="chevron-icon w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+                        </div>
+                    </div>
+                    <div class="recipe-book-content">
+                        <div class="p-6 border-t border-gray-200">
+                            
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2 border-b pb-1">Ingredients</h5>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                                    <ul class="list-disc list-inside text-gray-600 text-sm space-y-1">${leftColumnHtml}</ul>
+                                    <ul class="list-disc list-inside text-gray-600 text-sm space-y-1">${rightColumnHtml}</ul>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <div class="flex justify-between items-center mb-2 border-b pb-1">
+                                    <h5 class="font-semibold text-gray-700">Preparation Steps</h5>
+                                    <button class="edit-preparation-btn py-2 px-4 bg-brand-pink-50 text-brand-pink-700 font-semibold rounded-lg text-sm hover:bg-brand-pink-100 transition-colors" data-id="${recipe.id}">
+                                        Edit Preparation
+                                    </button>
+                                </div>
+                                <div class="prose prose-sm max-w-none">${recipe.preparationSteps || '<p class="text-gray-400">No instructions added yet.</p>'}</div>
+                            </div>
+                            
+                            <button class="collapse-recipe-btn w-full mt-6 py-2 bg-gray-50 hover:bg-gray-100 border-t flex justify-center items-center transition-colors">
+                                <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M14.77 12.79a.75.75 0 01-1.06-.02L10 8.832 6.29 12.77a.75.75 0 11-1.08-1.04l4.25-4.5a.75.75 0 011.08 0l4.25 4.5a.75.75 0 01-.02 1.06z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                        categorySection.appendChild(itemWrapper);
+                    });
+                    recipeBookList.appendChild(categorySection);
+                });
+
+                if (recipeBookList.innerHTML === '') {
+                    recipeBookList.innerHTML = `<div class="bg-white rounded-xl shadow-sm border border-gray-200"><p class="text-center text-gray-500 py-10 px-6">No recipes found for the selected filter.</p></div>`;
+                }
+            };
+
+            const openPreparationEditor = (recipeId) => {
+                currentlyEditingPrepId = recipeId;
+                const recipe = recipes.find(r => r.id === recipeId);
+                if (!recipe) return;
+                editorRecipeTitle.textContent = recipe.title;
+                preparationEditorModal.classList.remove('hidden');
+                quillEditor = new Quill('#quill-editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: {
+                            container: [
+                                [{ 'font': Font.whitelist }],
+                                [{ 'header': [1, 2, 3, false] }],
+                                ['bold', 'italic', 'underline'],
+                                [{ 'color': colorPalette }, { 'background': colorPalette }],
+                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                ['link', 'textbox'],
+                                ['clean']
+                            ],
+                            handlers: {
+                                'textbox': function () {
+                                    const range = this.quill.getSelection();
+                                    if (range) {
+                                        const isTextbox = this.quill.getFormat(range)['textbox'];
+                                        this.quill.format('textbox', !isTextbox);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                quillEditor.root.innerHTML = recipe.preparationSteps || '';
+            };
+
+            const closePreparationEditor = () => {
+                preparationEditorModal.classList.add('hidden');
+                const editorParent = document.getElementById('quill-editor').parentElement;
+                if (editorParent) {
+                    editorParent.innerHTML = '<div id="quill-editor" style="height: 400px;"></div>';
+                }
+                quillEditor = null;
+                currentlyEditingPrepId = null;
+            };
+
+            const openManageCategoryModal = () => {
+                manageCategoriesModal.classList.remove('hidden');
+                renderCategoryListInModal();
+            };
+
+            const renderCategoryListInModal = () => {
+                categoryListInModal.innerHTML = '';
+                categories.forEach(cat => {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center bg-gray-100 p-2 rounded';
+                    div.innerHTML = `
+                <span>${cat.name}</span>
+                <button class="remove-category-btn text-red-500 hover:text-red-700 font-bold text-lg" data-id="${cat.id}">&times;</button>
+            `;
+                    categoryListInModal.appendChild(div);
+                });
+            };
+
+            const addCategory = () => {
+                const name = newCategoryNameInput.value.trim();
+                if (name && !categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+                    categories.push({ id: Date.now(), name: name });
+                    saveCategories();
+                    renderCategoryListInModal();
+                    newCategoryNameInput.value = '';
+                }
+            };
+
+            const removeCategory = (categoryId) => {
+                categories = categories.filter(c => c.id !== categoryId);
+                recipes.forEach(r => {
+                    if (r.categoryId === categoryId) {
+                        r.categoryId = 0;
+                    }
+                });
+                saveCategories();
+                saveRecipes();
+                renderCategoryListInModal();
+            };
+
+            const populateCategoryDropdown = (selectElement, selectedId = 0) => {
+                selectElement.innerHTML = `<option value="0">Uncategorized</option>`;
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    if (cat.id === selectedId) {
+                        option.selected = true;
+                    }
+                    selectElement.appendChild(option);
+                });
+            };
+
+            // =================================================================
+            // EVENT LISTENERS & INITIALIZATION
+            // =================================================================
+
+            // --- Budget Page Listeners ---
+            const teamListDiv = document.getElementById('team-list');
+
+            teamListDiv.addEventListener('click', (e) => {
+                const toggleBtn = e.target.closest('.toggle-team-details');
+                if (toggleBtn) {
+                    const teamId = toggleBtn.dataset.teamId;
+                    const details = document.querySelector(`.team-card-details[data-details-for="${teamId}"]`);
+                    details.classList.toggle('expanded');
+                    toggleBtn.textContent = details.classList.contains('expanded') ? 'Collapse' : 'Details';
+
+                    if (details.classList.contains('expanded')) {
+                        const calendarContainer = details.querySelector('.production-calendar-container');
+                        if (!calendarContainer.hasChildNodes()) {
+                            const team = teams.find(t => t.id == teamId);
+                            renderProductionCalendar(calendarContainer, team);
+                        }
+                    }
+                }
+
+                const editBtn = e.target.closest('.edit-team-btn');
+                if (editBtn) {
+                    const teamId = parseInt(editBtn.dataset.teamId, 10);
+                    openEditTeamModal(teamId);
+                }
+
+                const deleteBtn = e.target.closest('.delete-team-btn');
+                if (deleteBtn) {
+                    const teamId = parseInt(deleteBtn.dataset.teamId, 10);
+                    if (confirm('Are you sure you want to delete this team? This action cannot be undone.')) {
+                        teams = teams.filter(t => t.id !== teamId);
+                        saveTeams();
+                        renderTeams();
+                        renderFullProductionCalendar();
+                    }
+                }
+            });
+
+            openAddTeamModalBtn.addEventListener('click', openAddTeamModal);
+            addTeamModalCancelBtn.addEventListener('click', closeAddTeamModal);
+            addStaffBtn.addEventListener('click', () => addStaffRow());
+
+            teamForm.addEventListener('input', updateBudgetSummary);
+
+            staffList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-staff-btn')) {
+                    e.target.closest('.staff-row').remove();
+                    updateBudgetSummary();
+                }
+            });
+            addTeamRecipeBtn.addEventListener('click', () => addTeamRecipeRow());
+            teamRecipeList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-team-recipe-btn')) {
+                    e.target.closest('.team-recipe-row').remove();
+                    updateBudgetSummary();
+                }
+            });
+
+            teamForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const teamData = {
+                    id: currentlyEditingTeamId || Date.now(),
+                    name: document.getElementById('team-name').value.trim() || 'Untitled Team',
+                    staff: [],
+                    recipes: []
+                };
+
+                document.querySelectorAll('.staff-row').forEach(row => {
+                    teamData.staff.push({
+                        name: row.querySelector('.staff-name').value,
+                        salary: parseFloat(row.querySelector('.staff-salary').value),
+                        duration_value: parseInt(row.querySelector('.staff-duration-value').value),
+                        duration_type: row.querySelector('.staff-duration-type').value,
+                    });
+                });
+
+                document.querySelectorAll('.team-recipe-row').forEach(row => {
+                    const recipeId = row.querySelector('.team-recipe-select')?.value;
+                    if (!recipeId) return;
+                    teamData.recipes.push({
+                        recipeId: parseInt(recipeId),
+                        qtyPerDay: parseInt(row.querySelector('.team-recipe-qty').value),
+                        cookDates: JSON.parse(row.querySelector('.team-recipe-dates').dataset.selectedDates || '[]')
+                    });
+                });
+
+                if (currentlyEditingTeamId) {
+                    const teamIndex = teams.findIndex(t => t.id === currentlyEditingTeamId);
+                    if (teamIndex > -1) {
+                        teams[teamIndex] = teamData;
+                    }
+                } else {
+                    teams.push(teamData);
+                }
+
+                saveTeams();
+                renderTeams();
+                renderFullProductionCalendar();
+                closeAddTeamModal();
+            });
+
+            // --- Ingredient Page Listeners ---
+            openAddIngredientModalBtn.addEventListener('click', openAddIngredientModal);
+            addIngredientModalCancelBtn.addEventListener('click', closeAddIngredientModal);
+            addIngredientForm.addEventListener('submit', addIngredient);
+            ingredientListDiv.addEventListener('click', (e) => { if (e.target.classList.contains('edit-btn')) { openEditModal(parseInt(e.target.dataset.id, 10)); } if (e.target.classList.contains('delete-btn')) { if (confirm('Are you sure?')) { ingredients = ingredients.filter(ing => ing.id !== parseInt(e.target.dataset.id, 10)); saveIngredients(); renderIngredients(); } } });
+            editForm.addEventListener('submit', (e) => { e.preventDefault(); const name = editNameInput.value.trim(), price = parseFloat(editPriceInput.value), weight = parseFloat(editWeightInput.value), unit = editUnitInput.value, supplier = editSupplierInput.value.trim(), notes = editNotesInput.value.trim(); if (!name || isNaN(price) || isNaN(weight) || price <= 0 || weight <= 0) { alert('Invalid values.'); return; } const newConversions = []; conversionsListDiv.querySelectorAll('.conversion-row').forEach(row => { const unitName = row.querySelector('.conversion-unit-name').value.trim(); const grams = parseFloat(row.querySelector('.conversion-grams').value); if (unitName && !isNaN(grams) && grams > 0) newConversions.push({ unitName, grams }); }); const ingToUpdate = ingredients.find(ing => ing.id === currentlyEditingId); if (ingToUpdate) { Object.assign(ingToUpdate, { name, price, weight, unit, supplier, notes, conversions: newConversions }); } saveIngredients(); renderIngredients(); closeEditModal(); });
+            modalCancelBtn.addEventListener('click', closeEditModal);
+            modalDeleteBtn.addEventListener('click', () => { if (confirm('Are you sure?')) { ingredients = ingredients.filter(ing => ing.id !== currentlyEditingId); saveIngredients(); renderIngredients(); closeEditModal(); } });
+            addConversionBtn.addEventListener('click', () => appendConversionInput());
+            conversionsListDiv.addEventListener('click', (e) => { if (e.target.classList.contains('remove-btn')) e.target.closest('.conversion-row').remove(); });
+            ingredientSearchInput.addEventListener('input', renderIngredients);
+            ingredientSortSelect.addEventListener('change', renderIngredients);
+            addIngredientModal.addEventListener('click', (e) => { if (e.target === addIngredientModal) closeAddIngredientModal(); });
+
+            // --- Recipe Page Listeners ---
+            addLibraryIngredientBtn.addEventListener('click', addLibraryIngredientRow);
+            addOpenItemBtn.addEventListener('click', addOpenItemRow);
+
+            recipeIngredientsList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-btn')) {
+                    const row = e.target.closest('.recipe-item-row');
+                    if (row) {
+                        const rowId = row.id;
+                        if (recipeTomSelectInstances[rowId]) {
+                            recipeTomSelectInstances[rowId].destroy();
+                            delete recipeTomSelectInstances[rowId];
+                        }
+                        row.remove();
+                    }
+                }
+            });
+
+            recipeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const yieldType = document.getElementById('recipe-yield-type').value;
+                let servingsData = {};
+
+                if (yieldType === 'quantity') {
+                    servingsData = {
+                        type: 'quantity',
+                        value: parseInt(document.getElementById('recipe-servings-value').value, 10),
+                        unit: document.getElementById('recipe-servings-unit').value
+                    };
+                } else {
+                    const shape = document.getElementById('recipe-pan-shape').value;
+                    servingsData = {
+                        type: 'size',
+                        shape: shape,
+                        unit: document.getElementById('recipe-pan-unit').value,
+                        quantity: parseInt(document.getElementById('recipe-pan-quantity').value, 10),
+                        length: shape === 'rectangular' ? parseFloat(document.getElementById('recipe-pan-length').value) : null,
+                        width: shape === 'rectangular' ? parseFloat(document.getElementById('recipe-pan-width').value) : null,
+                        diameter: shape === 'round' ? parseFloat(document.getElementById('recipe-pan-diameter').value) : null,
+                        height: shape === 'rectangular'
+                            ? parseFloat(document.getElementById('recipe-pan-height').value)
+                            : parseFloat(document.getElementById('recipe-pan-height-round').value)
+                    };
+                }
+
+                const newRecipe = {
+                    id: Date.now(),
+                    title: document.getElementById('recipe-title').value.trim(),
+                    categoryId: parseInt(document.getElementById('recipe-category').value, 10) || 0,
+                    servings: servingsData,
+                    profit: {
+                        type: document.getElementById('profit-type').value,
+                        value: parseFloat(document.getElementById('profit-value').value)
+                    },
+                    items: [],
+                    preparationSteps: ''
+                };
+
+                document.querySelectorAll('#recipe-ingredients-list .recipe-item-row').forEach(row => {
+                    if (row.dataset.type === 'library') {
+                        newRecipe.items.push({ type: 'library', ingredientId: parseInt(row.querySelector('.ingredient-select').value, 10), amount: parseFloat(row.querySelector('.amount-input').value), unit: row.querySelector('.unit-select').value });
+                    } else {
+                        newRecipe.items.push({ type: 'open', name: row.querySelector('.open-item-name').value.trim() });
+                    }
+                });
+                recipes.push(newRecipe);
+                saveRecipes();
+                renderRecipes();
+                closeAddRecipeModal();
+            });
+
+            openAddRecipeModalBtn.addEventListener('click', openAddRecipeModal);
+            addRecipeModalCancelBtn.addEventListener('click', closeAddRecipeModal);
+            recipeSearchInput.addEventListener('input', () => {
+                const activeFilter = recipeCategoryFiltersContainer.querySelector('.active')?.dataset.id || 'all';
+                renderRecipes(activeFilter);
+            });
+            recipeSortSelect.addEventListener('change', () => {
+                const activeFilter = recipeCategoryFiltersContainer.querySelector('.active')?.dataset.id || 'all';
+                renderRecipes(activeFilter);
+            });
+
+            recipeCategoryFiltersContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.category-filter-btn');
+                if (!btn) return;
+
+                recipeCategoryFiltersContainer.querySelectorAll('.category-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const categoryId = btn.dataset.id;
+                renderRecipes(categoryId);
+            });
+
+            editRecipeModalCancelBtn.addEventListener('click', closeEditRecipeModal);
+            editAddLibraryIngredientBtn.addEventListener('click', () => addEditLibraryIngredientRow({}));
+            editAddOpenItemBtn.addEventListener('click', () => addEditOpenItemRow({ name: '' }));
+
+            editRecipeIngredientsList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-btn')) {
+                    const row = e.target.closest('.recipe-item-row');
+                    if (row) {
+                        const rowId = row.id;
+                        if (editRecipeTomSelectInstances[rowId]) {
+                            editRecipeTomSelectInstances[rowId].destroy();
+                            delete editRecipeTomSelectInstances[rowId];
+                        }
+                        row.remove();
+                    }
+                }
+            });
+
+            recipeListDisplay.addEventListener('click', (e) => {
+                const target = e.target;
+                const recipeId = parseInt(target.dataset.id, 10);
+                const cardElement = target.closest('.bg-white.rounded-xl.shadow-sm');
+
+                if (target.classList.contains('edit-recipe-btn')) {
+                    openEditRecipeModal(recipeId);
+                }
+
+                if (target.classList.contains('delete-recipe-btn')) {
+                    if (confirm('Are you sure you want to delete this recipe?')) {
+                        recipes = recipes.filter(r => r.id !== recipeId);
+                        saveRecipes();
+                        renderRecipes();
+                    }
+                }
+
+                if (target.classList.contains('scale-btn')) {
+                    const newServingsInput = cardElement.querySelector(`.scale-input[data-id="${recipeId}"]`);
+                    const newServingsValue = parseFloat(newServingsInput.value);
+                    displayScaledRecipe(cardElement, recipeId, newServingsValue);
+                }
+
+                if (target.classList.contains('reset-btn')) {
+                    renderRecipes();
+                }
+
+                if (target.classList.contains('toggle-scroll-btn')) {
+                    const container = cardElement.querySelector('.breakdown-container');
+                    if (container) {
+                        const isCollapsed = container.classList.contains('is-collapsed');
+                        if (isCollapsed) {
+                            container.classList.remove('is-collapsed');
+                            target.textContent = 'See Less';
+                        } else {
+                            container.classList.add('is-collapsed');
+                            target.textContent = 'See More';
+                        }
+                    }
+                }
+            });
+
+            editRecipeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const recipeIndex = recipes.findIndex(r => r.id === currentlyEditingRecipeId);
+                if (recipeIndex === -1) return;
+
+                const yieldType = document.getElementById('edit-recipe-yield-type').value;
+                let servingsData = {};
+
+                if (yieldType === 'quantity') {
+                    servingsData = {
+                        type: 'quantity',
+                        value: parseInt(document.getElementById('edit-recipe-servings-value').value, 10),
+                        unit: document.getElementById('edit-recipe-servings-unit').value
+                    };
+                } else {
+                    const shape = document.getElementById('edit-recipe-pan-shape').value;
+                    servingsData = {
+                        type: 'size',
+                        shape: shape,
+                        unit: document.getElementById('edit-recipe-pan-unit').value,
+                        quantity: parseInt(document.getElementById('edit-recipe-pan-quantity').value, 10),
+                        length: shape === 'rectangular' ? parseFloat(document.getElementById('recipe-pan-length').value) : null,
+                        width: shape === 'rectangular' ? parseFloat(document.getElementById('edit-recipe-pan-width').value) : null,
+                        diameter: shape === 'round' ? parseFloat(document.getElementById('edit-recipe-pan-diameter').value) : null,
+                        height: shape === 'rectangular'
+                            ? parseFloat(document.getElementById('edit-recipe-pan-height').value)
+                            : parseFloat(document.getElementById('edit-recipe-pan-height-round').value)
+                    };
+                }
+
+                const updatedRecipe = {
+                    id: currentlyEditingRecipeId,
+                    title: document.getElementById('edit-recipe-title').value.trim(),
+                    categoryId: parseInt(document.getElementById('edit-recipe-category').value, 10) || 0,
+                    servings: servingsData,
+                    profit: {
+                        type: document.getElementById('edit-profit-type').value,
+                        value: parseFloat(document.getElementById('edit-profit-value').value)
+                    },
+                    items: [],
+                    preparationSteps: recipes[recipeIndex].preparationSteps || ''
+                };
+
+                editRecipeIngredientsList.querySelectorAll('.recipe-item-row').forEach(row => {
+                    if (row.dataset.type === 'library') {
+                        updatedRecipe.items.push({ type: 'library', ingredientId: parseInt(row.querySelector('.ingredient-select').value, 10), amount: parseFloat(row.querySelector('.amount-input').value), unit: row.querySelector('.unit-select').value });
+                    } else {
+                        updatedRecipe.items.push({ type: 'open', name: row.querySelector('.open-item-name').value.trim() });
+                    }
+                });
+                recipes[recipeIndex] = updatedRecipe;
+                saveRecipes();
+                renderRecipes();
+                closeEditRecipeModal();
+            });
+
+            // --- Recipe Book Listeners ---
+            viewRecipeBookBtn.addEventListener('click', () => {
+                recipesPage.classList.add('hidden');
+                recipeBookPage.classList.remove('hidden');
+                renderCategoryFilters(); // --- NEW --- Render filters when switching to the page
+                renderRecipeBook();
+            });
+            backToRecipesBtn.addEventListener('click', () => {
+                recipeBookPage.classList.add('hidden');
+                recipesPage.classList.remove('hidden');
+            });
+            recipeBookList.addEventListener('click', (e) => {
+                // Handle the "Edit Preparation" button click
+                const editBtn = e.target.closest('.edit-preparation-btn');
+                if (editBtn) {
+                    const recipeId = parseInt(editBtn.dataset.id, 10);
+                    openPreparationEditor(recipeId);
+                    return; // Stop further execution
+                }
+
+                const collapseBtn = e.target.closest('.collapse-recipe-btn');
+                if (collapseBtn) {
+                    const itemWrapper = collapseBtn.closest('.recipe-book-item');
+                    if (itemWrapper) {
+                        itemWrapper.classList.remove('is-expanded');
+                    }
+                    return;
+                }
+
+                // Handle the collapsible trigger click
+                const trigger = e.target.closest('.recipe-book-trigger');
+                if (trigger) {
+                    const itemWrapper = trigger.closest('.recipe-book-item');
+                    if (itemWrapper) {
+                        itemWrapper.classList.toggle('is-expanded');
+                    }
+                }
+            });
+            editorSaveBtn.addEventListener('click', () => {
+                if (!quillEditor || currentlyEditingPrepId === null) return;
+                const recipeIndex = recipes.findIndex(r => r.id === currentlyEditingPrepId);
+                if (recipeIndex > -1) {
+                    recipes[recipeIndex].preparationSteps = quillEditor.root.innerHTML;
+                    saveRecipes();
+                    renderRecipeBook();
+                    closePreparationEditor();
+                }
+            });
+            editorCancelBtn.addEventListener('click', closePreparationEditor);
+
+            // --- Category Listeners ---
+            manageCategoriesBtn.addEventListener('click', openManageCategoryModal);
+            closeCategoriesModalBtn.addEventListener('click', () => {
+                manageCategoriesModal.classList.add('hidden');
+                renderCategoryFilters(); // --- NEW --- Update filters when closing the modal
+                renderRecipeBook();
+            });
+            addCategoryBtn.addEventListener('click', addCategory);
+            categoryListInModal.addEventListener('click', (e) => {
+                const removeBtn = e.target.closest('.remove-category-btn');
+                if (removeBtn) {
+                    const categoryId = parseInt(removeBtn.dataset.id, 10);
+                    removeCategory(categoryId);
+                }
+            });
+
+            // --- NEW --- Event listener for the filter buttons container
+            categoryFiltersContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.category-filter-btn');
+                if (!btn) return;
+
+                // Update active state on buttons
+                categoryFiltersContainer.querySelectorAll('.category-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Rerender the book with the filter
+                const categoryId = btn.dataset.id;
+                renderRecipeBook(categoryId);
+            });
+
+            // Add listeners for search and sort on recipe book page
+            recipeBookSearchInput.addEventListener('input', () => renderRecipeBook());
+            recipeBookSortSelect.addEventListener('change', () => renderRecipeBook());
+
+
+            // --- Page Navigation & Initial Render ---
+            const showPage = (pageToShow) => {
+                const activeClasses = ['bg-white/10', 'font-semibold'];
+
+                // Hides all pages first
+                [homePage, ingredientsPage, recipesPage, budgetPage, settingsPage, recipeBookPage].forEach(page => page && page.classList.add('hidden'));
+
+                // Deactivates all nav links
+                [navHome, navIngredients, navRecipes, navBudget, navSettings].forEach(nav => nav.classList.remove(...activeClasses));
+
+                // Shows the correct page and activates the correct nav link
+                if (pageToShow === 'home') {
+                    homePage.classList.remove('hidden');
+                    navHome.classList.add(...activeClasses);
+                } else if (pageToShow === 'ingredients') {
+                    ingredientsPage.classList.remove('hidden');
+                    navIngredients.classList.add(...activeClasses);
+                } else if (pageToShow === 'recipes') {
+                    recipesPage.classList.remove('hidden');
+                    navRecipes.classList.add(...activeClasses);
+                } else if (pageToShow === 'budget') {
+                    budgetPage.classList.remove('hidden');
+                    navBudget.classList.add(...activeClasses);
+                    plannerDate = new Date();
+                    renderFullProductionCalendar();
+                    renderTeams();
+                } else if (pageToShow === 'settings') {
+                    settingsPage.classList.remove('hidden');
+                    navSettings.classList.add(...activeClasses);
+                }
+            };
+
+            // New listener for Home nav link
+            navHome.addEventListener('click', (e) => { e.preventDefault(); showPage('home'); });
+            navIngredients.addEventListener('click', (e) => { e.preventDefault(); showPage('ingredients'); });
+            navRecipes.addEventListener('click', (e) => { e.preventDefault(); showPage('recipes'); });
+            navBudget.addEventListener('click', (e) => { e.preventDefault(); showPage('budget'); });
+            navSettings.addEventListener('click', (e) => { e.preventDefault(); showPage('settings'); });
+
+            // New listeners for buttons on Home page
+            homeToRecipesBtn.addEventListener('click', (e) => { e.preventDefault(); showPage('recipes'); });
+            homeToIngredientsBtn.addEventListener('click', (e) => { e.preventDefault(); showPage('ingredients'); });
+            homeToRecipesBtn2.addEventListener('click', (e) => { e.preventDefault(); showPage('recipes'); });
+            homeToIngredientsBtn2.addEventListener('click', (e) => { e.preventDefault(); showPage('ingredients'); });
+
+            setupYieldUI('add');
+            setupYieldUI('edit');
+
+            // Initial render of all components
+            rerenderAll();
+            showPage('home'); // Set default page to 'home'
+        });
+    </script>
+</body>
+
+</html>
