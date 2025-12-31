@@ -505,6 +505,67 @@
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.08);
             transform: translateY(-2px);
         }
+
+        /* Custom Modal Styles */
+        .modal-animate-in {
+            animation: modalFadeIn 0.2s ease-out forwards;
+        }
+
+        .modal-animate-out {
+            animation: modalFadeOut 0.2s ease-in forwards;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes modalFadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        .icon-bg-danger {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+
+        .icon-bg-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-danger {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626 !important;
+        }
+
+        .btn-success {
+            background-color: #166534 !important;
+            color: white !important;
+        }
+
+        .btn-success:hover {
+            background-color: #15803d !important;
+        }
     </style>
 </head>
 
@@ -1462,6 +1523,31 @@
 
     <input type="file" id="import-file-input" class="hidden" accept=".json">
 
+    <!-- Custom Confirmation/Notification Modal -->
+    <div id="custom-confirmation-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/40 transition-opacity" id="confirmation-backdrop"></div>
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm transform transition-all scale-100 relative z-10 overflow-hidden"
+            id="confirmation-card">
+            <div class="p-6 text-center">
+                <div id="confirmation-icon-container"
+                    class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 transition-colors">
+                    <svg id="confirmation-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <!-- Icon Path -->
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2" id="confirmation-title">Title</h3>
+                <p class="text-sm text-gray-500 mb-6" id="confirmation-message">Message</p>
+                <div class="flex gap-3 justify-center" id="confirmation-actions">
+                    <button id="confirmation-cancel-btn"
+                        class="py-2.5 px-4 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors w-full">Cancel</button>
+                    <button id="confirmation-confirm-btn"
+                        class="py-2.5 px-4 text-white font-semibold rounded-lg shadow-sm transition-colors w-full shadow-md">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- PAGE & NAVIGATION ELEMENTS ---
@@ -1653,20 +1739,134 @@
                 reader.readAsText(file);
             });
 
-            resetDataBtn.addEventListener('click', () => {
-                if (confirm('⚠️ WARNING: This will delete ALL data permanently. This action cannot be undone. Are you absolutely sure?')) {
-                    ingredients = [];
-                    recipes = [];
-                    teams = [];
-                    categories = [];
-                    saveIngredients();
-                    saveRecipes();
-                    saveTeams();
-                    saveCategories();
-                    rerenderAll();
-                    alert('All data has been reset.');
+            // =================================================================
+            // CUSTOM NOTIFICATION / CONFIRMATION SYSTEM
+            // =================================================================
+            const confirmationModal = document.getElementById('custom-confirmation-modal');
+            const confirmationBackdrop = document.getElementById('confirmation-backdrop');
+            const confirmationCard = document.getElementById('confirmation-card');
+            const confirmationIconContainer = document.getElementById('confirmation-icon-container');
+            const confirmationIcon = document.getElementById('confirmation-icon');
+            const confirmationTitle = document.getElementById('confirmation-title');
+            const confirmationMessage = document.getElementById('confirmation-message');
+            const confirmationCancelBtn = document.getElementById('confirmation-cancel-btn');
+            const confirmationConfirmBtn = document.getElementById('confirmation-confirm-btn');
+            const confirmationActions = document.getElementById('confirmation-actions');
+
+            let currentConfirmCallback = null;
+
+            const hideConfirmation = () => {
+                confirmationCard.classList.remove('modal-animate-in');
+                confirmationCard.classList.add('modal-animate-out');
+                setTimeout(() => {
+                    confirmationModal.classList.add('hidden');
+                    confirmationCard.classList.remove('modal-animate-out');
+                    currentConfirmCallback = null;
+                }, 150);
+            };
+
+            const showConfirmation = ({ title, message, type = 'danger', onConfirm, showCancel = true, confirmText = 'Confirm' }) => {
+                // Reset styles
+                confirmationIconContainer.classList.remove('icon-bg-danger', 'icon-bg-success');
+                confirmationConfirmBtn.classList.remove('btn-danger', 'btn-success', 'bg-brand-pink-600', 'hover:bg-brand-pink-700');
+
+                // Set content
+                confirmationTitle.textContent = title;
+                confirmationMessage.textContent = message;
+                confirmationConfirmBtn.textContent = confirmText;
+
+                // Configure Type
+                if (type === 'danger') {
+                    confirmationIconContainer.classList.add('icon-bg-danger');
+                    confirmationConfirmBtn.classList.add('btn-danger');
+                    // Trash Icon
+                    confirmationIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />`;
+                } else if (type === 'success') {
+                    confirmationIconContainer.classList.add('icon-bg-success');
+                    confirmationConfirmBtn.classList.add('btn-success');
+                    // Check Icon
+                    confirmationIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />`;
+                } else {
+                    // Default / Info
+                    confirmationIconContainer.classList.add('bg-blue-100', 'text-blue-600');
+                    confirmationConfirmBtn.classList.add('bg-brand-pink-600', 'hover:bg-brand-pink-700');
+                    confirmationIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
                 }
+
+                // Toggle Cancel Button
+                if (showCancel) {
+                    confirmationCancelBtn.classList.remove('hidden');
+                    confirmationActions.classList.add('grid-cols-2');
+                } else {
+                    confirmationCancelBtn.classList.add('hidden');
+                    confirmationActions.classList.remove('grid-cols-2');
+                }
+
+                // Callbacks
+                currentConfirmCallback = onConfirm;
+
+                // Show
+                confirmationModal.classList.remove('hidden');
+                confirmationCard.classList.add('modal-animate-in');
+            };
+
+            // Event Listeners for Modal
+            confirmationCancelBtn.onclick = hideConfirmation;
+            confirmationBackdrop.onclick = hideConfirmation;
+            confirmationConfirmBtn.onclick = () => {
+                const preCallback = currentConfirmCallback;
+                if (currentConfirmCallback) currentConfirmCallback();
+                // Only hide if the callback hasn't initiated a new modal (which would change the callback ref)
+                if (currentConfirmCallback === preCallback) {
+                    hideConfirmation();
+                }
+            };
+
+            // --- Helper Wrappers ---
+            const renderDeleteConfirmation = (title, message, onConfirm) => {
+                showConfirmation({
+                    title,
+                    message,
+                    type: 'danger',
+                    onConfirm,
+                    confirmText: 'Delete'
+                });
+            };
+
+            const renderSuccessNotification = (title, message) => {
+                showConfirmation({
+                    title,
+                    message,
+                    type: 'success',
+                    showCancel: false,
+                    confirmText: 'OK',
+                    onConfirm: () => { }
+                });
+            };
+
+            // -------------------------------------------------------------
+            // Modified Data Management (using new system)
+            // -------------------------------------------------------------
+
+            resetDataBtn.addEventListener('click', () => {
+                renderDeleteConfirmation(
+                    'Reset All Data?',
+                    'This will permanently delete all recipes, ingredients, and teams. This action cannot be undone.',
+                    () => {
+                        ingredients = [];
+                        recipes = [];
+                        teams = [];
+                        categories = [];
+                        saveIngredients();
+                        saveRecipes();
+                        saveTeams();
+                        saveCategories();
+                        rerenderAll();
+                        renderSuccessNotification('Data Reset', 'All application data has been successfully reset.');
+                    }
+                );
             });
+
 
             // =================================================================
             // FULL PRODUCTION PLANNER FUNCTIONS
@@ -2505,25 +2705,26 @@
             };
 
             const removeSupplierTab = (index) => {
-                if (!confirm('Remove this supplier tab?')) return;
-                const wasActive = currentEditSuppliers[index].active;
-                currentEditSuppliers.splice(index, 1);
+                renderDeleteConfirmation('Remove Supplier Tab?', 'Are you sure you want to remove this supplier tab?', () => {
+                    const wasActive = currentEditSuppliers[index].active;
+                    currentEditSuppliers.splice(index, 1);
 
-                if (currentEditSuppliers.length === 0) {
-                    currentEditSuppliers.push({ price: 0, weight: 1, unit: 'kg', supplierName: '', notes: '', active: true });
-                } else if (wasActive) {
-                    currentEditSuppliers[0].active = true;
-                }
+                    if (currentEditSuppliers.length === 0) {
+                        currentEditSuppliers.push({ price: 0, weight: 1, unit: 'kg', supplierName: '', notes: '', active: true });
+                    } else if (wasActive) {
+                        currentEditSuppliers[0].active = true;
+                    }
 
-                if (index === currentEditTabIndex) {
-                    switchSupplierTab(Math.max(0, index - 1));
-                } else if (index < currentEditTabIndex) {
-                    currentEditTabIndex--;
-                    renderSupplierTabs();
-                } else {
-                    renderSupplierTabs();
-                }
-                setTimeout(pushHistory, 0);
+                    if (index === currentEditTabIndex) {
+                        switchSupplierTab(Math.max(0, index - 1));
+                    } else if (index < currentEditTabIndex) {
+                        currentEditTabIndex--;
+                        renderSupplierTabs();
+                    } else {
+                        renderSupplierTabs();
+                    }
+                    setTimeout(pushHistory, 0);
+                });
             };
 
             const updateActiveToggleUI = () => {
@@ -2754,6 +2955,7 @@
                     saveIngredients();
                     renderIngredients();
                     closeAddIngredientModal();
+                    renderSuccessNotification('Ingredient Added', 'New ingredient has been successfully added to the library.');
                 } catch (err) {
                     console.error('Error in addIngredient:', err);
                     alert('An unexpected error occurred while adding the ingredient. Please check the console for details.');
@@ -3941,12 +4143,13 @@
                 const deleteBtn = e.target.closest('.delete-team-btn');
                 if (deleteBtn) {
                     const teamId = parseInt(deleteBtn.dataset.teamId, 10);
-                    if (confirm('Are you sure you want to delete this team? This action cannot be undone.')) {
+                    renderDeleteConfirmation('Delete Team?', 'Are you sure you want to delete this team? This action cannot be undone.', () => {
                         teams = teams.filter(t => t.id !== teamId);
                         saveTeams();
                         renderTeams();
                         renderFullProductionCalendar();
-                    }
+                        renderSuccessNotification('Team Deleted', 'The team has been successfully removed.');
+                    });
                 }
             });
 
@@ -4011,6 +4214,7 @@
                 renderTeams();
                 renderFullProductionCalendar();
                 closeAddTeamModal();
+                renderSuccessNotification('Team Saved', 'Team details have been successfully saved.');
             });
 
             // --- Ingredient Page Listeners ---
@@ -4071,9 +4275,18 @@
                 saveIngredients();
                 renderIngredients();
                 closeEditModal();
+                renderSuccessNotification('Ingredient Updated', 'Ingredient details have been successfully updated.');
             });
             modalCancelBtn.addEventListener('click', closeEditModal);
-            modalDeleteBtn.addEventListener('click', () => { if (confirm('Are you sure?')) { ingredients = ingredients.filter(ing => ing.id !== currentlyEditingId); saveIngredients(); renderIngredients(); closeEditModal(); } });
+            modalDeleteBtn.addEventListener('click', () => {
+                renderDeleteConfirmation('Delete Ingredient?', 'Are you sure you want to delete this ingredient? This action cannot be undone.', () => {
+                    ingredients = ingredients.filter(ing => ing.id !== currentlyEditingId);
+                    saveIngredients();
+                    renderIngredients();
+                    closeEditModal();
+                    renderSuccessNotification('Ingredient Deleted', 'The ingredient has been successfully removed.');
+                });
+            });
             addConversionBtn.addEventListener('click', () => appendConversionInput());
             conversionsListDiv.addEventListener('click', (e) => { if (e.target.classList.contains('remove-btn')) e.target.closest('.conversion-row').remove(); });
             ingredientSearchInput.addEventListener('input', renderIngredients);
@@ -4149,6 +4362,7 @@
                 saveRecipes();
                 renderRecipes();
                 closeAddRecipeModal();
+                renderSuccessNotification('Recipe Added', 'New recipe has been successfully created.');
             });
 
             openAddRecipeModalBtn.addEventListener('click', openAddRecipeModal);
@@ -4196,12 +4410,13 @@
                 }
             });
             document.getElementById('edit-recipe-modal-delete-btn').addEventListener('click', () => {
-                if (confirm('Are you sure you want to delete this recipe?')) {
+                renderDeleteConfirmation('Delete Recipe?', 'Are you sure you want to delete this recipe? This action cannot be undone.', () => {
                     recipes = recipes.filter(r => r.id !== currentlyEditingRecipeId);
                     saveRecipes();
                     renderRecipes();
                     closeEditRecipeModal();
-                }
+                    renderSuccessNotification('Recipe Deleted', 'The recipe has been successfully removed.');
+                });
             });
 
             // Capture changes on form input
@@ -4243,11 +4458,12 @@
                 const deleteBtn = target.closest('.delete-recipe-btn');
                 if (deleteBtn) {
                     const recipeId = parseInt(deleteBtn.dataset.id, 10);
-                    if (confirm('Are you sure you want to delete this recipe?')) {
+                    renderDeleteConfirmation('Delete Recipe?', 'Are you sure you want to delete this recipe?', () => {
                         recipes = recipes.filter(r => r.id !== recipeId);
                         saveRecipes();
                         renderRecipes();
-                    }
+                        renderSuccessNotification('Recipe Deleted', 'The recipe has been successfully removed.');
+                    });
                     return;
                 }
 
@@ -4393,6 +4609,7 @@
                 saveRecipes();
                 renderRecipes();
                 closeEditRecipeModal();
+                renderSuccessNotification('Recipe Updated', 'Recipe details have been successfully updated.');
             });
 
             // --- Recipe Book Listeners ---
