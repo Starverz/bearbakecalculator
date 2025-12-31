@@ -2330,10 +2330,10 @@
                     return;
                 }
                 const table = document.createElement('table');
-                table.className = 'w-full text-sm text-left text-gray-600';
-                table.innerHTML = `<thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Purchase Cost</th><th class="px-6 py-3">Cost per unit</th><th class="px-6 py-3 text-right">Actions</th></tr></thead><tbody></tbody>`;
+                table.className = 'w-full text-sm text-left text-gray-600 table-fixed';
+                table.innerHTML = `<thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-6 py-3 w-[5%]">#</th><th class="px-6 py-3 w-[55%]">Name</th><th class="px-6 py-3 w-[15%]">Purchase Cost</th><th class="px-6 py-3 w-[15%]">Cost per unit</th><th class="px-6 py-3 text-right w-[10%]">Action</th></tr></thead><tbody></tbody>`;
                 const tbody = table.querySelector('tbody');
-                processedIngredients.forEach(ingredient => {
+                processedIngredients.forEach((ingredient, index) => {
                     const tr = document.createElement('tr');
                     tr.className = 'bg-white border-b hover:bg-gray-50';
                     let baseUnit = '', costPerUnit = 0, totalAmountInBaseUnit = 0;
@@ -2343,7 +2343,7 @@
                         default: totalAmountInBaseUnit = ingredient.weight; baseUnit = ingredient.unit;
                     }
                     if (totalAmountInBaseUnit > 0) costPerUnit = ingredient.price / totalAmountInBaseUnit;
-                    tr.innerHTML = `<td class="px-6 py-4 font-medium text-gray-900">${ingredient.name}</td><td class="px-6 py-4">RM ${ingredient.price.toFixed(2)} for ${ingredient.weight} ${ingredient.unit}</td><td class="px-6 py-4 font-semibold text-green-600">RM ${costPerUnit.toFixed(5)} / ${baseUnit}</td><td class="px-6 py-4 flex justify-end"><button class="edit-btn w-8 h-8 flex items-center justify-center bg-brand-pink-600 rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors group" data-id="${ingredient.id}"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button></td>`;
+                    tr.innerHTML = `<td class="px-6 py-4 text-gray-500">${index + 1}</td><td class="px-6 py-4 font-medium text-gray-900 whitespace-normal break-words">${ingredient.name}</td><td class="px-6 py-4">RM ${ingredient.price.toFixed(2)} for ${ingredient.weight} ${ingredient.unit}</td><td class="px-6 py-4 font-semibold text-green-600">RM ${costPerUnit.toFixed(5)} / ${baseUnit}</td><td class="px-6 py-4 flex justify-end"><button class="edit-btn w-8 h-8 flex items-center justify-center bg-brand-pink-600 rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors group" data-id="${ingredient.id}"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button></td>`;
                     tbody.appendChild(tr);
                 });
                 ingredientListDiv.appendChild(table);
@@ -2991,7 +2991,7 @@
 
                     } else {
                         // Fallback for quantity-type recipes forced into PAN mode (unlikely but safe to handle)
-                        const input = cardElement.querySelector(`.scale-input-qty[data-id="${recipeId}"]`);
+                        const input = cardElement.querySelector(`.scale-inputs-container[data-container-mode="pan"] .scale-input-qty[data-id="${recipeId}"]`);
                         const val = input ? parseFloat(input.value) : 0;
                         if (isNaN(val) || val <= 0) return;
 
@@ -3000,7 +3000,7 @@
                         scaledRecipe.servings.value = val;
                     }
                 } else if (mode === 'pcs') { // Scale by Quantity
-                    const input = cardElement.querySelector(`.scale-input-qty[data-id="${recipeId}"]`);
+                    const input = cardElement.querySelector(`.scale-inputs-container[data-container-mode="pcs"] .scale-input-qty[data-id="${recipeId}"]`);
                     const val = input ? parseFloat(input.value) : 0;
                     if (isNaN(val) || val <= 0) return;
 
@@ -3145,7 +3145,7 @@
                         <div class="${containerClasses}"><table class="w-full text-sm"><tbody>${breakdownHTML}</tbody></table></div>
                         ${toggleButtonHTML}
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-4 border">
+                    <div class="bg-gray-50 rounded-lg p-4 border js-scale-container">
                         <h4 class="font-semibold text-gray-700 mb-2 border-b pb-1">Summary</h4>
                         <table class="w-full text-sm">
                             <tbody class="summary-table-body">
@@ -4254,7 +4254,7 @@
                 const scaleBtn = target.closest('.scale-btn');
                 if (scaleBtn) {
                     const id = scaleBtn.dataset.id;
-                    const container = scaleBtn.closest('.rounded-lg'); // Find the container for this recipe's scaling UI
+                    const container = scaleBtn.closest('.js-scale-container'); // Find the container for this recipe's scaling UI
                     // Find active mode
                     const activeBtn = container.querySelector('.scale-mode-btn.bg-brand-pink-600');
                     const mode = activeBtn ? activeBtn.dataset.mode : 'pan';
@@ -4267,7 +4267,7 @@
                 if (scaleModeBtn) {
                     const mode = scaleModeBtn.dataset.mode;
                     const id = scaleModeBtn.dataset.id;
-                    const container = scaleModeBtn.closest('.rounded-lg');
+                    const container = scaleModeBtn.closest('.js-scale-container');
 
                     // Update Buttons UI
                     container.querySelectorAll('.scale-mode-btn').forEach(btn => {
@@ -4297,7 +4297,7 @@
                 if (target.classList.contains('scale-mode-btn')) {
                     const mode = target.dataset.mode;
                     const id = target.dataset.id;
-                    const container = target.closest('.rounded-lg');
+                    const container = target.closest('.js-scale-container');
 
                     // Update Buttons UI
                     container.querySelectorAll('.scale-mode-btn').forEach(btn => {
