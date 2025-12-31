@@ -255,6 +255,126 @@
             background-color: #F9FAFB;
         }
 
+        /* Tab Bar Styles */
+        .supplier-tabs-container {
+            display: flex;
+            align-items: end;
+            overflow-x: auto;
+            overflow-y: hidden;
+            background: transparent;
+            padding: 8px 8px 2px 8px;
+            /* Added bottom padding */
+            gap: 4px;
+            border-radius: 8px 8px 0 0;
+            margin-top: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .supplier-tabs-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .supplier-tab {
+            position: relative;
+            padding: 8px 12px;
+            background: #ffffff;
+            color: #1f2937;
+            border-radius: 8px 8px 0 0;
+            max-width: 150px;
+            min-width: 80px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            border: 1px solid #d1d5db;
+            border-bottom: none;
+            margin-bottom: -2px;
+        }
+
+        .supplier-tab.active {
+            background: #db2777;
+            color: #ffffff;
+            border-color: #db2777;
+            z-index: 10;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .supplier-tab:hover:not(.active) {
+            background: #f3f4f6;
+            color: #000000;
+        }
+
+        .tab-label-container {
+            overflow: hidden;
+            white-space: nowrap;
+            mask-image: linear-gradient(to right, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+            flex: 1;
+            margin-right: 6px;
+        }
+
+        .tab-label {
+            display: inline-block;
+            transition: transform 4s linear;
+            min-width: 100%;
+        }
+
+        .supplier-tab:hover .tab-label {
+            transform: translateX(-50%);
+        }
+
+        .tab-close {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .tab-close:hover {
+            background: rgba(0, 0, 0, 0.2);
+            opacity: 1;
+        }
+
+        .supplier-tab.active .tab-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .active-price-toggle {
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        .active-price-toggle.active {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .active-price-toggle.active .indicator-dot {
+            background-color: #166534;
+        }
+
+        .active-price-toggle.inactive {
+            background-color: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
         .full-calendar-day {
             padding: 0.5rem;
             border-right: 1px solid #E5E7EB;
@@ -857,20 +977,50 @@
 
     <div id="edit-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[95vh]">
-            <div class="p-6 border-b">
+            <div class="px-6 pt-3 border-b pb-0 relative">
                 <h3 class="text-xl font-bold text-gray-800">Edit Ingredient</h3>
+                <div class="relative flex items-center w-full px-2">
+                    <button type="button" id="tab-scroll-left"
+                        class="hidden absolute left-0 z-10 p-1 bg-gray-100 text-black hover:bg-gray-200 rounded-full shadow-md -ml-2 border border-gray-300 transition-opacity">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <div id="edit-supplier-tabs"
+                        class="supplier-tabs-container flex overflow-x-auto no-scrollbar scroll-smooth w-full px-1 items-center">
+                        <!-- Tabs will be injected here -->
+                        <button type="button" id="add-tab-btn"
+                            class="ml-1 text-gray-400 hover:text-white px-2 rounded hover:bg-white/10 text-xl font-light h-full flex items-center mb-1">+</button>
+                    </div>
+                    <button type="button" id="tab-scroll-right"
+                        class="hidden absolute right-0 z-10 p-1 bg-gray-100 text-black hover:bg-gray-200 rounded-full shadow-md -mr-2 border border-gray-300 transition-opacity">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
             </div>
             <form id="edit-form" class="p-6 space-y-5 overflow-y-auto">
-                <div><label for="edit-name" class="block text-sm font-medium text-gray-700 mb-1">Ingredient
-                        Name</label><input type="text" id="edit-name" required
-                        class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="edit-name" class="block text-sm font-medium text-gray-700">Ingredient Name</label>
+                        <button type="button" id="edit-active-toggle" class="active-price-toggle inactive">
+                            <span class="w-2 h-2 rounded-full bg-gray-400 indicator-dot"></span>
+                            <span class="text-xs font-semibold toggle-text">Set Active Price</span>
+                        </button>
+                    </div>
+                    <input type="text" id="edit-name" required placeholder="e.g., Sugar"
+                        class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
+                </div>
                 <div class="grid grid-cols-3 gap-4">
                     <div><label for="edit-price" class="block text-sm font-medium text-gray-700 mb-1">Price
                             (RM)</label><input type="number" id="edit-price" step="0.01" min="0" required
-                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
+                            placeholder="10.00" class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
                     <div><label for="edit-weight"
                             class="block text-sm font-medium text-gray-700 mb-1">Amount</label><input type="number"
-                            id="edit-weight" step="0.01" min="0" required
+                            id="edit-weight" step="0.01" min="0" required placeholder="1"
                             class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
                     <div><label for="edit-unit" class="block text-sm font-medium text-gray-700 mb-1">Unit</label><select
                             id="edit-unit" required
@@ -894,20 +1044,42 @@
                 <div class="pt-4 border-t space-y-4">
                     <div><label for="edit-supplier" class="block text-sm font-medium text-gray-700 mb-1">Supplier Name
                             <span class="text-gray-400">(Optional)</span></label><input type="text" id="edit-supplier"
+                            placeholder="e.g., Bakery Supply Co"
                             class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></div>
                     <div><label for="edit-notes" class="block text-sm font-medium text-gray-700 mb-1">Notes <span
                                 class="text-gray-400">(Optional)</span></label><textarea id="edit-notes" rows="3"
+                            placeholder="e.g., Halal certified"
                             class="w-full p-2 border border-gray-300 rounded-lg focus-ring"></textarea></div>
                 </div>
             </form>
-            <div class="flex justify-between items-center p-6 border-t bg-gray-50 rounded-b-xl mt-auto">
+            <div class="flex justify-between items-center px-6 py-3 border-t bg-gray-50 rounded-b-xl mt-auto">
                 <button type="button" id="modal-delete-btn"
-                    class="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-sm hover:bg-red-700">Delete</button>
-                <div class="space-x-4">
+                    class="py-2 px-3 bg-red-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-red-700 transition-colors">Delete</button>
+                <div class="flex items-center gap-4">
+                    <div id="edit-history-controls" class="hidden flex gap-3 mr-2 border-r pr-6 border-gray-300">
+                        <button type="button" id="edit-undo-btn"
+                            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            title="Undo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                        </button>
+                        <button type="button" id="edit-redo-btn"
+                            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            title="Redo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                            </svg>
+                        </button>
+                    </div>
                     <button type="button" id="modal-cancel-btn"
-                        class="py-2 px-4 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancel</button>
+                        class="py-2 px-4 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
                     <button type="submit" form="edit-form" id="modal-done-btn"
-                        class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700">Save
+                        class="py-2 px-4 bg-brand-pink-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Save
                         Changes</button>
                 </div>
             </div>
@@ -916,7 +1088,7 @@
 
     <div id="add-recipe-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col">
-            <div class="p-6 border-b">
+            <div class="px-6 py-3 border-b">
                 <h3 class="text-xl font-bold text-gray-800">Create New Recipe</h3>
             </div>
             <form id="recipe-form" class="p-6 space-y-6 overflow-y-auto">
@@ -924,7 +1096,7 @@
                     <div>
                         <label for="recipe-title" class="block text-sm font-medium text-gray-700 mb-1">Recipe
                             Title</label>
-                        <input type="text" id="recipe-title" required
+                        <input type="text" id="recipe-title" required placeholder="e.g., Chocolate Cake"
                             class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring">
                     </div>
                     <div>
@@ -999,28 +1171,51 @@
                                 id="profit-type"
                                 class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white">
                                 <option value="percent">Percent (%)</option>
-                                <option value="multiplier">Multiplier (x)</option>
+                                <option value="multiplier" selected>Multiplier (x)</option>
                             </select></div>
                         <div><label for="profit-value"
                                 class="block text-sm font-medium text-gray-700 mb-1">Value</label><input type="number"
-                                id="profit-value" step="0.01" min="0" placeholder="e.g., 100" required
+                                id="profit-value" step="0.01" min="0" placeholder="3" required
                                 class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
                     </div>
                 </div>
             </form>
-            <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl mt-auto">
-                <div class="flex gap-4"><button type="button" id="add-recipe-modal-cancel-btn"
-                        class="py-2.5 px-6 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button><button
-                        type="submit" form="recipe-form"
-                        class="py-2.5 px-6 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Add
-                        Recipe</button></div>
+            <div class="flex justify-between items-center px-6 py-3 border-t bg-gray-50 rounded-b-xl mt-auto">
+                <div></div>
+                <div class="flex items-center gap-4">
+                    <div id="add-recipe-history-controls" class="hidden flex gap-3 mr-2 border-r pr-6 border-gray-300">
+                        <button type="button" id="add-recipe-undo-btn"
+                            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            title="Undo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                        </button>
+                        <button type="button" id="add-recipe-redo-btn"
+                            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            title="Redo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                            </svg>
+                        </button>
+                    </div>
+                    <button type="button" id="add-recipe-modal-cancel-btn"
+                        class="py-2 px-4 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="submit" form="recipe-form"
+                        class="py-2 px-4 bg-brand-pink-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Add
+                        Recipe</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="edit-recipe-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col">
-            <div class="p-6 border-b">
+            <div class="px-6 py-3 border-b">
                 <h3 class="text-xl font-bold text-gray-800">Edit Recipe</h3>
             </div>
             <form id="edit-recipe-form" class="p-6 space-y-6 overflow-y-auto">
@@ -1028,7 +1223,7 @@
                     <div>
                         <label for="edit-recipe-title" class="block text-sm font-medium text-gray-700 mb-1">Recipe
                             Title</label>
-                        <input type="text" id="edit-recipe-title" required
+                        <input type="text" id="edit-recipe-title" required placeholder="e.g., Chocolate Cake"
                             class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring">
                     </div>
                     <div>
@@ -1075,7 +1270,7 @@
                                 step="0.1" id="edit-recipe-pan-height-round" placeholder="Height (in)"
                                 class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
                         <div class="grid grid-cols-3 gap-2 pt-1"><input type="number" min="1"
-                                id="edit-recipe-pan-quantity"
+                                id="edit-recipe-pan-quantity" placeholder="Qty"
                                 class="col-span-1 w-full p-2.5 border border-gray-300 rounded-lg focus-ring"><select
                                 id="edit-recipe-pan-unit"
                                 class="col-span-2 w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white">
@@ -1102,21 +1297,45 @@
                                 id="edit-profit-type"
                                 class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring bg-white">
                                 <option value="percent">Percent (%)</option>
-                                <option value="multiplier">Multiplier (x)</option>
+                                <option value="multiplier" selected>Multiplier (x)</option>
                             </select></div>
                         <div><label for="edit-profit-value"
                                 class="block text-sm font-medium text-gray-700 mb-1">Value</label><input type="number"
-                                id="edit-profit-value" step="0.01" min="0" required
+                                id="edit-profit-value" step="0.01" min="0" required placeholder="3"
                                 class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring"></div>
                     </div>
                 </div>
             </form>
-            <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl mt-auto">
-                <div class="flex gap-4"><button type="button" id="edit-recipe-modal-cancel-btn"
-                        class="py-2.5 px-6 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button><button
-                        type="submit" form="edit-recipe-form"
-                        class="py-2.5 px-6 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Save
-                        Changes</button></div>
+            <div class="flex justify-between items-center px-6 py-3 border-t bg-gray-50 rounded-b-xl mt-auto">
+                <button type="button" id="edit-recipe-modal-delete-btn"
+                    class="py-2 px-3 bg-red-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-red-700 transition-colors">Delete</button>
+                <div class="flex items-center gap-4">
+                    <div id="edit-recipe-history-controls" class="hidden flex gap-3 mr-2 border-r pr-6 border-gray-300">
+                        <button type="button" id="edit-recipe-undo-btn"
+                            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            title="Undo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                        </button>
+                        <button type="button" id="edit-recipe-redo-btn"
+                            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            title="Redo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                            </svg>
+                        </button>
+                    </div>
+                    <button type="button" id="edit-recipe-modal-cancel-btn"
+                        class="py-2 px-4 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="submit" form="edit-recipe-form"
+                        class="py-2 px-4 bg-brand-pink-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Save
+                        Changes</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1277,6 +1496,13 @@
             const modalCancelBtn = document.getElementById('modal-cancel-btn'), modalDeleteBtn = document.getElementById('modal-delete-btn');
             const conversionsListDiv = document.getElementById('edit-conversions-list'), addConversionBtn = document.getElementById('add-conversion-btn');
 
+            // Undo/Redo Elements
+            const editUndoBtn = document.getElementById('edit-undo-btn');
+            const editRedoBtn = document.getElementById('edit-redo-btn');
+            const editHistoryControls = document.getElementById('edit-history-controls');
+
+
+
             // --- RECIPE PAGE ELEMENTS ---
             const recipeListDisplay = document.getElementById('recipe-list-display');
             const recipeForm = document.getElementById('recipe-form');
@@ -1346,6 +1572,11 @@
             let plannerDate = new Date();
             let recipeBookCurrentPage = 1;
             const RECIPES_PER_PAGE = 20;
+
+            // --- RECIPE UNDO/REDO STATE ---
+            let recipeEditHistory = [];
+            let recipeHistoryStep = -1;
+            let isRecipeUndoingRedoing = false;
 
             const saveIngredients = () => { try { localStorage.setItem('ingredients', JSON.stringify(ingredients)); } catch (e) { console.error('Error saving ingredients:', e); alert('Warning: Could not save ingredients. Storage might be full or restricted.'); } };
             const saveRecipes = () => { try { localStorage.setItem('recipes', JSON.stringify(recipes)); } catch (e) { console.error('Error saving recipes:', e); alert('Warning: Could not save recipes. Storage might be full or restricted.'); } };
@@ -2112,35 +2343,398 @@
                         default: totalAmountInBaseUnit = ingredient.weight; baseUnit = ingredient.unit;
                     }
                     if (totalAmountInBaseUnit > 0) costPerUnit = ingredient.price / totalAmountInBaseUnit;
-                    tr.innerHTML = `<td class="px-6 py-4 font-medium text-gray-900">${ingredient.name}</td><td class="px-6 py-4">RM ${ingredient.price.toFixed(2)} for ${ingredient.weight} ${ingredient.unit}</td><td class="px-6 py-4 font-semibold text-green-600">RM ${costPerUnit.toFixed(5)} / ${baseUnit}</td><td class="px-6 py-4 flex space-x-4 justify-end"><button class="edit-btn font-medium text-brand-indigo-700 hover:underline" data-id="${ingredient.id}">Edit</button><button class="delete-btn font-medium text-red-600 hover:underline" data-id="${ingredient.id}">Delete</button></td>`;
+                    tr.innerHTML = `<td class="px-6 py-4 font-medium text-gray-900">${ingredient.name}</td><td class="px-6 py-4">RM ${ingredient.price.toFixed(2)} for ${ingredient.weight} ${ingredient.unit}</td><td class="px-6 py-4 font-semibold text-green-600">RM ${costPerUnit.toFixed(5)} / ${baseUnit}</td><td class="px-6 py-4 flex justify-end"><button class="edit-btn w-8 h-8 flex items-center justify-center bg-brand-pink-600 rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors group" data-id="${ingredient.id}"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button></td>`;
                     tbody.appendChild(tr);
                 });
                 ingredientListDiv.appendChild(table);
             };
-            const appendConversionInput = (unitName = 'tsp', grams = '') => {
+            const appendConversionInput = (unitName = '', grams = '', targetUnit = 'g') => {
                 const div = document.createElement('div');
-                div.className = 'flex items-center space-x-2 conversion-row';
-                const predefinedUnits = ['tsp', 'tbsp', 'cup'];
-                const optionsHTML = predefinedUnits.map(unit => `<option value="${unit}" ${unit === unitName ? 'selected' : ''}>${unit}</option>`).join('');
-                div.innerHTML = `<span class="font-mono text-sm">1</span><select class="conversion-unit-name w-full p-1.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring">${optionsHTML}</select><span class="font-mono text-sm">=</span><input type="number" placeholder="grams" value="${grams}" step="0.01" class="conversion-grams w-24 p-1.5 border border-gray-300 rounded-lg text-sm focus-ring"><span class="text-sm">g</span><button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button>`;
+                div.className = 'flex items-center space-x-2 conversion-row w-full';
+                const predefinedUnits = ['tsp', 'tbsp', 'cup', '1 cup', '3/4 cup', '2/3 cup', '1/2 cup', '1/3 cup', '1/4 cup', '1/8 cup', '1/16 cup'];
+                const datalistId = `unit-options-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                const optionsHTML = predefinedUnits.map(unit => `<option value="${unit}">`).join('');
+
+                div.innerHTML = `
+                    <span class="font-mono text-sm">1</span>
+                    <input list="${datalistId}" type="text" value="${unitName}" placeholder="1 cup" class="conversion-unit-name flex-1 min-w-0 p-1.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring">
+                    <datalist id="${datalistId}">${optionsHTML}</datalist>
+                    <span class="font-mono text-sm">=</span>
+                    <input type="number" placeholder="120" value="${grams}" step="0.01" min="0" class="conversion-grams w-24 p-1.5 border border-gray-300 rounded-lg text-sm focus-ring">
+                    <select class="conversion-target-unit w-20 p-1.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring">
+                        <option value="g" ${targetUnit === 'g' ? 'selected' : ''}>g</option>
+                        <option value="kg" ${targetUnit === 'kg' ? 'selected' : ''}>kg</option>
+                        <option value="ml" ${targetUnit === 'ml' ? 'selected' : ''}>ml</option>
+                        <option value="l" ${targetUnit === 'l' ? 'selected' : ''}>l</option>
+                        <option value="oz" ${targetUnit === 'oz' ? 'selected' : ''}>oz</option>
+                        <option value="lb" ${targetUnit === 'lb' ? 'selected' : ''}>lb</option>
+                    </select>
+                    <button type="button" class="remove-btn text-gray-400 hover:text-red-500 transition-colors p-1" title="Remove Conversion">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                `;
                 conversionsListDiv.appendChild(div);
             };
+            // --- Multi-Supplier Tab Logic ---
+            let currentEditSuppliers = [];
+            let currentEditTabIndex = 0;
+
+            const updateTabScrollButtons = () => {
+                const container = document.getElementById('edit-supplier-tabs');
+                const leftBtn = document.getElementById('tab-scroll-left');
+                const rightBtn = document.getElementById('tab-scroll-right');
+
+                if (!container || !leftBtn || !rightBtn) return;
+
+                const { scrollLeft, scrollWidth, clientWidth } = container;
+                // Use a small epsilon for float comparison safety
+                if (scrollLeft > 1) leftBtn.classList.remove('hidden');
+                else leftBtn.classList.add('hidden');
+
+                if (scrollLeft + clientWidth < scrollWidth - 1) rightBtn.classList.remove('hidden');
+                else rightBtn.classList.add('hidden');
+            };
+
+            // Initialize Scroll Listeners
+            document.addEventListener('DOMContentLoaded', () => {
+                const leftBtn = document.getElementById('tab-scroll-left');
+                const rightBtn = document.getElementById('tab-scroll-right');
+                const container = document.getElementById('edit-supplier-tabs');
+
+                if (leftBtn) leftBtn.addEventListener('click', () => {
+                    container.scrollBy({ left: -100, behavior: 'smooth' });
+                });
+                if (rightBtn) rightBtn.addEventListener('click', () => {
+                    container.scrollBy({ left: 100, behavior: 'smooth' });
+                });
+                if (container) container.addEventListener('scroll', updateTabScrollButtons);
+                window.addEventListener('resize', updateTabScrollButtons);
+            });
+
+            const renderSupplierTabs = () => {
+                const container = document.getElementById('edit-supplier-tabs');
+                container.innerHTML = '';
+
+                currentEditSuppliers.forEach((sup, index) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `supplier-tab ${index === currentEditTabIndex ? 'active' : ''}`;
+                    const label = sup.supplierName || `Shop ${String.fromCharCode(65 + index)}`;
+
+                    btn.innerHTML = `
+                        <div class="tab-label-container"><span class="tab-label">${label}</span></div>
+                        ${currentEditSuppliers.length > 1 ? '<span class="tab-close">&times;</span>' : ''}
+                    `;
+
+                    btn.onclick = (e) => {
+                        if (e.target.classList.contains('tab-close')) {
+                            e.stopPropagation();
+                            removeSupplierTab(index);
+                        } else {
+                            switchSupplierTab(index);
+                        }
+                    };
+                    container.appendChild(btn);
+                });
+
+                const addBtn = document.createElement('button');
+                addBtn.id = 'add-tab-btn';
+                addBtn.type = 'button';
+                addBtn.className = 'ml-1 text-gray-400 hover:text-brand-pink-600 px-2 rounded hover:bg-brand-pink-50 text-xl font-light h-full flex items-center mb-1';
+                addBtn.textContent = '+';
+                addBtn.onclick = addSupplierTab;
+                container.appendChild(addBtn);
+
+                updateActiveToggleUI();
+                setTimeout(updateTabScrollButtons, 50);
+            };
+
+            const switchSupplierTab = (newIndex) => {
+                if (currentEditSuppliers[currentEditTabIndex]) {
+                    const s = currentEditSuppliers[currentEditTabIndex];
+                    s.price = parseFloat(editPriceInput.value) || 0;
+                    s.weight = parseFloat(editWeightInput.value) || 0;
+                    s.unit = editUnitInput.value;
+                    s.supplierName = editSupplierInput.value.trim();
+                    s.notes = editNotesInput.value.trim();
+                }
+
+                currentEditTabIndex = newIndex;
+                const next = currentEditSuppliers[newIndex];
+
+                editPriceInput.value = next.price; // .toFixed handled by input type number usually, but raw value ok
+                editWeightInput.value = next.weight;
+                editUnitInput.value = next.unit;
+                editSupplierInput.value = next.supplierName;
+                editNotesInput.value = next.notes;
+
+                renderSupplierTabs();
+            };
+
+            const addSupplierTab = () => {
+                const firstTab = currentEditSuppliers[0];
+                // Sync current input to array first (in case we are on tab 0)
+                if (currentEditTabIndex === 0) firstTab.supplierName = editSupplierInput.value.trim();
+
+                if (!firstTab.supplierName && currentEditSuppliers.length === 1) {
+                    alert('Please enter a Supplier Name for the first shop before adding another.');
+                    editSupplierInput.focus();
+                    return;
+                }
+
+                const currentSup = currentEditSuppliers[currentEditTabIndex];
+                currentSup.supplierName = editSupplierInput.value.trim();
+                if (!currentSup.supplierName) {
+                    alert('Please name the current shop before adding a new one.');
+                    editSupplierInput.focus();
+                    return;
+                }
+
+                currentEditSuppliers.push({
+                    price: 0,
+                    weight: 1,
+                    unit: 'kg',
+                    supplierName: '',
+                    notes: '',
+                    active: false
+                });
+                switchSupplierTab(currentEditSuppliers.length - 1);
+                setTimeout(pushHistory, 0);
+            };
+
+            const removeSupplierTab = (index) => {
+                if (!confirm('Remove this supplier tab?')) return;
+                const wasActive = currentEditSuppliers[index].active;
+                currentEditSuppliers.splice(index, 1);
+
+                if (currentEditSuppliers.length === 0) {
+                    currentEditSuppliers.push({ price: 0, weight: 1, unit: 'kg', supplierName: '', notes: '', active: true });
+                } else if (wasActive) {
+                    currentEditSuppliers[0].active = true;
+                }
+
+                if (index === currentEditTabIndex) {
+                    switchSupplierTab(Math.max(0, index - 1));
+                } else if (index < currentEditTabIndex) {
+                    currentEditTabIndex--;
+                    renderSupplierTabs();
+                } else {
+                    renderSupplierTabs();
+                }
+                setTimeout(pushHistory, 0);
+            };
+
+            const updateActiveToggleUI = () => {
+                const btn = document.getElementById('edit-active-toggle');
+                const sup = currentEditSuppliers[currentEditTabIndex];
+                const text = btn.querySelector('.toggle-text'); // updated selector
+
+                if (sup && sup.active) {
+                    btn.classList.remove('inactive');
+                    btn.classList.add('active');
+                    btn.title = "This price is currently used for calculations";
+                    text.textContent = 'Active Price';
+                } else {
+                    btn.classList.remove('active');
+                    btn.classList.add('inactive');
+                    btn.title = "Click to use this price for calculations";
+                    text.textContent = 'Set active';
+                }
+            };
+
+            const toggleActivePrice = () => {
+                // Sync DOM first
+                if (currentEditSuppliers[currentEditTabIndex]) {
+                    const s = currentEditSuppliers[currentEditTabIndex];
+                    s.price = parseFloat(editPriceInput.value);
+                    s.weight = parseFloat(editWeightInput.value);
+                    s.unit = editUnitInput.value;
+                    s.supplierName = editSupplierInput.value.trim();
+                    s.notes = editNotesInput.value.trim();
+                }
+
+                const s = currentEditSuppliers[currentEditTabIndex];
+                // Strict validation: Price MUST be > 0.
+                if (!s.supplierName || isNaN(s.price) || isNaN(s.weight) || s.price <= 0 || s.weight <= 0) {
+                    alert('To set this price as Active, please fill in all details (Supplier Name, Price, Amount). Price must be greater than 0.');
+                    return;
+                }
+
+                currentEditSuppliers.forEach(s => s.active = false);
+                currentEditSuppliers[currentEditTabIndex].active = true;
+                updateActiveToggleUI();
+                pushHistory();
+            };
+
+            document.getElementById('edit-active-toggle').onclick = toggleActivePrice;
+            editSupplierInput.addEventListener('input', () => {
+                if (currentEditSuppliers[currentEditTabIndex]) {
+                    currentEditSuppliers[currentEditTabIndex].supplierName = editSupplierInput.value.trim();
+                    renderSupplierTabs();
+                }
+            });
+
             const openEditModal = (id) => {
                 const ingredientToEdit = ingredients.find(ing => ing.id === id);
                 if (!ingredientToEdit) return;
                 currentlyEditingId = id;
                 editNameInput.value = ingredientToEdit.name;
-                editPriceInput.value = ingredientToEdit.price.toFixed(2);
-                editWeightInput.value = ingredientToEdit.weight;
-                editUnitInput.value = ingredientToEdit.unit;
-                editSupplierInput.value = ingredientToEdit.supplier || '';
-                editNotesInput.value = ingredientToEdit.notes || '';
+
+                if (ingredientToEdit.suppliers && ingredientToEdit.suppliers.length > 0) {
+                    currentEditSuppliers = JSON.parse(JSON.stringify(ingredientToEdit.suppliers));
+                } else {
+                    currentEditSuppliers = [{
+                        price: ingredientToEdit.price,
+                        weight: ingredientToEdit.weight,
+                        unit: ingredientToEdit.unit,
+                        supplierName: ingredientToEdit.supplier || '',
+                        notes: ingredientToEdit.notes || '',
+                        active: true
+                    }];
+                }
+
+                const activeIndex = currentEditSuppliers.findIndex(s => s.active);
+                currentEditTabIndex = activeIndex >= 0 ? activeIndex : 0;
+
+                const sup = currentEditSuppliers[currentEditTabIndex];
+                editPriceInput.value = sup.price;
+                editWeightInput.value = sup.weight;
+                editUnitInput.value = sup.unit;
+                editSupplierInput.value = sup.supplierName;
+                editNotesInput.value = sup.notes;
+
                 conversionsListDiv.innerHTML = '';
                 if (ingredientToEdit.conversions && ingredientToEdit.conversions.length > 0) {
-                    ingredientToEdit.conversions.forEach(conv => appendConversionInput(conv.unitName, conv.grams));
+                    ingredientToEdit.conversions.forEach(conv => appendConversionInput(conv.unitName, conv.grams, conv.targetUnit || 'g'));
                 }
+
+                renderSupplierTabs();
+
+                editHistory = [];
+                historyStep = -1;
+                pushHistory();
+                updateHistoryButtons();
+
                 editModal.classList.remove('hidden');
             };
+
+            // --- UNDO/REDO LOGIC ---
+            let editHistory = [];
+            let historyStep = -1;
+            let isUndoingRedoing = false;
+
+            const captureEditState = () => {
+                // Sync DOM
+                if (currentEditSuppliers[currentEditTabIndex]) {
+                    const s = currentEditSuppliers[currentEditTabIndex];
+                    s.price = parseFloat(editPriceInput.value) || 0;
+                    s.weight = parseFloat(editWeightInput.value) || 0;
+                    s.unit = editUnitInput.value;
+                    s.supplierName = editSupplierInput.value.trim();
+                    s.notes = editNotesInput.value.trim();
+                }
+
+                const conversions = [];
+                conversionsListDiv.querySelectorAll('.conversion-row').forEach(row => {
+                    conversions.push({
+                        unitName: row.querySelector('.conversion-unit-name').value,
+                        grams: row.querySelector('.conversion-grams').value,
+                        targetUnit: row.querySelector('.conversion-target-unit').value
+                    });
+                });
+                return JSON.stringify({
+                    name: editNameInput.value,
+                    suppliers: currentEditSuppliers,
+                    tabIndex: currentEditTabIndex,
+                    conversions: conversions
+                });
+            };
+
+            const restoreEditState = (stateStr) => {
+                isUndoingRedoing = true;
+                const state = JSON.parse(stateStr);
+                editNameInput.value = state.name;
+                currentEditSuppliers = JSON.parse(JSON.stringify(state.suppliers));
+                currentEditTabIndex = state.tabIndex || 0;
+
+                const sup = currentEditSuppliers[currentEditTabIndex];
+                editPriceInput.value = sup.price;
+                editWeightInput.value = sup.weight;
+                editUnitInput.value = sup.unit;
+                editSupplierInput.value = sup.supplierName;
+                editNotesInput.value = sup.notes;
+
+                renderSupplierTabs();
+
+                conversionsListDiv.innerHTML = '';
+                state.conversions.forEach(c => appendConversionInput(c.unitName, c.grams, c.targetUnit));
+                isUndoingRedoing = false;
+            };
+
+            const pushHistory = () => {
+                if (isUndoingRedoing) return;
+                const state = captureEditState();
+
+                // Dedup: Don't push if same as current top
+                if (historyStep >= 0 && editHistory[historyStep] === state) return;
+
+                historyStep++;
+                editHistory = editHistory.slice(0, historyStep); // Truncate redo history
+                editHistory.push(state);
+                updateHistoryButtons();
+            };
+
+            const updateHistoryButtons = () => {
+                if (historyStep > 0) { // Has history to undo (0 is initial)
+                    editHistoryControls.classList.remove('hidden');
+                } else {
+                    editHistoryControls.classList.add('hidden');
+                }
+
+                editUndoBtn.disabled = historyStep <= 0;
+                editRedoBtn.disabled = historyStep >= editHistory.length - 1;
+            };
+
+            editUndoBtn.addEventListener('click', () => {
+                if (historyStep > 0) {
+                    historyStep--;
+                    restoreEditState(editHistory[historyStep]);
+                    updateHistoryButtons();
+                }
+            });
+
+            editRedoBtn.addEventListener('click', () => {
+                if (historyStep < editHistory.length - 1) {
+                    historyStep++;
+                    restoreEditState(editHistory[historyStep]);
+                    updateHistoryButtons();
+                }
+            });
+
+            // Watch for changes
+            editForm.addEventListener('input', () => {
+                pushHistory();
+            });
+            // Also capture changes when adding/removing rows (handled in listener)
+            conversionsListDiv.addEventListener('input', () => pushHistory()); // Delegate input for dynamic fields
+
+            // Override original append for history
+            const originalAppend = appendConversionInput; // Self-reference issue, better to wrap
+            addConversionBtn.addEventListener('click', () => {
+                // The original listener calls appendConversionInput, we need to capture state AFTER
+                setTimeout(pushHistory, 0);
+            });
+            // Override remove click
+            conversionsListDiv.addEventListener('click', (e) => {
+                // Wait for existing listener to maybe remove it? 
+                // The existing listener is: if (e.target.classList.contains('remove-btn')) e.target.closest('.conversion-row').remove();
+                // We add another one that runs after
+                if (e.target.closest('.remove-btn')) {
+                    setTimeout(pushHistory, 0);
+                }
+            });
             const closeEditModal = () => { currentlyEditingId = null; editModal.classList.add('hidden'); };
             const openAddIngredientModal = () => addIngredientModal.classList.remove('hidden');
             const closeAddIngredientModal = () => {
@@ -2234,9 +2828,9 @@
                 div.className = 'grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-gray-50 fade-in recipe-item-row';
                 div.dataset.type = 'library';
                 div.innerHTML = `
-            <div class="col-span-5"><select class="ingredient-select w-full" required></select></div>
-            <div class="col-span-3"><input type="number" step="0.01" placeholder="Amount" class="amount-input w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
-            <div class="col-span-3"><select class="unit-select w-full p-2.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring" required disabled><option value="">Unit</option></select></div>
+            <div class="col-span-7"><select class="ingredient-select w-full" required></select></div>
+            <div class="col-span-2"><input type="number" step="0.01" placeholder="100" class="amount-input w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
+            <div class="col-span-2"><select class="unit-select w-full p-2.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring" required disabled><option value="">Unit</option></select></div>
             <div class="col-span-1 text-right"><button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button></div>
         `;
                 recipeIngredientsList.appendChild(div);
@@ -2272,6 +2866,7 @@
 
             const formatAmount = (num) => {
                 if (num === 0) return 0;
+                if (isNaN(num) || num === null || num === undefined) return '?'; // Safeguard
                 return parseFloat(num.toFixed(2));
             };
 
@@ -2314,8 +2909,19 @@
                     } else if (item.unit !== baseUnit) {
                         const conversion = ingredient.conversions.find(c => c.unitName === item.unit);
                         if (conversion) {
-                            requiredAmountInBaseUnit = item.amount * conversion.grams;
-                            detail = `${formatAmount(item.amount)} ${item.unit} (${conversion.grams}g/ea)`;
+                            // Normalize conversion value to base unit
+                            let conversionValue = conversion.grams; // This is the 'value' user entered
+                            const targetUnit = conversion.targetUnit || 'g'; // Default to g for old data
+
+                            // Multiplier to convert TARGET unit to BASE unit (g or ml)
+                            let multiplier = 1;
+                            if (targetUnit === 'kg' || targetUnit === 'l') multiplier = 1000;
+                            else if (targetUnit === 'oz') multiplier = 28.35;
+                            else if (targetUnit === 'lb') multiplier = 453.6;
+                            // g and ml are treated as 1 (base)
+
+                            requiredAmountInBaseUnit = item.amount * conversionValue * multiplier;
+                            detail = `${formatAmount(item.amount)} ${item.unit} (${conversionValue}${targetUnit}/ea)`;
                         } else {
                             return { name: ingredient.name, cost: 0, detail: `Conversion for '${item.unit}' not defined` };
                         }
@@ -2342,33 +2948,71 @@
                 return { totalCost, finalPrice, pricePerServing, costPerServing, breakdown, profitDetail };
             };
 
-            const displayScaledRecipe = (cardElement, recipeId, newPrimaryDimension) => {
+            const displayScaledRecipe = (cardElement, recipeId, mode = 'pan') => {
                 const originalRecipe = recipes.find(r => r.id === recipeId);
-                if (!originalRecipe || isNaN(newPrimaryDimension) || newPrimaryDimension <= 0) return;
+                if (!originalRecipe) return;
 
                 let scalingFactor = 1;
                 const scaledRecipe = JSON.parse(JSON.stringify(originalRecipe));
 
-                if (originalRecipe.servings.type === 'size') {
-                    const originalVolume = calculateVolume(originalRecipe.servings);
-                    const targetServings = { ...originalRecipe.servings };
+                if (mode === 'pan') { // Scale by Dimension
+                    if (originalRecipe.servings.type === 'size') {
+                        const originalVolume = calculateVolume(originalRecipe.servings);
+                        const targetServings = { ...originalRecipe.servings };
 
-                    if (targetServings.shape === 'round') {
-                        targetServings.diameter = newPrimaryDimension;
+                        // Gather inputs based on shape
+                        const shape = targetServings.shape;
+                        let newPrimaryDimension = 0; // Just for validation check
+
+                        if (shape === 'round') {
+                            const diameterInput = cardElement.querySelector(`.scale-input-diameter[data-id="${recipeId}"]`);
+                            const heightInput = cardElement.querySelector(`.scale-input-height[data-id="${recipeId}"]`);
+                            // Use fallback to original if empty, but try to parse if present
+                            targetServings.diameter = diameterInput && diameterInput.value ? parseFloat(diameterInput.value) : targetServings.diameter;
+                            targetServings.height = heightInput && heightInput.value ? parseFloat(heightInput.value) : targetServings.height;
+                            newPrimaryDimension = targetServings.diameter; // simplified validation check
+                        } else { // rectangular
+                            const lengthInput = cardElement.querySelector(`.scale-input-length[data-id="${recipeId}"]`);
+                            const widthInput = cardElement.querySelector(`.scale-input-width[data-id="${recipeId}"]`);
+                            const heightInput = cardElement.querySelector(`.scale-input-height[data-id="${recipeId}"]`);
+
+                            targetServings.length = lengthInput && lengthInput.value ? parseFloat(lengthInput.value) : targetServings.length;
+                            targetServings.width = widthInput && widthInput.value ? parseFloat(widthInput.value) : targetServings.width;
+                            targetServings.height = heightInput && heightInput.value ? parseFloat(heightInput.value) : targetServings.height;
+                            newPrimaryDimension = targetServings.length; // simplified validation check
+                        }
+
+                        if (isNaN(newPrimaryDimension) || newPrimaryDimension <= 0) return; // Basic validation
+
+                        const targetVolume = calculateVolume(targetServings);
+                        if (originalVolume > 0) scalingFactor = targetVolume / originalVolume;
+
+                        scaledRecipe.servings = targetServings;
+
                     } else {
-                        const ratio = targetServings.width / targetServings.length;
-                        targetServings.length = newPrimaryDimension;
-                        targetServings.width = newPrimaryDimension * ratio;
+                        // Fallback for quantity-type recipes forced into PAN mode (unlikely but safe to handle)
+                        const input = cardElement.querySelector(`.scale-input-qty[data-id="${recipeId}"]`);
+                        const val = input ? parseFloat(input.value) : 0;
+                        if (isNaN(val) || val <= 0) return;
+
+                        const originalServings = originalRecipe.servings.value;
+                        scalingFactor = val / originalServings;
+                        scaledRecipe.servings.value = val;
                     }
-                    const targetVolume = calculateVolume(targetServings);
-                    if (originalVolume > 0) scalingFactor = targetVolume / originalVolume;
+                } else if (mode === 'pcs') { // Scale by Quantity
+                    const input = cardElement.querySelector(`.scale-input-qty[data-id="${recipeId}"]`);
+                    const val = input ? parseFloat(input.value) : 0;
+                    if (isNaN(val) || val <= 0) return;
 
-                    scaledRecipe.servings = targetServings;
-
-                } else {
-                    const originalServings = originalRecipe.servings.value;
-                    scalingFactor = newPrimaryDimension / originalServings;
-                    scaledRecipe.servings.value = newPrimaryDimension;
+                    if (originalRecipe.servings.type === 'size') {
+                        const originalQuantity = originalRecipe.servings.quantity || 1;
+                        scalingFactor = val / originalQuantity;
+                        scaledRecipe.servings.quantity = val;
+                    } else {
+                        const originalValue = originalRecipe.servings.value;
+                        scalingFactor = val / originalValue;
+                        scaledRecipe.servings.value = val;
+                    }
                 }
 
                 scaledRecipe.items = originalRecipe.items.map(item => {
@@ -2463,13 +3107,15 @@
                         recipeCard.className = 'bg-white rounded-xl shadow-sm border border-gray-200 p-6';
                         const breakdownHTML = calc.breakdown.map(item => ` <tr class="border-b last:border-b-0 border-gray-100"> <td class="py-2 pr-4 text-gray-700">${item.name} ${item.detail ? `<span class="text-xs text-gray-500">(${item.detail})</span>` : ''}</td> <td class="py-2 pl-4 text-right font-mono">${item.cost > 0 ? `RM ${item.cost.toFixed(2)}` : '-'}</td> </tr> `).join('');
 
+                        const isPanMode = recipe.servings.type === 'size'; // Default to PAN if it's a size-based recipe
                         let yieldText = '';
                         let finalPriceServingsText = '';
                         if (recipe.servings.type === 'size') {
-                            const { quantity, shape, length, width, diameter, unit } = recipe.servings;
-                            const dimensionText = shape === 'round' ? `${diameter}" Round` : `${length}" x ${width}"`;
-                            yieldText = `${quantity} x ${dimensionText} ${unit}`;
-                            finalPriceServingsText = `${quantity} ${unit}`;
+                            const { quantity, shape, length, width, height, diameter, roundHeight, unit, panUnit } = recipe.servings;
+                            const displayUnit = panUnit || unit;
+                            const dimensionText = shape === 'round' ? `${diameter}" x ${roundHeight}" (Round)` : `${length}" x ${width}" x ${height}"`;
+                            yieldText = `${quantity} x ${dimensionText} ${displayUnit}`;
+                            finalPriceServingsText = `${quantity} ${displayUnit}`;
                         } else {
                             yieldText = `${recipe.servings.value} ${recipe.servings.unit}`;
                             finalPriceServingsText = `${recipe.servings.value} ${recipe.servings.unit}`;
@@ -2486,9 +3132,11 @@
                         <p class="text-sm text-gray-500">Yields: ${yieldText}</p>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button class="edit-recipe-btn font-medium text-brand-indigo-700 hover:underline" data-id="${recipe.id}">Edit</button>
-                        <span class="text-gray-300">|</span>
-                        <button class="delete-recipe-btn font-medium text-red-600 hover:underline" data-id="${recipe.id}">Delete</button>
+                        <button class="edit-recipe-btn flex items-center justify-center w-8 h-8 bg-brand-pink-600 text-white rounded-lg hover:bg-brand-pink-700 transition-colors shadow-sm" data-id="${recipe.id}" title="Edit Recipe">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -2509,11 +3157,36 @@
                             </tbody>
                         </table>
                         <div class="mt-4 pt-4 border-t border-gray-200">
-                            <label class="block text-sm font-medium text-gray-600 mb-1">Scale Recipe to:</label>
-                            <div class="flex gap-2">
-                                <input type="number" min="1" placeholder="${recipe.servings.type === 'size' ? 'New Diameter/Length' : 'New Yield'}" class="scale-input w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}">
-                                <button class="scale-btn py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg text-sm hover:bg-gray-700" data-id="${recipe.id}">Scale</button>
-                                <button class="reset-btn hidden py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg text-sm hover:bg-gray-300" data-id="${recipe.id}">Reset</button>
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="text-sm font-medium text-gray-600">Scale Recipe to:</label>
+                                <div class="flex bg-gray-100 p-0.5 rounded-lg">
+                                    <button class="scale-mode-btn flex items-center justify-center px-4 py-1 text-xs font-semibold rounded-md transition-all ${isPanMode ? 'bg-brand-pink-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}" data-mode="pan" data-id="${recipe.id}">
+                                        PAN
+                                    </button>
+                                    <button class="scale-mode-btn flex items-center justify-center px-4 py-1 text-xs font-semibold rounded-md transition-all ${!isPanMode ? 'bg-brand-pink-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}" data-mode="pcs" data-id="${recipe.id}">
+                                        PCS
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="scale-inputs-container gap-2 flex-wrap ${isPanMode ? '' : 'hidden'}" data-container-mode="pan" data-id="${recipe.id}">
+                                ${recipe.servings.type === 'size' && recipe.servings.shape === 'rectangular' ?
+                                `<div class="flex gap-2 w-full"><input type="number" step="any" placeholder="L (${recipe.servings.unit})" class="scale-input-length w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}"><input type="number" step="any" placeholder="W (${recipe.servings.unit})" class="scale-input-width w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}"><input type="number" step="any" placeholder="H (${recipe.servings.unit})" class="scale-input-height w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}"></div>` : ''}
+
+                                ${recipe.servings.type === 'size' && recipe.servings.shape === 'round' ?
+                                `<div class="flex gap-2 w-full"><input type="number" step="any" placeholder="Dia (${recipe.servings.unit})" class="scale-input-diameter w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}"><input type="number" step="any" placeholder="H (${recipe.servings.unit})" class="scale-input-height w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}"></div>` : ''}
+                                
+                                ${recipe.servings.type !== 'size' ?
+                                `<input type="number" min="0.1" step="any" placeholder="New Yield Amount" class="scale-input-qty w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}">` : ''}
+                            </div>
+
+                            <div class="scale-inputs-container ${!isPanMode ? '' : 'hidden'}" data-container-mode="pcs" data-id="${recipe.id}">
+                                <input type="number" min="1" step="any" placeholder="New Quantity (pcs)" class="scale-input-qty w-full p-2 border border-gray-300 rounded-lg text-sm focus-ring" data-id="${recipe.id}">
+                            </div>
+
+                            <div class="flex gap-2 mt-2">
+                                <button class="scale-btn w-full py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg text-sm hover:bg-gray-700" data-id="${recipe.id}">Scale</button>
+                                <button class="reset-btn hidden w-full py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg text-sm hover:bg-gray-300" data-id="${recipe.id}">Reset</button>
                             </div>
                         </div>
                     </div>
@@ -2535,10 +3208,16 @@
                 div.className = 'grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-gray-50 fade-in recipe-item-row';
                 div.dataset.type = 'library';
                 div.innerHTML = `
-            <div class="col-span-5"><select class="ingredient-select w-full" required></select></div>
-            <div class="col-span-3"><input type="number" step="0.01" value="${item.amount || ''}" class="amount-input w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
-            <div class="col-span-3"><select class="unit-select w-full p-2.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring" required>${createUnitOptions(item.ingredientId)}</select></div>
-            <div class="col-span-1 text-right"><button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button></div>
+            <div class="col-span-7"><select class="ingredient-select w-full" required></select></div>
+            <div class="col-span-2"><input type="number" step="0.01" value="${item.amount || ''}" placeholder="100" class="amount-input w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
+            <div class="col-span-2"><select class="unit-select w-full p-2.5 border border-gray-300 rounded-lg text-sm bg-white focus-ring" required>${createUnitOptions(item.ingredientId)}</select></div>
+            <div class="col-span-1 text-right">
+                <button type="button" class="remove-btn text-gray-400 hover:text-red-500 transition-colors p-1" title="Remove Ingredient">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
         `;
                 editRecipeIngredientsList.appendChild(div);
 
@@ -2572,11 +3251,204 @@
                 div.className = 'grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-gray-50 fade-in recipe-item-row';
                 div.dataset.type = 'open';
                 div.innerHTML = `
-            <div class="col-span-11"><input type="text" value="${item.name || ''}" class="open-item-name w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
-            <div class="col-span-1 text-right"><button type="button" class="remove-btn text-red-500 hover:text-red-700 font-bold p-1 rounded-full hover:bg-red-50">&times;</button></div>
+            <div class="col-span-7"><input type="text" value="${item.name || ''}" placeholder="e.g., Water" class="open-item-name w-full p-2.5 border border-gray-300 rounded-lg text-sm focus-ring" required></div>
+            <div class="col-span-5 text-right">
+                <button type="button" class="remove-btn text-gray-400 hover:text-red-500 transition-colors p-1" title="Remove Item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
         `;
                 editRecipeIngredientsList.appendChild(div);
             };
+
+            // --- ADD RECIPE UNDO/REDO IMPLEMENTATION ---
+            let addRecipeHistory = [];
+            let addRecipeHistoryStep = -1;
+            let isAddRecipeUndoingRedoing = false;
+
+            const captureAddRecipeState = () => {
+                const items = [];
+                recipeIngredientsList.querySelectorAll('.recipe-item-row').forEach(row => {
+                    if (row.dataset.type === 'library') {
+                        const ingSelect = row.querySelector('.ingredient-select');
+                        const amtInput = row.querySelector('.amount-input');
+                        const unitSelect = row.querySelector('.unit-select');
+                        // Get value from TomSelect instance if possible
+                        let ingId = ingSelect.value;
+                        if (recipeTomSelectInstances[row.id] && recipeTomSelectInstances[row.id].getValue()) {
+                            ingId = recipeTomSelectInstances[row.id].getValue();
+                        }
+
+                        items.push({
+                            type: 'library',
+                            ingredientId: ingId ? parseInt(ingId, 10) : null,
+                            amount: amtInput.value,
+                            unit: unitSelect.value
+                        });
+                    } else {
+                        const nameInput = row.querySelector('.open-item-name');
+                        items.push({
+                            type: 'open',
+                            name: nameInput.value
+                        });
+                    }
+                });
+
+                const servings = {
+                    type: document.getElementById('recipe-yield-type').value,
+                    value: document.getElementById('recipe-servings-value').value,
+                    unit: document.getElementById('recipe-servings-unit').value,
+                    quantity: document.getElementById('recipe-pan-quantity').value,
+                    shape: document.getElementById('recipe-pan-shape').value,
+                    length: document.getElementById('recipe-pan-length').value,
+                    width: document.getElementById('recipe-pan-width').value,
+                    height: document.getElementById('recipe-pan-height').value,
+                    diameter: document.getElementById('recipe-pan-diameter').value,
+                    roundHeight: document.getElementById('recipe-pan-height-round').value,
+                    panUnit: document.getElementById('recipe-pan-unit').value
+                };
+
+                const profit = {
+                    type: document.getElementById('profit-type').value,
+                    value: document.getElementById('profit-value').value
+                };
+
+                return JSON.stringify({
+                    title: document.getElementById('recipe-title').value,
+                    categoryId: document.getElementById('recipe-category').value,
+                    servings,
+                    profit,
+                    items
+                });
+            };
+
+            const restoreAddRecipeState = (stateStr) => {
+                isAddRecipeUndoingRedoing = true;
+                const state = JSON.parse(stateStr);
+
+                // Basic Info
+                document.getElementById('recipe-title').value = state.title;
+                document.getElementById('recipe-category').value = state.categoryId;
+
+                // Yields
+                document.getElementById('recipe-yield-type').value = state.servings.type;
+                document.getElementById('recipe-servings-value').value = state.servings.value;
+                document.getElementById('recipe-servings-unit').value = state.servings.unit;
+                document.getElementById('recipe-pan-quantity').value = state.servings.quantity;
+                document.getElementById('recipe-pan-shape').value = state.servings.shape;
+                document.getElementById('recipe-pan-length').value = state.servings.length;
+                document.getElementById('recipe-pan-width').value = state.servings.width;
+                document.getElementById('recipe-pan-height').value = state.servings.height;
+                document.getElementById('recipe-pan-diameter').value = state.servings.diameter;
+                document.getElementById('recipe-pan-height-round').value = state.servings.roundHeight;
+                document.getElementById('recipe-pan-unit').value = state.servings.panUnit;
+
+                // Trigger change to update UI
+                setupYieldUI('add');
+
+                // Profit
+                document.getElementById('profit-type').value = state.profit.type;
+                document.getElementById('profit-value').value = state.profit.value;
+
+                // Ingredients
+                recipeIngredientsList.innerHTML = '';
+                // Clear TomSelect instances for deleted rows (handled roughly by overwriting list)
+                // Note: older instances remain in 'recipeTomSelectInstances' object but keys won't collide due to Date.now() 
+
+                state.items.forEach(item => {
+                    if (item.type === 'library') {
+                        addLibraryIngredientRow();
+                        const row = recipeIngredientsList.lastElementChild;
+                        const rowId = row.id;
+
+                        setTimeout(() => { // Small delay to ensure TomSelect init
+                            const tom = recipeTomSelectInstances[rowId];
+                            if (tom && item.ingredientId) {
+                                tom.setValue(item.ingredientId);
+                                // Set other fields after TomSelect populates units
+                                setTimeout(() => {
+                                    row.querySelector('.amount-input').value = item.amount;
+                                    row.querySelector('.unit-select').value = item.unit;
+                                    row.querySelector('.unit-select').disabled = false;
+                                }, 10);
+                            }
+                        }, 0);
+                    } else {
+                        addOpenItemRow();
+                        const row = recipeIngredientsList.lastElementChild;
+                        row.querySelector('.open-item-name').value = item.name;
+                    }
+                });
+
+                isAddRecipeUndoingRedoing = false;
+            };
+
+            const pushAddRecipeHistory = () => {
+                if (isAddRecipeUndoingRedoing) return;
+                const state = captureAddRecipeState();
+                if (addRecipeHistoryStep >= 0 && addRecipeHistory[addRecipeHistoryStep] === state) return;
+
+                addRecipeHistoryStep++;
+                addRecipeHistory = addRecipeHistory.slice(0, addRecipeHistoryStep);
+                addRecipeHistory.push(state);
+                updateAddRecipeHistoryButtons();
+            };
+
+            const updateAddRecipeHistoryButtons = () => {
+                const controls = document.getElementById('add-recipe-history-controls');
+                if (addRecipeHistoryStep > 0) {
+                    controls.classList.remove('hidden');
+                } else {
+                    controls.classList.add('hidden');
+                }
+                document.getElementById('add-recipe-undo-btn').disabled = addRecipeHistoryStep <= 0;
+                document.getElementById('add-recipe-redo-btn').disabled = addRecipeHistoryStep >= addRecipeHistory.length - 1;
+            };
+
+            // Event Listeners
+            document.getElementById('add-recipe-undo-btn').addEventListener('click', () => {
+                if (addRecipeHistoryStep > 0) {
+                    addRecipeHistoryStep--;
+                    restoreAddRecipeState(addRecipeHistory[addRecipeHistoryStep]);
+                    updateAddRecipeHistoryButtons();
+                }
+            });
+
+            document.getElementById('add-recipe-redo-btn').addEventListener('click', () => {
+                if (addRecipeHistoryStep < addRecipeHistory.length - 1) {
+                    addRecipeHistoryStep++;
+                    restoreAddRecipeState(addRecipeHistory[addRecipeHistoryStep]);
+                    updateAddRecipeHistoryButtons();
+                }
+            });
+
+            document.getElementById('recipe-form').addEventListener('input', () => {
+                pushAddRecipeHistory();
+            });
+            // Capture changes in recipe ingredients list (delegated)
+            recipeIngredientsList.addEventListener('input', () => pushAddRecipeHistory());
+            recipeIngredientsList.addEventListener('click', (e) => {
+                if (e.target.closest('.remove-btn')) {
+                    setTimeout(pushAddRecipeHistory, 50); // Delay to let row removal happen
+                }
+            });
+            document.getElementById('add-library-ingredient-btn').addEventListener('click', () => setTimeout(pushAddRecipeHistory, 50));
+            document.getElementById('add-open-item-btn').addEventListener('click', () => setTimeout(pushAddRecipeHistory, 50));
+
+            // Hook into Open Modal to reset history
+            // Finding the Add Recipe button via text content since ID is missing
+            document.addEventListener('DOMContentLoaded', () => {
+                const addRecipeBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim().includes('Add Recipe') && !b.id);
+                if (addRecipeBtn) {
+                    addRecipeBtn.addEventListener('click', () => {
+                        addRecipeHistory = [];
+                        addRecipeHistoryStep = -1;
+                        setTimeout(pushAddRecipeHistory, 100); // Capture initial state once modal is ready
+                    });
+                }
+            });
 
             const openEditRecipeModal = (recipeId) => {
                 const recipeToEdit = recipes.find(r => r.id === recipeId);
@@ -2625,7 +3497,148 @@
                 });
 
                 editRecipeModal.classList.remove('hidden');
+
+                // Initialize History
+                recipeEditHistory = [];
+                recipeHistoryStep = -1;
+                pushRecipeHistory();
+                updateRecipeHistoryButtons();
             };
+
+            // --- RECIPE UNDO/REDO IMPLEMENTATION ---
+            const captureRecipeState = () => {
+                const items = [];
+                editRecipeIngredientsList.querySelectorAll('.recipe-item-row').forEach(row => {
+                    if (row.dataset.type === 'library') {
+                        // For library items, we need ingredientId, amount, unit
+                        // If TomSelect is destroyed or not ready, fallback might be needed but usually value is there
+                        const ingSelect = row.querySelector('.ingredient-select');
+                        const amtInput = row.querySelector('.amount-input');
+                        const unitSelect = row.querySelector('.unit-select');
+                        items.push({
+                            type: 'library',
+                            ingredientId: ingSelect.value ? parseInt(ingSelect.value, 10) : null,
+                            amount: amtInput.value,
+                            unit: unitSelect.value
+                        });
+                    } else {
+                        const nameInput = row.querySelector('.open-item-name');
+                        items.push({
+                            type: 'open',
+                            name: nameInput.value
+                        });
+                    }
+                });
+
+                const servings = {
+                    type: document.getElementById('edit-recipe-yield-type').value,
+                    value: document.getElementById('edit-recipe-servings-value').value,
+                    unit: document.getElementById('edit-recipe-servings-unit').value,
+                    quantity: document.getElementById('edit-recipe-pan-quantity').value,
+                    shape: document.getElementById('edit-recipe-pan-shape').value,
+                    length: document.getElementById('edit-recipe-pan-length').value,
+                    width: document.getElementById('edit-recipe-pan-width').value,
+                    height: document.getElementById('edit-recipe-pan-height').value, // Rect uses this
+                    diameter: document.getElementById('edit-recipe-pan-diameter').value,
+                    heightRound: document.getElementById('edit-recipe-pan-height-round').value, // Round uses this
+                    panUnit: document.getElementById('edit-recipe-pan-unit').value
+                };
+
+                return JSON.stringify({
+                    title: document.getElementById('edit-recipe-title').value,
+                    categoryId: document.getElementById('edit-recipe-category').value,
+                    servings: servings,
+                    profitType: document.getElementById('edit-profit-type').value,
+                    profitValue: document.getElementById('edit-profit-value').value,
+                    items: items
+                });
+            };
+
+            const restoreRecipeState = (stateStr) => {
+                isRecipeUndoingRedoing = true;
+                const state = JSON.parse(stateStr);
+
+                // Restore Basic Info
+                document.getElementById('edit-recipe-title').value = state.title;
+                document.getElementById('edit-recipe-category').value = state.categoryId;
+
+                // Restore Yields - Set values then trigger UI update
+                document.getElementById('edit-recipe-yield-type').value = state.servings.type;
+                document.getElementById('edit-recipe-servings-value').value = state.servings.value;
+                document.getElementById('edit-recipe-servings-unit').value = state.servings.unit;
+
+                document.getElementById('edit-recipe-pan-quantity').value = state.servings.quantity;
+                document.getElementById('edit-recipe-pan-shape').value = state.servings.shape;
+                document.getElementById('edit-recipe-pan-length').value = state.servings.length;
+                document.getElementById('edit-recipe-pan-width').value = state.servings.width;
+                document.getElementById('edit-recipe-pan-height').value = state.servings.height;
+                document.getElementById('edit-recipe-pan-diameter').value = state.servings.diameter;
+                document.getElementById('edit-recipe-pan-height-round').value = state.servings.heightRound;
+                document.getElementById('edit-recipe-pan-unit').value = state.servings.panUnit;
+
+                setupYieldUI('edit'); // Refresh visibility
+
+                // Restore Profit
+                document.getElementById('edit-profit-type').value = state.profitType;
+                document.getElementById('edit-profit-value').value = state.profitValue;
+
+                // Restore Items
+                // Destroy existing instances first to avoid leaks
+                Object.values(editRecipeTomSelectInstances).forEach(i => i.destroy());
+                editRecipeTomSelectInstances = {};
+                editRecipeIngredientsList.innerHTML = '';
+
+                state.items.forEach(item => {
+                    if (item.type === 'library') {
+                        // We need to pass the IDs back. amount/unit are strings in state, convert if needed? 
+                        // addEditLibraryIngredientRow expects {ingredientId, amount, unit}
+                        addEditLibraryIngredientRow({
+                            ingredientId: item.ingredientId,
+                            amount: item.amount,
+                            unit: item.unit
+                        });
+                    } else {
+                        addEditOpenItemRow({ name: item.name });
+                    }
+                });
+
+                isRecipeUndoingRedoing = false;
+            };
+
+            const pushRecipeHistory = () => {
+                if (isRecipeUndoingRedoing) return;
+                const state = captureRecipeState();
+                if (recipeHistoryStep >= 0 && recipeEditHistory[recipeHistoryStep] === state) return;
+
+                recipeHistoryStep++;
+                recipeEditHistory = recipeEditHistory.slice(0, recipeHistoryStep);
+                recipeEditHistory.push(state);
+                updateRecipeHistoryButtons();
+            };
+
+            const updateRecipeHistoryButtons = () => {
+                const undoBtn = document.getElementById('edit-recipe-undo-btn');
+                const redoBtn = document.getElementById('edit-recipe-redo-btn');
+                const controls = document.getElementById('edit-recipe-history-controls');
+
+                if (recipeHistoryStep > 0) {
+                    controls.classList.remove('hidden');
+                } else {
+                    controls.classList.add('hidden');
+                }
+
+                undoBtn.disabled = recipeHistoryStep <= 0;
+                redoBtn.disabled = recipeHistoryStep >= recipeEditHistory.length - 1;
+            };
+
+            // Event Listeners for Recipe History
+            // We need to attach these once. Where is the best place? 
+            // Since we are replacing content, let's put them here if they don't exist, 
+            // or better yet, assume we add them in the init section with others. 
+            // For now, I'll attach them inside this block but checking if they are attached is hard.
+            // BETTER STRATEGY: Add them to the global listener section below.
+
+            // --- END RECIPE UNDO/REDO IMPLEMENTATION ---
 
             const closeEditRecipeModal = () => {
                 Object.values(editRecipeTomSelectInstances).forEach(instance => instance.destroy());
@@ -3004,8 +4017,61 @@
             openAddIngredientModalBtn.addEventListener('click', openAddIngredientModal);
             addIngredientModalCancelBtn.addEventListener('click', closeAddIngredientModal);
             addIngredientForm.addEventListener('submit', addIngredient);
-            ingredientListDiv.addEventListener('click', (e) => { if (e.target.classList.contains('edit-btn')) { openEditModal(parseInt(e.target.dataset.id, 10)); } if (e.target.classList.contains('delete-btn')) { if (confirm('Are you sure?')) { ingredients = ingredients.filter(ing => ing.id !== parseInt(e.target.dataset.id, 10)); saveIngredients(); renderIngredients(); } } });
-            editForm.addEventListener('submit', (e) => { e.preventDefault(); const name = editNameInput.value.trim(), price = parseFloat(editPriceInput.value), weight = parseFloat(editWeightInput.value), unit = editUnitInput.value, supplier = editSupplierInput.value.trim(), notes = editNotesInput.value.trim(); if (!name || isNaN(price) || isNaN(weight) || price <= 0 || weight <= 0) { alert('Invalid values.'); return; } const newConversions = []; conversionsListDiv.querySelectorAll('.conversion-row').forEach(row => { const unitName = row.querySelector('.conversion-unit-name').value.trim(); const grams = parseFloat(row.querySelector('.conversion-grams').value); if (unitName && !isNaN(grams) && grams > 0) newConversions.push({ unitName, grams }); }); const ingToUpdate = ingredients.find(ing => ing.id === currentlyEditingId); if (ingToUpdate) { Object.assign(ingToUpdate, { name, price, weight, unit, supplier, notes, conversions: newConversions }); } saveIngredients(); renderIngredients(); closeEditModal(); });
+            ingredientListDiv.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-btn');
+                if (editBtn) {
+                    openEditModal(parseInt(editBtn.dataset.id, 10));
+                }
+            });
+            editForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = editNameInput.value.trim();
+
+                if (currentEditSuppliers[currentEditTabIndex]) {
+                    const s = currentEditSuppliers[currentEditTabIndex];
+                    s.price = parseFloat(editPriceInput.value) || 0;
+                    s.weight = parseFloat(editWeightInput.value) || 0;
+                    s.unit = editUnitInput.value;
+                    s.supplierName = editSupplierInput.value.trim();
+                    s.notes = editNotesInput.value.trim();
+                }
+
+                let activeSup = currentEditSuppliers.find(s => s.active);
+                if (!activeSup) {
+                    activeSup = currentEditSuppliers[0];
+                    activeSup.active = true;
+                }
+
+                if (!name || isNaN(activeSup.price) || isNaN(activeSup.weight) || activeSup.price < 0 || activeSup.weight <= 0) {
+                    alert('Invalid values. Ensure the active price profile has valid Price and Amount.');
+                    return;
+                }
+
+                const newConversions = [];
+                conversionsListDiv.querySelectorAll('.conversion-row').forEach(row => {
+                    const unitName = row.querySelector('.conversion-unit-name').value.trim();
+                    const grams = parseFloat(row.querySelector('.conversion-grams').value);
+                    const targetUnit = row.querySelector('.conversion-target-unit').value;
+                    if (unitName && !isNaN(grams) && grams > 0) newConversions.push({ unitName, grams, targetUnit });
+                });
+
+                const ingToUpdate = ingredients.find(ing => ing.id === currentlyEditingId);
+                if (ingToUpdate) {
+                    Object.assign(ingToUpdate, {
+                        name,
+                        price: activeSup.price,
+                        weight: activeSup.weight,
+                        unit: activeSup.unit,
+                        supplier: activeSup.supplierName,
+                        notes: activeSup.notes,
+                        suppliers: JSON.parse(JSON.stringify(currentEditSuppliers)),
+                        conversions: newConversions
+                    });
+                }
+                saveIngredients();
+                renderIngredients();
+                closeEditModal();
+            });
             modalCancelBtn.addEventListener('click', closeEditModal);
             modalDeleteBtn.addEventListener('click', () => { if (confirm('Are you sure?')) { ingredients = ingredients.filter(ing => ing.id !== currentlyEditingId); saveIngredients(); renderIngredients(); closeEditModal(); } });
             addConversionBtn.addEventListener('click', () => appendConversionInput());
@@ -3109,7 +4175,45 @@
 
             editRecipeModalCancelBtn.addEventListener('click', closeEditRecipeModal);
             editAddLibraryIngredientBtn.addEventListener('click', () => addEditLibraryIngredientRow({}));
-            editAddOpenItemBtn.addEventListener('click', () => addEditOpenItemRow({ name: '' }));
+            editAddOpenItemBtn.addEventListener('click', () => {
+                addEditOpenItemRow({ name: '' });
+                setTimeout(pushRecipeHistory, 0);
+            });
+
+            // Recipe Undo/Redo/Delete Button Listeners
+            document.getElementById('edit-recipe-undo-btn').addEventListener('click', () => {
+                if (recipeHistoryStep > 0) {
+                    recipeHistoryStep--;
+                    restoreRecipeState(recipeEditHistory[recipeHistoryStep]);
+                    updateRecipeHistoryButtons();
+                }
+            });
+            document.getElementById('edit-recipe-redo-btn').addEventListener('click', () => {
+                if (recipeHistoryStep < recipeEditHistory.length - 1) {
+                    recipeHistoryStep++;
+                    restoreRecipeState(recipeEditHistory[recipeHistoryStep]);
+                    updateRecipeHistoryButtons();
+                }
+            });
+            document.getElementById('edit-recipe-modal-delete-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this recipe?')) {
+                    recipes = recipes.filter(r => r.id !== currentlyEditingRecipeId);
+                    saveRecipes();
+                    renderRecipes();
+                    closeEditRecipeModal();
+                }
+            });
+
+            // Capture changes on form input
+            editRecipeForm.addEventListener('input', () => pushRecipeHistory());
+            editRecipeForm.addEventListener('change', () => pushRecipeHistory()); // For selects
+
+            // Delegate click for removing items to capture history
+            editRecipeIngredientsList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-btn') || e.target.closest('.remove-btn')) {
+                    setTimeout(pushRecipeHistory, 0); // Wait for the remove to happen (handled by other listener)
+                }
+            });
 
             editRecipeIngredientsList.addEventListener('click', (e) => {
                 if (e.target.classList.contains('remove-btn')) {
@@ -3127,25 +4231,93 @@
 
             recipeListDisplay.addEventListener('click', (e) => {
                 const target = e.target;
-                const recipeId = parseInt(target.dataset.id, 10);
                 const cardElement = target.closest('.bg-white.rounded-xl.shadow-sm');
 
-                if (target.classList.contains('edit-recipe-btn')) {
+                const editBtn = target.closest('.edit-recipe-btn');
+                if (editBtn) {
+                    const recipeId = parseInt(editBtn.dataset.id, 10);
                     openEditRecipeModal(recipeId);
+                    return;
                 }
 
-                if (target.classList.contains('delete-recipe-btn')) {
+                const deleteBtn = target.closest('.delete-recipe-btn');
+                if (deleteBtn) {
+                    const recipeId = parseInt(deleteBtn.dataset.id, 10);
                     if (confirm('Are you sure you want to delete this recipe?')) {
                         recipes = recipes.filter(r => r.id !== recipeId);
                         saveRecipes();
                         renderRecipes();
                     }
+                    return;
                 }
 
-                if (target.classList.contains('scale-btn')) {
-                    const newServingsInput = cardElement.querySelector(`.scale-input[data-id="${recipeId}"]`);
-                    const newServingsValue = parseFloat(newServingsInput.value);
-                    displayScaledRecipe(cardElement, recipeId, newServingsValue);
+                const scaleBtn = target.closest('.scale-btn');
+                if (scaleBtn) {
+                    const id = scaleBtn.dataset.id;
+                    const container = scaleBtn.closest('.rounded-lg'); // Find the container for this recipe's scaling UI
+                    // Find active mode
+                    const activeBtn = container.querySelector('.scale-mode-btn.bg-brand-pink-600');
+                    const mode = activeBtn ? activeBtn.dataset.mode : 'pan';
+
+                    displayScaledRecipe(cardElement, parseInt(id), mode);
+                    return;
+                }
+
+                const scaleModeBtn = target.closest('.scale-mode-btn');
+                if (scaleModeBtn) {
+                    const mode = scaleModeBtn.dataset.mode;
+                    const id = scaleModeBtn.dataset.id;
+                    const container = scaleModeBtn.closest('.rounded-lg');
+
+                    // Update Buttons UI
+                    container.querySelectorAll('.scale-mode-btn').forEach(btn => {
+                        if (btn.dataset.mode === mode) {
+                            btn.classList.remove('text-gray-500', 'hover:text-gray-700');
+                            btn.classList.add('bg-brand-pink-600', 'text-white', 'shadow-sm');
+                        } else {
+                            btn.classList.remove('bg-brand-pink-600', 'text-white', 'shadow-sm');
+                            btn.classList.add('text-gray-500', 'hover:text-gray-700');
+                        }
+                    });
+
+                    // Toggle Input Containers
+                    container.querySelectorAll('.scale-inputs-container').forEach(div => {
+                        if (div.dataset.containerMode === mode) {
+                            div.classList.remove('hidden');
+                        } else {
+                            div.classList.add('hidden');
+                        }
+                    });
+
+                    // Reset inputs? Maybe optional.
+                    return;
+                }
+
+                // Handle Mode Checking
+                if (target.classList.contains('scale-mode-btn')) {
+                    const mode = target.dataset.mode;
+                    const id = target.dataset.id;
+                    const container = target.closest('.rounded-lg');
+
+                    // Update Buttons UI
+                    container.querySelectorAll('.scale-mode-btn').forEach(btn => {
+                        if (btn.dataset.mode === mode) {
+                            btn.classList.remove('text-gray-500', 'hover:text-gray-700');
+                            btn.classList.add('bg-brand-pink-600', 'text-white', 'shadow-sm');
+                        } else {
+                            btn.classList.remove('bg-brand-pink-600', 'text-white', 'shadow-sm');
+                            btn.classList.add('text-gray-500', 'hover:text-gray-700');
+                        }
+                    });
+
+                    // Toggle Input Containers
+                    container.querySelectorAll('.scale-inputs-container').forEach(div => {
+                        if (div.dataset.containerMode === mode) {
+                            div.classList.remove('hidden');
+                        } else {
+                            div.classList.add('hidden');
+                        }
+                    });
                 }
 
                 if (target.classList.contains('reset-btn')) {
@@ -3188,7 +4360,7 @@
                         shape: shape,
                         unit: document.getElementById('edit-recipe-pan-unit').value,
                         quantity: parseInt(document.getElementById('edit-recipe-pan-quantity').value, 10),
-                        length: shape === 'rectangular' ? parseFloat(document.getElementById('recipe-pan-length').value) : null,
+                        length: shape === 'rectangular' ? parseFloat(document.getElementById('edit-recipe-pan-length').value) : null,
                         width: shape === 'rectangular' ? parseFloat(document.getElementById('edit-recipe-pan-width').value) : null,
                         diameter: shape === 'round' ? parseFloat(document.getElementById('edit-recipe-pan-diameter').value) : null,
                         height: shape === 'rectangular'
