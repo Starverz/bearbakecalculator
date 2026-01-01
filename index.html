@@ -505,73 +505,32 @@
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.08);
             transform: translateY(-2px);
         }
-
-        /* Custom Modal Styles */
-        .modal-animate-in {
-            animation: modalFadeIn 0.2s ease-out forwards;
-        }
-
-        .modal-animate-out {
-            animation: modalFadeOut 0.2s ease-in forwards;
-        }
-
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes modalFadeOut {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            to {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-        }
-
-        .icon-bg-danger {
-            background-color: #fee2e2;
-            color: #ef4444;
-        }
-
-        .icon-bg-success {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .btn-danger {
-            background-color: #ef4444 !important;
-            color: white !important;
-        }
-
-        .btn-danger:hover {
-            background-color: #dc2626 !important;
-        }
-
-        .btn-success {
-            background-color: #166534 !important;
-            color: white !important;
-        }
-
-        .btn-success:hover {
-            background-color: #15803d !important;
-        }
     </style>
 </head>
 
-<body class="bg-gray-50 flex antialiased">
+<body class="bg-gray-50 flex flex-col md:flex-row antialiased">
 
-    <aside class="w-64 h-screen bg-brand-pink-600 text-white flex flex-col p-4 sticky top-0">
+    <!-- Mobile Header -->
+    <header
+        class="md:hidden bg-brand-pink-600 text-white p-4 flex justify-between items-center sticky top-0 z-40 shadow-md">
+        <div class="flex items-center gap-2">
+            <svg class="w-6 h-6 text-brand-pink-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A3.375 3.375 0 006.375 8.25v2.25H17.625v-2.25A3.375 3.375 0 0012 4.875z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75v6.75h6.75v-6.75H12z" />
+            </svg>
+            <h1 class="text-xl font-bold">BearBake</h1>
+        </div>
+        <button id="mobile-menu-btn" class="text-white focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+    </header>
+
+    <aside class="w-64 h-screen bg-brand-pink-600 text-white flex-col p-4 sticky top-0 hidden md:flex">
         <div class="flex items-center gap-3 px-3 mb-10">
             <svg class="w-8 h-8 text-brand-pink-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                 stroke-width="1.5" stroke="currentColor">
@@ -603,7 +562,7 @@
         </nav>
     </aside>
 
-    <main class="flex-1 p-8 lg:p-10">
+    <main class="flex-1 p-4 md:p-8 lg:p-10 w-full overflow-x-hidden">
 
         <!-- Redesigned Homepage -->
         <div id="home-page">
@@ -1040,22 +999,22 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[95vh]">
             <div class="px-6 pt-3 border-b pb-0 relative">
                 <h3 class="text-xl font-bold text-gray-800">Edit Ingredient</h3>
-                <div class="relative flex items-center w-full px-2">
+                <div class="relative w-full flex items-center gap-1">
                     <button type="button" id="tab-scroll-left"
-                        class="hidden absolute left-0 z-10 p-1 bg-gray-100 text-black hover:bg-gray-200 rounded-full shadow-md -ml-2 border border-gray-300 transition-opacity">
+                        class="hidden flex-shrink-0 z-10 p-1 bg-gray-100 text-black hover:bg-gray-200 rounded-full shadow-md border border-gray-300 transition-opacity">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
                     <div id="edit-supplier-tabs"
-                        class="supplier-tabs-container flex overflow-x-auto no-scrollbar scroll-smooth w-full px-1 items-center">
+                        class="supplier-tabs-container flex-1 flex overflow-x-auto no-scrollbar scroll-smooth px-1 items-center">
                         <!-- Tabs will be injected here -->
                         <button type="button" id="add-tab-btn"
-                            class="ml-1 text-gray-400 hover:text-white px-2 rounded hover:bg-white/10 text-xl font-light h-full flex items-center mb-1">+</button>
+                            class="ml-1 text-gray-400 hover:text-white px-2 rounded hover:bg-white/10 text-xl font-light h-full flex items-center mb-1 flex-shrink-0">+</button>
                     </div>
                     <button type="button" id="tab-scroll-right"
-                        class="hidden absolute right-0 z-10 p-1 bg-gray-100 text-black hover:bg-gray-200 rounded-full shadow-md -mr-2 border border-gray-300 transition-opacity">
+                        class="hidden flex-shrink-0 z-10 p-1 bg-gray-100 text-black hover:bg-gray-200 rounded-full shadow-md border border-gray-300 transition-opacity">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -1410,7 +1369,7 @@
                 <div class="p-6 space-y-6 overflow-y-auto">
                     <div>
                         <label for="team-name" class="block text-sm font-medium text-gray-700 mb-1">Team Name</label>
-                        <input type="text" id="team-name"
+                        <input type="text" id="team-name" placeholder="e.g., Donut Baking Team"
                             class="w-full p-2.5 border border-gray-300 rounded-lg focus-ring">
                     </div>
                     <div>
@@ -1523,29 +1482,41 @@
 
     <input type="file" id="import-file-input" class="hidden" accept=".json">
 
-    <!-- Custom Confirmation/Notification Modal -->
-    <div id="custom-confirmation-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
-        <div class="fixed inset-0 bg-black/40 transition-opacity" id="confirmation-backdrop"></div>
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm transform transition-all scale-100 relative z-10 overflow-hidden"
-            id="confirmation-card">
-            <div class="p-6 text-center">
-                <div id="confirmation-icon-container"
-                    class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 transition-colors">
-                    <svg id="confirmation-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <!-- Icon Path -->
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2" id="confirmation-title">Title</h3>
-                <p class="text-sm text-gray-500 mb-6" id="confirmation-message">Message</p>
-                <div class="flex gap-3 justify-center" id="confirmation-actions">
-                    <button id="confirmation-cancel-btn"
-                        class="py-2.5 px-4 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors w-full">Cancel</button>
-                    <button id="confirmation-confirm-btn"
-                        class="py-2.5 px-4 text-white font-semibold rounded-lg shadow-sm transition-colors w-full shadow-md">Confirm</button>
-                </div>
-            </div>
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu-overlay"
+        class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-menu-drawer"
+        class="fixed top-0 right-0 w-64 h-full bg-brand-pink-700 text-white z-50 transform translate-x-full transition-transform duration-300 shadow-xl flex flex-col p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold">Menu</h2>
+            <button id="close-mobile-menu-btn"
+                class="text-white focus:outline-none hover:bg-white/10 p-1 rounded-full text-brand-pink-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
+        <nav class="flex-1">
+            <ul class="space-y-4">
+                <li><a href="#" id="mobile-nav-home"
+                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Home</a>
+                </li>
+                <li><a href="#" id="mobile-nav-recipes"
+                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Recipes</a>
+                </li>
+                <li><a href="#" id="mobile-nav-ingredients"
+                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Ingredients</a>
+                </li>
+                <li><a href="#" id="mobile-nav-budget"
+                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Production
+                        &
+                        Budget</a></li>
+                <li><a href="#" id="mobile-nav-settings"
+                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Settings</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
     <script>
@@ -1563,10 +1534,56 @@
             const homePage = document.getElementById('home-page');
             const homeToRecipesBtn = document.getElementById('home-to-recipes-btn');
             const homeToIngredientsBtn = document.getElementById('home-to-ingredients-btn');
-            // --- FIX START ---
             const homeToRecipesBtn2 = document.getElementById('home-to-recipes-btn-2');
             const homeToIngredientsBtn2 = document.getElementById('home-to-ingredients-btn-2');
             // --- FIX END ---
+
+            // --- MOBILE MENU ELEMENTS ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMobileMenuBtn = document.getElementById('close-mobile-menu-btn');
+            const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            const mobileNavLinks = [
+                { id: 'mobile-nav-home', page: 'home' },
+                { id: 'mobile-nav-recipes', page: 'recipes' },
+                { id: 'mobile-nav-ingredients', page: 'ingredients' },
+                { id: 'mobile-nav-budget', page: 'budget' },
+                { id: 'mobile-nav-settings', page: 'settings' }
+            ];
+
+            // --- MOBILE MENU LOGIC ---
+            function openMobileMenu() {
+                mobileMenuOverlay.classList.remove('hidden');
+                // Trigger reflow for transition
+                void mobileMenuOverlay.offsetWidth;
+                mobileMenuOverlay.classList.remove('opacity-0');
+
+                mobileMenuDrawer.classList.remove('translate-x-full');
+            }
+
+            function closeMobileMenu() {
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenuDrawer.classList.add('translate-x-full');
+
+                setTimeout(() => {
+                    mobileMenuOverlay.classList.add('hidden');
+                }, 300);
+            }
+
+            if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileMenu);
+            if (closeMobileMenuBtn) closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
+            if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+            mobileNavLinks.forEach(linkObj => {
+                const linkEl = document.getElementById(linkObj.id);
+                if (linkEl) {
+                    linkEl.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showPage(linkObj.page);
+                        closeMobileMenu();
+                    });
+                }
+            });
 
             // --- INGREDIENT PAGE ELEMENTS ---
             const ingredientListDiv = document.getElementById('ingredient-list');
@@ -1739,120 +1756,13 @@
                 reader.readAsText(file);
             });
 
-            // =================================================================
-            // CUSTOM NOTIFICATION / CONFIRMATION SYSTEM
-            // =================================================================
-            const confirmationModal = document.getElementById('custom-confirmation-modal');
-            const confirmationBackdrop = document.getElementById('confirmation-backdrop');
-            const confirmationCard = document.getElementById('confirmation-card');
-            const confirmationIconContainer = document.getElementById('confirmation-icon-container');
-            const confirmationIcon = document.getElementById('confirmation-icon');
-            const confirmationTitle = document.getElementById('confirmation-title');
-            const confirmationMessage = document.getElementById('confirmation-message');
-            const confirmationCancelBtn = document.getElementById('confirmation-cancel-btn');
-            const confirmationConfirmBtn = document.getElementById('confirmation-confirm-btn');
-            const confirmationActions = document.getElementById('confirmation-actions');
-
-            let currentConfirmCallback = null;
-
-            const hideConfirmation = () => {
-                confirmationCard.classList.remove('modal-animate-in');
-                confirmationCard.classList.add('modal-animate-out');
-                setTimeout(() => {
-                    confirmationModal.classList.add('hidden');
-                    confirmationCard.classList.remove('modal-animate-out');
-                    currentConfirmCallback = null;
-                }, 150);
-            };
-
-            const showConfirmation = ({ title, message, type = 'danger', onConfirm, showCancel = true, confirmText = 'Confirm' }) => {
-                // Reset styles
-                confirmationIconContainer.classList.remove('icon-bg-danger', 'icon-bg-success');
-                confirmationConfirmBtn.classList.remove('btn-danger', 'btn-success', 'bg-brand-pink-600', 'hover:bg-brand-pink-700');
-
-                // Set content
-                confirmationTitle.textContent = title;
-                confirmationMessage.textContent = message;
-                confirmationConfirmBtn.textContent = confirmText;
-
-                // Configure Type
-                if (type === 'danger') {
-                    confirmationIconContainer.classList.add('icon-bg-danger');
-                    confirmationConfirmBtn.classList.add('btn-danger');
-                    // Trash Icon
-                    confirmationIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />`;
-                } else if (type === 'success') {
-                    confirmationIconContainer.classList.add('icon-bg-success');
-                    confirmationConfirmBtn.classList.add('btn-success');
-                    // Check Icon
-                    confirmationIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />`;
-                } else {
-                    // Default / Info
-                    confirmationIconContainer.classList.add('bg-blue-100', 'text-blue-600');
-                    confirmationConfirmBtn.classList.add('bg-brand-pink-600', 'hover:bg-brand-pink-700');
-                    confirmationIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
-                }
-
-                // Toggle Cancel Button
-                if (showCancel) {
-                    confirmationCancelBtn.classList.remove('hidden');
-                    confirmationActions.classList.add('grid-cols-2');
-                } else {
-                    confirmationCancelBtn.classList.add('hidden');
-                    confirmationActions.classList.remove('grid-cols-2');
-                }
-
-                // Callbacks
-                currentConfirmCallback = onConfirm;
-
-                // Show
-                confirmationModal.classList.remove('hidden');
-                confirmationCard.classList.add('modal-animate-in');
-            };
-
-            // Event Listeners for Modal
-            confirmationCancelBtn.onclick = hideConfirmation;
-            confirmationBackdrop.onclick = hideConfirmation;
-            confirmationConfirmBtn.onclick = () => {
-                const preCallback = currentConfirmCallback;
-                if (currentConfirmCallback) currentConfirmCallback();
-                // Only hide if the callback hasn't initiated a new modal (which would change the callback ref)
-                if (currentConfirmCallback === preCallback) {
-                    hideConfirmation();
-                }
-            };
-
-            // --- Helper Wrappers ---
-            const renderDeleteConfirmation = (title, message, onConfirm) => {
-                showConfirmation({
-                    title,
-                    message,
-                    type: 'danger',
-                    onConfirm,
-                    confirmText: 'Delete'
-                });
-            };
-
-            const renderSuccessNotification = (title, message) => {
-                showConfirmation({
-                    title,
-                    message,
-                    type: 'success',
-                    showCancel: false,
-                    confirmText: 'OK',
-                    onConfirm: () => { }
-                });
-            };
-
-            // -------------------------------------------------------------
-            // Modified Data Management (using new system)
-            // -------------------------------------------------------------
-
             resetDataBtn.addEventListener('click', () => {
-                renderDeleteConfirmation(
-                    'Reset All Data?',
-                    'This will permanently delete all recipes, ingredients, and teams. This action cannot be undone.',
-                    () => {
+                showFeedbackModal({
+                    type: 'danger',
+                    title: 'Reset All Data?',
+                    message: 'WARNING: This will delete ALL data permanently. This action cannot be undone. Are you absolutely sure?',
+                    confirmText: 'Yes, Delete Everything',
+                    onConfirm: () => {
                         ingredients = [];
                         recipes = [];
                         teams = [];
@@ -1862,11 +1772,15 @@
                         saveTeams();
                         saveCategories();
                         rerenderAll();
-                        renderSuccessNotification('Data Reset', 'All application data has been successfully reset.');
-                    }
-                );
-            });
 
+                        showFeedbackModal({
+                            type: 'success',
+                            title: 'Data Reset',
+                            message: 'All application data has been successfully reset.'
+                        });
+                    }
+                });
+            });
 
             // =================================================================
             // FULL PRODUCTION PLANNER FUNCTIONS
@@ -2530,8 +2444,8 @@
                     return;
                 }
                 const table = document.createElement('table');
-                table.className = 'w-full text-sm text-left text-gray-600 table-fixed';
-                table.innerHTML = `<thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-6 py-3 w-[5%]">#</th><th class="px-6 py-3 w-[55%]">Name</th><th class="px-6 py-3 w-[15%]">Purchase Cost</th><th class="px-6 py-3 w-[15%]">Cost per unit</th><th class="px-6 py-3 text-right w-[10%]">Action</th></tr></thead><tbody></tbody>`;
+                table.className = 'w-full text-sm text-left text-gray-600';
+                table.innerHTML = `<thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-4 py-3 text-center w-12">#</th><th class="px-6 py-3 w-full">Name</th><th class="px-6 py-3 whitespace-nowrap text-center">Purchase Cost</th><th class="px-6 py-3 whitespace-nowrap text-center">Cost per unit</th><th class="px-6 py-3 text-center">Actions</th></tr></thead><tbody></tbody>`;
                 const tbody = table.querySelector('tbody');
                 processedIngredients.forEach((ingredient, index) => {
                     const tr = document.createElement('tr');
@@ -2543,7 +2457,7 @@
                         default: totalAmountInBaseUnit = ingredient.weight; baseUnit = ingredient.unit;
                     }
                     if (totalAmountInBaseUnit > 0) costPerUnit = ingredient.price / totalAmountInBaseUnit;
-                    tr.innerHTML = `<td class="px-6 py-4 text-gray-500">${index + 1}</td><td class="px-6 py-4 font-medium text-gray-900 whitespace-normal break-words">${ingredient.name}</td><td class="px-6 py-4">RM ${ingredient.price.toFixed(2)} for ${ingredient.weight} ${ingredient.unit}</td><td class="px-6 py-4 font-semibold text-green-600">RM ${costPerUnit.toFixed(5)} / ${baseUnit}</td><td class="px-6 py-4 flex justify-end"><button class="edit-btn w-8 h-8 flex items-center justify-center bg-brand-pink-600 rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors group" data-id="${ingredient.id}"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button></td>`;
+                    tr.innerHTML = `<td class="px-4 py-4 text-center text-gray-500">${index + 1}</td><td class="px-6 py-4 font-medium text-gray-900">${ingredient.name}</td><td class="px-6 py-4 whitespace-nowrap text-center">RM ${ingredient.price.toFixed(2)} for ${ingredient.weight} ${ingredient.unit}</td><td class="px-6 py-4 font-semibold text-green-600 whitespace-nowrap text-center">RM ${costPerUnit.toFixed(5)} / ${baseUnit}</td><td class="px-6 py-4 flex justify-center"><button class="edit-btn w-8 h-8 flex items-center justify-center bg-brand-pink-600 rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors group" data-id="${ingredient.id}"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button></td>`;
                     tbody.appendChild(tr);
                 });
                 ingredientListDiv.appendChild(table);
@@ -2581,41 +2495,99 @@
             let currentEditSuppliers = [];
             let currentEditTabIndex = 0;
 
-            const updateTabScrollButtons = () => {
-                const container = document.getElementById('edit-supplier-tabs');
+            const updateTabNavButtons = () => {
                 const leftBtn = document.getElementById('tab-scroll-left');
                 const rightBtn = document.getElementById('tab-scroll-right');
 
-                if (!container || !leftBtn || !rightBtn) return;
+                if (!leftBtn || !rightBtn) return;
 
-                const { scrollLeft, scrollWidth, clientWidth } = container;
-                // Use a small epsilon for float comparison safety
-                if (scrollLeft > 1) leftBtn.classList.remove('hidden');
-                else leftBtn.classList.add('hidden');
+                if (currentEditTabIndex > 0) {
+                    leftBtn.classList.remove('invisible', 'pointer-events-none');
+                    leftBtn.disabled = false;
+                } else {
+                    leftBtn.classList.add('invisible', 'pointer-events-none');
+                    leftBtn.disabled = true;
+                }
 
-                if (scrollLeft + clientWidth < scrollWidth - 1) rightBtn.classList.remove('hidden');
-                else rightBtn.classList.add('hidden');
+                if (currentEditTabIndex < currentEditSuppliers.length - 1) {
+                    rightBtn.classList.remove('invisible', 'pointer-events-none');
+                    rightBtn.disabled = false;
+                } else {
+                    rightBtn.classList.add('invisible', 'pointer-events-none');
+                    rightBtn.disabled = true;
+                }
             };
 
-            // Initialize Scroll Listeners
+            // Initialize Nav Listeners
             document.addEventListener('DOMContentLoaded', () => {
+                const container = document.getElementById('edit-supplier-tabs');
                 const leftBtn = document.getElementById('tab-scroll-left');
                 const rightBtn = document.getElementById('tab-scroll-right');
-                const container = document.getElementById('edit-supplier-tabs');
 
+                // Drag-to-Scroll Logic
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+
+                const mouseMoveHandler = (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - container.offsetLeft;
+                    const walk = (x - startX) * 2; // Scroll-fast multiplier
+                    container.scrollLeft = scrollLeft - walk;
+
+                    // If moved significantly (more than 5px), mark as dragging
+                    if (Math.abs(walk) > 5) {
+                        container.dataset.isDragging = 'true';
+                    }
+                };
+
+                const mouseUpHandler = () => {
+                    isDown = false;
+                    container.classList.remove('cursor-grabbing');
+                    container.classList.add('cursor-grab');
+
+                    // Remove global listeners
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+
+                    // Delay clearing drag flag to allow click event to process
+                    setTimeout(() => { container.dataset.isDragging = 'false'; }, 50);
+                };
+
+                // Mouse Down - Attach to Container
+                container.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    container.dataset.isDragging = 'false';
+                    container.classList.add('cursor-grabbing');
+                    container.classList.remove('cursor-grab');
+                    startX = e.pageX - container.offsetLeft;
+                    scrollLeft = container.scrollLeft;
+
+                    // Attach global listeners
+                    document.addEventListener('mousemove', mouseMoveHandler);
+                    document.addEventListener('mouseup', mouseUpHandler);
+                });
+
+                // Add initial cursor style
+                container.classList.add('cursor-grab');
+                // Prevent text selection during drag
+                container.style.userSelect = 'none';
+
+                // Update Button Click Handlers
                 if (leftBtn) leftBtn.addEventListener('click', () => {
-                    container.scrollBy({ left: -100, behavior: 'smooth' });
+                    if (currentEditTabIndex > 0) switchSupplierTab(currentEditTabIndex - 1);
                 });
                 if (rightBtn) rightBtn.addEventListener('click', () => {
-                    container.scrollBy({ left: 100, behavior: 'smooth' });
+                    if (currentEditTabIndex < currentEditSuppliers.length - 1) switchSupplierTab(currentEditTabIndex + 1);
                 });
-                if (container) container.addEventListener('scroll', updateTabScrollButtons);
-                window.addEventListener('resize', updateTabScrollButtons);
             });
 
             const renderSupplierTabs = () => {
                 const container = document.getElementById('edit-supplier-tabs');
                 container.innerHTML = '';
+                // Ensure helper classes are applied if re-rendered
+                container.classList.add('cursor-grab', 'active:cursor-grabbing');
 
                 currentEditSuppliers.forEach((sup, index) => {
                     const btn = document.createElement('button');
@@ -2629,6 +2601,20 @@
                     `;
 
                     btn.onclick = (e) => {
+                        // If we were just dragging, DO NOT switch tabs
+                        // Note: 'isDragging' variable scope needs to be accessible here. 
+                        // Since renderSupplierTabs is outside the DOMContentLoaded scope where the variable was defined, 
+                        // we need to make sure isDragging is accessible or checking the class state.
+                        // However, a cleaner way is to use a data attribute or check movement distance in the click itself if we rewrote it.
+                        // But wait, the previous block I wrote was inside 'DOMContentLoaded'. 
+                        // 'renderSupplierTabs' is defined outside.
+                        // I need to handle the scope issue.
+
+                        // FIX: I will check a global or attached property on the container.
+                        if (container.dataset.isDragging === 'true') {
+                            return;
+                        }
+
                         if (e.target.classList.contains('tab-close')) {
                             e.stopPropagation();
                             removeSupplierTab(index);
@@ -2642,13 +2628,26 @@
                 const addBtn = document.createElement('button');
                 addBtn.id = 'add-tab-btn';
                 addBtn.type = 'button';
-                addBtn.className = 'ml-1 text-gray-400 hover:text-brand-pink-600 px-2 rounded hover:bg-brand-pink-50 text-xl font-light h-full flex items-center mb-1';
+                addBtn.className = 'ml-1 text-gray-400 hover:text-brand-pink-600 px-2 rounded hover:bg-brand-pink-50 text-xl font-light h-full flex items-center mb-1 flex-shrink-0';
                 addBtn.textContent = '+';
                 addBtn.onclick = addSupplierTab;
                 container.appendChild(addBtn);
 
                 updateActiveToggleUI();
-                setTimeout(updateTabScrollButtons, 50);
+                updateTabNavButtons();
+
+                // Scroll logic to ensure visibility
+                setTimeout(() => {
+                    const activeBtn = container.querySelector('.supplier-tab.active');
+                    if (activeBtn) {
+                        if (currentEditTabIndex === currentEditSuppliers.length - 1) {
+                            // If last tab, scroll to end to show Add button too
+                            container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+                        } else {
+                            activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                        }
+                    }
+                }, 50);
             };
 
             const switchSupplierTab = (newIndex) => {
@@ -2679,7 +2678,12 @@
                 if (currentEditTabIndex === 0) firstTab.supplierName = editSupplierInput.value.trim();
 
                 if (!firstTab.supplierName && currentEditSuppliers.length === 1) {
-                    alert('Please enter a Supplier Name for the first shop before adding another.');
+                    showFeedbackModal({
+                        type: 'warning',
+                        title: 'Missing Supplier Name',
+                        message: 'Please enter a Supplier Name for the first shop before adding another.',
+                        confirmText: 'OK'
+                    });
                     editSupplierInput.focus();
                     return;
                 }
@@ -2687,7 +2691,12 @@
                 const currentSup = currentEditSuppliers[currentEditTabIndex];
                 currentSup.supplierName = editSupplierInput.value.trim();
                 if (!currentSup.supplierName) {
-                    alert('Please name the current shop before adding a new one.');
+                    showFeedbackModal({
+                        type: 'warning',
+                        title: 'Missing Supplier Name',
+                        message: 'Please name the current shop before adding a new one.',
+                        confirmText: 'OK'
+                    });
                     editSupplierInput.focus();
                     return;
                 }
@@ -2705,25 +2714,31 @@
             };
 
             const removeSupplierTab = (index) => {
-                renderDeleteConfirmation('Remove Supplier Tab?', 'Are you sure you want to remove this supplier tab?', () => {
-                    const wasActive = currentEditSuppliers[index].active;
-                    currentEditSuppliers.splice(index, 1);
+                showFeedbackModal({
+                    type: 'danger',
+                    title: 'Remove Supplier Tab?',
+                    message: 'Are you sure you want to remove this supplier tab?',
+                    confirmText: 'Delete',
+                    onConfirm: () => {
+                        const wasActive = currentEditSuppliers[index].active;
+                        currentEditSuppliers.splice(index, 1);
 
-                    if (currentEditSuppliers.length === 0) {
-                        currentEditSuppliers.push({ price: 0, weight: 1, unit: 'kg', supplierName: '', notes: '', active: true });
-                    } else if (wasActive) {
-                        currentEditSuppliers[0].active = true;
-                    }
+                        if (currentEditSuppliers.length === 0) {
+                            currentEditSuppliers.push({ price: 0, weight: 1, unit: 'kg', supplierName: '', notes: '', active: true });
+                        } else if (wasActive) {
+                            currentEditSuppliers[0].active = true;
+                        }
 
-                    if (index === currentEditTabIndex) {
-                        switchSupplierTab(Math.max(0, index - 1));
-                    } else if (index < currentEditTabIndex) {
-                        currentEditTabIndex--;
-                        renderSupplierTabs();
-                    } else {
-                        renderSupplierTabs();
+                        if (index === currentEditTabIndex) {
+                            switchSupplierTab(Math.max(0, index - 1));
+                        } else if (index < currentEditTabIndex) {
+                            currentEditTabIndex--;
+                            renderSupplierTabs();
+                        } else {
+                            renderSupplierTabs();
+                        }
+                        setTimeout(pushHistory, 0);
                     }
-                    setTimeout(pushHistory, 0);
                 });
             };
 
@@ -2759,7 +2774,12 @@
                 const s = currentEditSuppliers[currentEditTabIndex];
                 // Strict validation: Price MUST be > 0.
                 if (!s.supplierName || isNaN(s.price) || isNaN(s.weight) || s.price <= 0 || s.weight <= 0) {
-                    alert('To set this price as Active, please fill in all details (Supplier Name, Price, Amount). Price must be greater than 0.');
+                    showFeedbackModal({
+                        type: 'warning',
+                        title: 'Incomplete Details',
+                        message: 'To set this price as Active, please fill in all details (Supplier Name, Price, Amount). Price must be greater than 0.',
+                        confirmText: 'OK'
+                    });
                     return;
                 }
 
@@ -2949,16 +2969,36 @@
                     const price = parseFloat(document.getElementById('add-price').value);
                     const weight = parseFloat(document.getElementById('add-weight').value);
                     const unit = document.getElementById('add-unit').value;
-                    if (!name || isNaN(price) || isNaN(weight) || price <= 0 || weight <= 0) { alert('Invalid values.'); return; }
+
+                    if (!name || isNaN(price) || isNaN(weight) || price <= 0 || weight <= 0) {
+                        showFeedbackModal({
+                            type: 'warning',
+                            title: 'Invalid Input',
+                            message: 'Please fill in all fields correctly. Price and Weight must be greater than 0.',
+                            confirmText: 'OK'
+                        });
+                        return;
+                    }
+
                     const newIngredient = { id: Date.now(), name, price, weight, unit, supplier: '', notes: '', conversions: [], dateAdded: new Date().toISOString() };
                     ingredients.push(newIngredient);
                     saveIngredients();
                     renderIngredients();
                     closeAddIngredientModal();
-                    renderSuccessNotification('Ingredient Added', 'New ingredient has been successfully added to the library.');
+
+                    // Show success modal
+                    showFeedbackModal({
+                        type: 'success',
+                        title: 'Ingredient Added!',
+                        message: `${name} has been successfully added to your library.`
+                    });
                 } catch (err) {
                     console.error('Error in addIngredient:', err);
-                    alert('An unexpected error occurred while adding the ingredient. Please check the console for details.');
+                    showFeedbackModal({
+                        type: 'danger',
+                        title: 'Error',
+                        message: 'An unexpected error occurred while adding the ingredient. Please check the console for details.'
+                    });
                 }
             };
 
@@ -3070,6 +3110,22 @@
                 if (num === 0) return 0;
                 if (isNaN(num) || num === null || num === undefined) return '?'; // Safeguard
                 return parseFloat(num.toFixed(2));
+            };
+
+            // Animation Utility
+            const animateValue = (obj, start, end, duration) => {
+                if (!obj) return;
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const value = progress * (end - start) + start;
+                    obj.textContent = `RM ${value.toFixed(2)}`;
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
             };
 
             const calculateVolume = (servings) => {
@@ -3192,8 +3248,10 @@
                         scaledRecipe.servings = targetServings;
 
                     } else {
-                        // Fallback for quantity-type recipes forced into PAN mode (unlikely but safe to handle)
-                        const input = cardElement.querySelector(`.scale-inputs-container[data-container-mode="pan"] .scale-input-qty[data-id="${recipeId}"]`);
+                        // Fallback for quantity-type recipes forced into PAN mode
+                        // Robustly find the VISIBLE input
+                        const inputs = cardElement.querySelectorAll('.scale-input-qty');
+                        const input = Array.from(inputs).find(el => el.offsetParent !== null);
                         const val = input ? parseFloat(input.value) : 0;
                         if (isNaN(val) || val <= 0) return;
 
@@ -3202,7 +3260,8 @@
                         scaledRecipe.servings.value = val;
                     }
                 } else if (mode === 'pcs') { // Scale by Quantity
-                    const input = cardElement.querySelector(`.scale-inputs-container[data-container-mode="pcs"] .scale-input-qty[data-id="${recipeId}"]`);
+                    const inputs = cardElement.querySelectorAll('.scale-input-qty');
+                    const input = Array.from(inputs).find(el => el.offsetParent !== null);
                     const val = input ? parseFloat(input.value) : 0;
                     if (isNaN(val) || val <= 0) return;
 
@@ -3223,6 +3282,23 @@
                     }
                     return item;
                 });
+                // Capture OLD values for animation
+                const summaryBody = cardElement.querySelector('.summary-table-body');
+                let startTotal = 0, startServing = 0, startFinal = 0, startSell = 0;
+
+                if (summaryBody) {
+                    const cleanVal = (txt) => parseFloat(txt.replace(/[^0-9.-]+/g, '')) || 0;
+                    // Try to find via classes first, fallback to row indices
+                    const totalEl = summaryBody.querySelector('.summary-total-cost') || summaryBody.querySelectorAll('tr')[0]?.querySelectorAll('td')[1];
+                    const servingEl = summaryBody.querySelector('.summary-serving-cost') || summaryBody.querySelectorAll('tr')[1]?.querySelectorAll('td')[1];
+                    const finalEl = summaryBody.querySelector('.summary-final-price') || summaryBody.querySelectorAll('tr')[3]?.querySelectorAll('td')[1];
+                    const sellEl = summaryBody.querySelector('.summary-sell-price') || summaryBody.querySelectorAll('tr')[4]?.querySelectorAll('td')[1];
+
+                    if (totalEl) startTotal = cleanVal(totalEl.textContent);
+                    if (servingEl) startServing = cleanVal(servingEl.textContent);
+                    if (finalEl) startFinal = cleanVal(finalEl.textContent);
+                    if (sellEl) startSell = cleanVal(sellEl.textContent);
+                }
 
                 const calc = calculateRecipeCost(scaledRecipe);
 
@@ -3244,12 +3320,18 @@
                 }
 
                 summaryTbody.innerHTML = `
-            <tr><td class="py-1 pr-2">Total Ingredient Cost</td><td class="py-1 pl-2 text-right font-bold">RM ${calc.totalCost.toFixed(2)}</td></tr>
-            <tr><td class="py-1 pr-2 text-gray-600">Cost per Serving</td><td class="py-1 pl-2 text-right text-gray-800 font-mono">RM ${calc.costPerServing.toFixed(2)}</td></tr>
+            <tr><td class="py-1 pr-2">Total Ingredient Cost</td><td class="py-1 pl-2 text-right font-bold summary-total-cost">RM ${calc.totalCost.toFixed(2)}</td></tr>
+            <tr><td class="py-1 pr-2 text-gray-600">Cost per Serving</td><td class="py-1 pl-2 text-right text-gray-800 font-mono summary-serving-cost">RM ${calc.costPerServing.toFixed(2)}</td></tr>
             <tr><td class="py-1 pr-2">Profit</td><td class="py-1 pl-2 text-right">${calc.profitDetail}</td></tr>
-            <tr class="border-t-2 border-gray-300"><td class="pt-2 pr-2 text-lg font-bold text-brand-pink-700">Final Price (${finalPriceServingsText})</td><td class="pt-2 pl-2 text-right text-lg font-bold text-brand-pink-700">RM ${calc.finalPrice.toFixed(2)}</td></tr>
-            <tr><td class="py-1 pr-2 text-green-700 font-semibold">Sell Price per Serving</td><td class="py-1 pl-2 text-right text-green-700 font-semibold">RM ${calc.pricePerServing.toFixed(2)}</td></tr>
+            <tr class="border-t-2 border-gray-300"><td class="pt-2 pr-2 text-lg font-bold text-brand-pink-700">Final Price (${finalPriceServingsText})</td><td class="pt-2 pl-2 text-right text-lg font-bold text-brand-pink-700 summary-final-price">RM ${calc.finalPrice.toFixed(2)}</td></tr>
+            <tr><td class="py-1 pr-2 text-green-700 font-semibold">Sell Price per Serving</td><td class="py-1 pl-2 text-right text-green-700 font-semibold summary-sell-price">RM ${calc.pricePerServing.toFixed(2)}</td></tr>
         `;
+
+                // Trigger Animations
+                animateValue(summaryTbody.querySelector('.summary-total-cost'), startTotal, calc.totalCost, 800);
+                animateValue(summaryTbody.querySelector('.summary-serving-cost'), startServing, calc.costPerServing, 800);
+                animateValue(summaryTbody.querySelector('.summary-final-price'), startFinal, calc.finalPrice, 800);
+                animateValue(summaryTbody.querySelector('.summary-sell-price'), startSell, calc.pricePerServing, 800);
 
                 cardElement.querySelector('.scale-btn').classList.add('hidden');
                 cardElement.querySelector('.reset-btn').classList.remove('hidden');
@@ -3347,15 +3429,15 @@
                         <div class="${containerClasses}"><table class="w-full text-sm"><tbody>${breakdownHTML}</tbody></table></div>
                         ${toggleButtonHTML}
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-4 border js-scale-container">
+                    <div class="bg-gray-50 rounded-lg p-4 border">
                         <h4 class="font-semibold text-gray-700 mb-2 border-b pb-1">Summary</h4>
                         <table class="w-full text-sm">
                             <tbody class="summary-table-body">
-                                <tr><td class="py-1 pr-2">Total Ingredient Cost</td><td class="py-1 pl-2 text-right font-bold text-gray-800">RM ${calc.totalCost.toFixed(2)}</td></tr>
-                                <tr><td class="py-1 pr-2 text-gray-600">Cost per Serving</td><td class="py-1 pl-2 text-right text-gray-800 font-mono">RM ${calc.costPerServing.toFixed(2)}</td></tr>
+                                <tr><td class="py-1 pr-2">Total Ingredient Cost</td><td class="py-1 pl-2 text-right font-bold text-gray-800 summary-total-cost">RM ${calc.totalCost.toFixed(2)}</td></tr>
+                                <tr><td class="py-1 pr-2 text-gray-600">Cost per Serving</td><td class="py-1 pl-2 text-right text-gray-800 font-mono summary-serving-cost">RM ${calc.costPerServing.toFixed(2)}</td></tr>
                                 <tr><td class="py-1 pr-2">Profit</td><td class="py-1 pl-2 text-right">${calc.profitDetail}</td></tr>
-                                <tr class="border-t-2 border-gray-300"><td class="pt-2 pr-2 text-lg font-bold text-brand-pink-700">Final Price (${finalPriceServingsText})</td><td class="pt-2 pl-2 text-right text-lg font-bold text-brand-pink-700">RM ${calc.finalPrice.toFixed(2)}</td></tr>
-                                <tr><td class="py-1 pr-2 text-green-700 font-semibold">Sell Price per Serving</td><td class="py-1 pl-2 text-right text-green-700 font-semibold">RM ${calc.pricePerServing.toFixed(2)}</td></tr>
+                                <tr class="border-t-2 border-gray-300"><td class="pt-2 pr-2 text-lg font-bold text-brand-pink-700">Final Price (${finalPriceServingsText})</td><td class="pt-2 pl-2 text-right text-lg font-bold text-brand-pink-700 summary-final-price">RM ${calc.finalPrice.toFixed(2)}</td></tr>
+                                <tr><td class="py-1 pr-2 text-green-700 font-semibold">Sell Price per Serving</td><td class="py-1 pl-2 text-right text-green-700 font-semibold summary-sell-price">RM ${calc.pricePerServing.toFixed(2)}</td></tr>
                             </tbody>
                         </table>
                         <div class="mt-4 pt-4 border-t border-gray-200">
@@ -4143,12 +4225,17 @@
                 const deleteBtn = e.target.closest('.delete-team-btn');
                 if (deleteBtn) {
                     const teamId = parseInt(deleteBtn.dataset.teamId, 10);
-                    renderDeleteConfirmation('Delete Team?', 'Are you sure you want to delete this team? This action cannot be undone.', () => {
-                        teams = teams.filter(t => t.id !== teamId);
-                        saveTeams();
-                        renderTeams();
-                        renderFullProductionCalendar();
-                        renderSuccessNotification('Team Deleted', 'The team has been successfully removed.');
+                    showFeedbackModal({
+                        type: 'danger',
+                        title: 'Delete Team?',
+                        message: 'Are you sure you want to delete this team? This action cannot be undone.',
+                        confirmText: 'Delete',
+                        onConfirm: () => {
+                            teams = teams.filter(t => t.id !== teamId);
+                            saveTeams();
+                            renderTeams();
+                            renderFullProductionCalendar();
+                        }
                     });
                 }
             });
@@ -4210,11 +4297,17 @@
                     teams.push(teamData);
                 }
 
+                const isEdit = !!currentlyEditingTeamId;
                 saveTeams();
                 renderTeams();
                 renderFullProductionCalendar();
                 closeAddTeamModal();
-                renderSuccessNotification('Team Saved', 'Team details have been successfully saved.');
+
+                showFeedbackModal({
+                    type: 'success',
+                    title: isEdit ? 'Team Updated!' : 'Team Created!',
+                    message: `${teamData.name} has been successfully ${isEdit ? 'updated' : 'created'}.`
+                });
             });
 
             // --- Ingredient Page Listeners ---
@@ -4275,16 +4368,25 @@
                 saveIngredients();
                 renderIngredients();
                 closeEditModal();
-                renderSuccessNotification('Ingredient Updated', 'Ingredient details have been successfully updated.');
+                showFeedbackModal({
+                    type: 'success',
+                    title: 'Ingredient Updated!',
+                    message: `${name} has been successfully updated.`
+                });
             });
             modalCancelBtn.addEventListener('click', closeEditModal);
             modalDeleteBtn.addEventListener('click', () => {
-                renderDeleteConfirmation('Delete Ingredient?', 'Are you sure you want to delete this ingredient? This action cannot be undone.', () => {
-                    ingredients = ingredients.filter(ing => ing.id !== currentlyEditingId);
-                    saveIngredients();
-                    renderIngredients();
-                    closeEditModal();
-                    renderSuccessNotification('Ingredient Deleted', 'The ingredient has been successfully removed.');
+                showFeedbackModal({
+                    type: 'danger',
+                    title: 'Delete Ingredient?',
+                    message: 'Are you sure you want to delete this ingredient? This cannot be undone.',
+                    confirmText: 'Delete',
+                    onConfirm: () => {
+                        ingredients = ingredients.filter(ing => ing.id !== currentlyEditingId);
+                        saveIngredients();
+                        renderIngredients();
+                        closeEditModal();
+                    }
                 });
             });
             addConversionBtn.addEventListener('click', () => appendConversionInput());
@@ -4362,7 +4464,11 @@
                 saveRecipes();
                 renderRecipes();
                 closeAddRecipeModal();
-                renderSuccessNotification('Recipe Added', 'New recipe has been successfully created.');
+                showFeedbackModal({
+                    type: 'success',
+                    title: 'Recipe Added!',
+                    message: `${newRecipe.title} has been successfully added to your recipe book.`
+                });
             });
 
             openAddRecipeModalBtn.addEventListener('click', openAddRecipeModal);
@@ -4410,12 +4516,17 @@
                 }
             });
             document.getElementById('edit-recipe-modal-delete-btn').addEventListener('click', () => {
-                renderDeleteConfirmation('Delete Recipe?', 'Are you sure you want to delete this recipe? This action cannot be undone.', () => {
-                    recipes = recipes.filter(r => r.id !== currentlyEditingRecipeId);
-                    saveRecipes();
-                    renderRecipes();
-                    closeEditRecipeModal();
-                    renderSuccessNotification('Recipe Deleted', 'The recipe has been successfully removed.');
+                showFeedbackModal({
+                    type: 'danger',
+                    title: 'Delete Recipe?',
+                    message: 'Are you sure you want to delete this recipe?',
+                    confirmText: 'Delete',
+                    onConfirm: () => {
+                        recipes = recipes.filter(r => r.id !== currentlyEditingRecipeId);
+                        saveRecipes();
+                        renderRecipes();
+                        closeEditRecipeModal();
+                    }
                 });
             });
 
@@ -4458,11 +4569,16 @@
                 const deleteBtn = target.closest('.delete-recipe-btn');
                 if (deleteBtn) {
                     const recipeId = parseInt(deleteBtn.dataset.id, 10);
-                    renderDeleteConfirmation('Delete Recipe?', 'Are you sure you want to delete this recipe?', () => {
-                        recipes = recipes.filter(r => r.id !== recipeId);
-                        saveRecipes();
-                        renderRecipes();
-                        renderSuccessNotification('Recipe Deleted', 'The recipe has been successfully removed.');
+                    showFeedbackModal({
+                        type: 'danger',
+                        title: 'Delete Recipe?',
+                        message: 'Are you sure you want to delete this recipe?',
+                        confirmText: 'Delete',
+                        onConfirm: () => {
+                            recipes = recipes.filter(r => r.id !== recipeId);
+                            saveRecipes();
+                            renderRecipes();
+                        }
                     });
                     return;
                 }
@@ -4470,7 +4586,7 @@
                 const scaleBtn = target.closest('.scale-btn');
                 if (scaleBtn) {
                     const id = scaleBtn.dataset.id;
-                    const container = scaleBtn.closest('.js-scale-container'); // Find the container for this recipe's scaling UI
+                    const container = scaleBtn.closest('.rounded-lg'); // Find the container for this recipe's scaling UI
                     // Find active mode
                     const activeBtn = container.querySelector('.scale-mode-btn.bg-brand-pink-600');
                     const mode = activeBtn ? activeBtn.dataset.mode : 'pan';
@@ -4483,7 +4599,7 @@
                 if (scaleModeBtn) {
                     const mode = scaleModeBtn.dataset.mode;
                     const id = scaleModeBtn.dataset.id;
-                    const container = scaleModeBtn.closest('.js-scale-container');
+                    const container = scaleModeBtn.closest('.rounded-lg');
 
                     // Update Buttons UI
                     container.querySelectorAll('.scale-mode-btn').forEach(btn => {
@@ -4513,7 +4629,7 @@
                 if (target.classList.contains('scale-mode-btn')) {
                     const mode = target.dataset.mode;
                     const id = target.dataset.id;
-                    const container = target.closest('.js-scale-container');
+                    const container = target.closest('.rounded-lg');
 
                     // Update Buttons UI
                     container.querySelectorAll('.scale-mode-btn').forEach(btn => {
@@ -4609,7 +4725,11 @@
                 saveRecipes();
                 renderRecipes();
                 closeEditRecipeModal();
-                renderSuccessNotification('Recipe Updated', 'Recipe details have been successfully updated.');
+                showFeedbackModal({
+                    type: 'success',
+                    title: 'Recipe Updated!',
+                    message: `${updatedRecipe.title} has been successfully updated.`
+                });
             });
 
             // --- Recipe Book Listeners ---
@@ -4746,10 +4866,191 @@
             setupYieldUI('edit');
 
             // Initial render of all components
+            // =================================================================
+            // CUSTOM FEEDBACK MODAL UTILITY
+            // =================================================================
+            const feedbackModal = document.getElementById('feedback-modal');
+            const feedbackIconContainer = document.getElementById('feedback-icon-container');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackMessage = document.getElementById('feedback-message');
+            const feedbackCancelBtn = document.getElementById('feedback-cancel-btn');
+            const feedbackConfirmBtn = document.getElementById('feedback-confirm-btn');
+
+            // Stored callbacks
+            let currentConfirmCallback = null;
+            let currentCancelCallback = null;
+
+            const closeFeedbackModal = () => {
+                feedbackModal.classList.add('hidden');
+                currentConfirmCallback = null;
+                currentCancelCallback = null;
+            };
+
+            // Re-attach listeners outside to avoid duplicates
+            if (feedbackCancelBtn) {
+                feedbackCancelBtn.onclick = () => {
+                    if (currentCancelCallback) currentCancelCallback();
+                    closeFeedbackModal();
+                };
+            }
+
+            const showFeedbackModal = ({ type = 'success', title, message, confirmText = 'OK', cancelText = 'Cancel', onConfirm, onCancel }) => {
+                // 1. Set Icons and Colors
+                if (type === 'danger') {
+                    // Red / Trash
+                    feedbackIconContainer.className = "mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 bg-red-100";
+                    feedbackIconContainer.innerHTML = `<svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+                    feedbackConfirmBtn.className = "px-6 py-3 rounded-xl font-bold text-white transition-colors flex-1 shadow-md hover:shadow-lg bg-red-500 hover:bg-red-600";
+                } else if (type === 'warning') {
+                    // Yellow / Exclamation '!'
+                    feedbackIconContainer.className = "mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 bg-yellow-100";
+                    feedbackIconContainer.innerHTML = `<svg class="w-10 h-10 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                    feedbackConfirmBtn.className = "px-6 py-3 rounded-xl font-bold text-white transition-colors flex-1 shadow-md hover:shadow-lg bg-yellow-500 hover:bg-yellow-600";
+                } else {
+                    // Green / Check
+                    feedbackIconContainer.className = "mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 bg-green-100";
+                    feedbackIconContainer.innerHTML = `<svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                    feedbackConfirmBtn.className = "px-6 py-3 rounded-xl font-bold text-white transition-colors flex-1 shadow-md hover:shadow-lg bg-green-700 hover:bg-green-800";
+                }
+
+                // 2. Set Content
+                feedbackTitle.textContent = title;
+                feedbackMessage.textContent = message;
+                feedbackConfirmBtn.textContent = confirmText;
+
+                // 3. Handle Buttons
+                if (onConfirm) {
+                    // It's a choice modal (Confirm/Cancel)
+                    feedbackCancelBtn.classList.remove('hidden');
+                    feedbackCancelBtn.textContent = cancelText;
+                    currentConfirmCallback = onConfirm;
+                    currentCancelCallback = onCancel;
+
+                    feedbackConfirmBtn.onclick = () => {
+                        if (currentConfirmCallback) currentConfirmCallback();
+                        closeFeedbackModal();
+                    };
+                } else {
+                    // It's an alert modal (OK only)
+                    feedbackCancelBtn.classList.add('hidden');
+                    feedbackConfirmBtn.onclick = () => {
+                        closeFeedbackModal();
+                    };
+                }
+
+                // 4. Show
+                feedbackModal.classList.remove('hidden');
+            };
+
+            // Make it globally accessible for inline event handlers if needed
+            window.showFeedbackModal = showFeedbackModal;
+
+            // Initial render of all components
             rerenderAll();
             showPage('home'); // Set default page to 'home'
         });
+
+        /*
+        // =================================================================
+        // CUSTOM FEEDBACK MODAL UTILITY
+        // =================================================================
+        const feedbackModal = document.getElementById('feedback-modal');
+        const feedbackIconContainer = document.getElementById('feedback-icon-container');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const feedbackCancelBtn = document.getElementById('feedback-cancel-btn');
+        const feedbackConfirmBtn = document.getElementById('feedback-confirm-btn');
+
+        // Stored callbacks
+        let currentConfirmCallback = null;
+        let currentCancelCallback = null;
+
+        const closeFeedbackModal = () => {
+            feedbackModal.classList.add('hidden');
+            currentConfirmCallback = null;
+            currentCancelCallback = null;
+        };
+
+        // Re-attach listeners outside to avoid duplicates
+        feedbackCancelBtn.onclick = () => {
+            if (currentCancelCallback) currentCancelCallback();
+            closeFeedbackModal();
+        };
+
+        const showFeedbackModal = ({ type = 'success', title, message, confirmText = 'OK', cancelText = 'Cancel', onConfirm, onCancel }) => {
+            // 1. Set Icons and Colors
+            if (type === 'danger') {
+                // Red / Trash
+                feedbackIconContainer.className = "mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 bg-red-100";
+                feedbackIconContainer.innerHTML = `<svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+                feedbackConfirmBtn.className = "px-6 py-3 rounded-xl font-bold text-white transition-colors flex-1 shadow-md hover:shadow-lg bg-red-500 hover:bg-red-600";
+            } else if (type === 'warning') {
+                // Yellow / Exclamation '!'
+                feedbackIconContainer.className = "mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 bg-yellow-100";
+                // Using a simple exclamation mark icon (heroicons outline exclamation-circle style or similar)
+                feedbackIconContainer.innerHTML = `<svg class="w-10 h-10 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                feedbackConfirmBtn.className = "px-6 py-3 rounded-xl font-bold text-white transition-colors flex-1 shadow-md hover:shadow-lg bg-yellow-500 hover:bg-yellow-600";
+            } else {
+                // Green / Check
+                feedbackIconContainer.className = "mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 bg-green-100";
+                feedbackIconContainer.innerHTML = `<svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                feedbackConfirmBtn.className = "px-6 py-3 rounded-xl font-bold text-white transition-colors flex-1 shadow-md hover:shadow-lg bg-green-700 hover:bg-green-800";
+            }
+
+            // 2. Set Content
+            feedbackTitle.textContent = title;
+            feedbackMessage.textContent = message;
+            feedbackConfirmBtn.textContent = confirmText;
+
+            // 3. Handle Buttons
+            if (onConfirm) {
+                // It's a choice modal (Confirm/Cancel)
+                feedbackCancelBtn.classList.remove('hidden');
+                feedbackCancelBtn.textContent = cancelText;
+                currentConfirmCallback = onConfirm;
+                currentCancelCallback = onCancel;
+
+                feedbackConfirmBtn.onclick = () => {
+                    if (currentConfirmCallback) currentConfirmCallback();
+                    closeFeedbackModal();
+                };
+            } else {
+                // It's an alert modal (OK only)
+                feedbackCancelBtn.classList.add('hidden');
+                feedbackConfirmBtn.onclick = () => {
+                    closeFeedbackModal();
+                };
+            }
+
+            // 4. Show
+            feedbackModal.classList.remove('hidden');
+        };
+        */
     </script>
+    <!-- Generic Feedback Modal -->
+    <div id="feedback-modal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center backdrop-blur-sm">
+        <div
+            class="relative mx-auto p-8 border w-96 shadow-lg rounded-2xl bg-white text-center transform transition-all scale-100">
+            <!-- Icon Container -->
+            <div id="feedback-icon-container"
+                class="mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6">
+                <!-- Icon SVG will be injected here -->
+            </div>
+
+            <!-- Content -->
+            <h3 id="feedback-title" class="text-2xl font-bold text-gray-900 mb-2"></h3>
+            <p id="feedback-message" class="text-gray-500 mb-8"></p>
+
+            <!-- Buttons -->
+            <div id="feedback-actions" class="flex justify-center gap-4">
+                <button id="feedback-cancel-btn"
+                    class="hidden px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors flex-1">Cancel</button>
+                <button id="feedback-confirm-btn"
+                    class="px-6 py-3 rounded-xl font-bold text-white transition-colors flex-1 shadow-md hover:shadow-lg">OK</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
