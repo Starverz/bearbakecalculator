@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dessert Cost Calculator</title>
+    <title>BearBake Calculator</title>
     <link rel="icon" type="image/x-icon" href="LogoBB.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -506,6 +506,150 @@
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.08);
             transform: translateY(-2px);
         }
+
+        /* Optimizer Modal Styles */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(233, 68, 139, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(233, 68, 139, 0.5);
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .optimizer-modal-content {
+            animation: slideInUp 0.4s ease-out forwards;
+        }
+
+        .optimizer-stat-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(233, 68, 139, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .optimizer-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(233, 68, 139, 0.15);
+            border-color: rgba(233, 68, 139, 0.3);
+        }
+
+        .optimizer-stat-value {
+            animation: countUp 0.6s ease-out forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .optimizer-table-row {
+            transition: all 0.2s ease;
+        }
+
+        .optimizer-table-row:hover {
+            background-color: #fef2f6;
+            transform: scale(1.005);
+        }
+
+        .savings-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            animation: pulseGlow 2s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+
+        .switch-btn-row {
+            transition: all 0.2s ease;
+        }
+
+        .switch-btn-row:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(233, 68, 139, 0.3);
+        }
+
+        .optimizer-header-gradient {
+            background: linear-gradient(135deg, #e9448b 0%, #d52770 50%, #b41d5a 100%);
+        }
+
+        .optimizer-scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #f9bed7 #fef2f6;
+        }
+
+        .optimizer-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .optimizer-scroll-container::-webkit-scrollbar-track {
+            background: #fef2f6;
+            border-radius: 4px;
+        }
+
+        .optimizer-scroll-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #f9bed7 0%, #e9448b 100%);
+            border-radius: 4px;
+        }
+
+        .price-compare-arrow {
+            animation: bounceRight 1s ease-in-out infinite;
+        }
+
+        @keyframes bounceRight {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(4px);
+            }
+        }
+
+        .apply-all-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: all 0.3s ease;
+        }
+
+        .apply-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .close-optimizer-btn {
+            transition: all 0.2s ease;
+        }
+
+        .close-optimizer-btn:hover {
+            background-color: #f3f4f6;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 
@@ -544,24 +688,139 @@
         <nav>
             <ul class="space-y-2">
                 <li><a href="#" id="nav-home"
-                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Home</span></a>
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span>Home</span></a>
                 </li>
 
                 <li><a href="#" id="nav-recipes"
-                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Recipes</span></a>
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span>Recipes</span></a>
                 </li>
                 <li><a href="#" id="nav-ingredients"
-                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Ingredients</span></a>
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span>Ingredients</span></a>
+                </li>
+                <!-- Financial Management Section -->
+                <li class="pt-4 pb-1">
+                    <span class="text-xs font-semibold text-brand-pink-200 uppercase tracking-wider px-3">Financial
+                        Management</span>
+                </li>
+                <li><a href="#" id="nav-supplier"
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Supplier Comparison</span></a>
                 </li>
                 <li><a href="#" id="nav-budget"
-                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Production
-                            & Budget</span></a></li>
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <span>Production & Budget</span></a></li>
                 <li><a href="#" id="nav-settings"
-                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200"><span>Settings</span></a>
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>Settings</span></a>
                 </li>
             </ul>
         </nav>
     </aside>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-brand-pink-600 z-50 text-white p-6 hidden flex-col">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold">Menu</h2>
+            <button id="close-mobile-menu-btn" class="p-2 hover:bg-white/10 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <nav class="flex-1">
+            <ul class="space-y-4 text-lg">
+                <li><a href="#" id="mob-nav-home"
+                        class="flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Home</a></li>
+                <li><a href="#" id="mob-nav-recipes"
+                        class="flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        Recipes</a></li>
+                <li><a href="#" id="mob-nav-ingredients"
+                        class="flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        Ingredients</a></li>
+                <!-- Financial Management Section Mobile -->
+                <li class="pt-4 pb-1">
+                    <span class="text-xs font-semibold text-brand-pink-200 uppercase tracking-wider">Financial
+                        Management</span>
+                </li>
+                <li><a href="#" id="mob-nav-supplier"
+                        class="flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Supplier Comparison</a></li>
+                <li><a href="#" id="mob-nav-budget"
+                        class="flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Production & Budget</a></li>
+                <li><a href="#" id="mob-nav-settings"
+                        class="flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Settings</a></li>
+            </ul>
+        </nav>
+    </div>
 
     <main class="flex-1 p-4 md:p-8 lg:p-10 w-full overflow-x-hidden">
 
@@ -949,6 +1208,105 @@
 
                 <div id="recipe-book-list" class="space-y-8"></div>
                 <div id="recipe-book-pagination" class="mt-8 flex justify-center items-center space-x-2"></div>
+            </div>
+        </div>
+        <div id="supplier-dashboard-page" class="hidden space-y-6 fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Supplier Comparison</h2>
+                    <p class="text-gray-500 mt-1">Analyze ingredient costs across different vendors to maximize savings.
+                    </p>
+                </div>
+                <button id="optimize-shopping-list-btn"
+                    class="py-2.5 px-6 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-md hover:bg-brand-pink-700 transition-all flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Run Shopping List Optimizer
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-brand-pink-100 flex items-center gap-4">
+                    <div class="p-3 bg-brand-pink-50 text-brand-pink-600 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Suppliers</h4>
+                        <p class="text-2xl font-bold text-gray-800" id="total-suppliers-count">0</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-green-100 flex items-center gap-4">
+                    <div class="p-3 bg-green-50 text-green-600 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Ingredients Checked</h4>
+                        <p class="text-2xl font-bold text-gray-800" id="ingredients-checked-count">0</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-100 flex items-center gap-4">
+                    <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Cost Variance</h4>
+                        <p class="text-sm text-gray-500">Price difference between highest & lowest</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h3 class="text-xl font-bold text-gray-800">Wholesale Value Matrix</h3>
+                    <div class="flex items-center gap-2">
+
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" id="supplier-search-input" placeholder="Filter ingredients..."
+                                class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-pink-500 focus:border-brand-pink-500 outline-none w-64">
+                        </div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-bold tracking-wider">
+                            <tr>
+                                <th class="p-4 border-b w-12 text-center">#</th>
+                                <th class="p-4 border-b">Name</th>
+                                <th class="p-4 border-b">Active Source</th>
+                                <th class="p-4 border-b">Best Price</th>
+                                <th class="p-4 border-b text-center">Status</th>
+                                <th class="p-4 border-b text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplier-matrix-body"
+                            class="text-sm text-gray-700 divide-y divide-gray-100 bg-white">
+                            <!-- Rows generated by JS -->
+                        </tbody>
+                    </table>
+                    <div id="supplier-empty-state" class="hidden p-8 text-center text-gray-500">
+                        No ingredients found. Add ingredients with multiple suppliers to see the comparison.
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -1465,6 +1823,9 @@
             </div>
         </div>
     </div>
+    <!-- Supplier Dashboard Page -->
+
+
     <div id="planner-day-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
             <div class="p-5 border-b flex justify-between items-center">
@@ -1483,42 +1844,7 @@
 
     <input type="file" id="import-file-input" class="hidden" accept=".json">
 
-    <!-- Mobile Navigation Drawer -->
-    <div id="mobile-menu-overlay"
-        class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity duration-300 opacity-0"></div>
-    <div id="mobile-menu-drawer"
-        class="fixed top-0 right-0 w-64 h-full bg-brand-pink-700 text-white z-50 transform translate-x-full transition-transform duration-300 shadow-xl flex flex-col p-6">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-bold">Menu</h2>
-            <button id="close-mobile-menu-btn"
-                class="text-white focus:outline-none hover:bg-white/10 p-1 rounded-full text-brand-pink-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-        <nav class="flex-1">
-            <ul class="space-y-4">
-                <li><a href="#" id="mobile-nav-home"
-                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Home</a>
-                </li>
-                <li><a href="#" id="mobile-nav-recipes"
-                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Recipes</a>
-                </li>
-                <li><a href="#" id="mobile-nav-ingredients"
-                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Ingredients</a>
-                </li>
-                <li><a href="#" id="mobile-nav-budget"
-                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Production
-                        &
-                        Budget</a></li>
-                <li><a href="#" id="mobile-nav-settings"
-                        class="block text-lg font-medium hover:bg-white/10 p-2 rounded-lg transition-colors">Settings</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -1541,50 +1867,42 @@
 
             // --- MOBILE MENU ELEMENTS ---
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
             const closeMobileMenuBtn = document.getElementById('close-mobile-menu-btn');
-            const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
-            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-            const mobileNavLinks = [
-                { id: 'mobile-nav-home', page: 'home' },
-                { id: 'mobile-nav-recipes', page: 'recipes' },
-                { id: 'mobile-nav-ingredients', page: 'ingredients' },
-                { id: 'mobile-nav-budget', page: 'budget' },
-                { id: 'mobile-nav-settings', page: 'settings' }
+            const mobNavLinks = [
+                document.getElementById('mob-nav-home'),
+                document.getElementById('mob-nav-recipes'),
+                document.getElementById('mob-nav-ingredients'),
+                document.getElementById('mob-nav-budget'),
+                document.getElementById('mob-nav-supplier'),
+                document.getElementById('mob-nav-settings')
             ];
 
-            // --- MOBILE MENU LOGIC ---
-            function openMobileMenu() {
-                mobileMenuOverlay.classList.remove('hidden');
-                // Trigger reflow for transition
-                void mobileMenuOverlay.offsetWidth;
-                mobileMenuOverlay.classList.remove('opacity-0');
+            // Mobile Menu Logic
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('flex');
+            });
 
-                mobileMenuDrawer.classList.remove('translate-x-full');
-            }
+            closeMobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+            });
 
-            function closeMobileMenu() {
-                mobileMenuOverlay.classList.add('opacity-0');
-                mobileMenuDrawer.classList.add('translate-x-full');
-
-                setTimeout(() => {
-                    mobileMenuOverlay.classList.add('hidden');
-                }, 300);
-            }
-
-            if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileMenu);
-            if (closeMobileMenuBtn) closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
-            if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenu);
-
-            mobileNavLinks.forEach(linkObj => {
-                const linkEl = document.getElementById(linkObj.id);
-                if (linkEl) {
-                    linkEl.addEventListener('click', (e) => {
+            mobNavLinks.forEach(link => {
+                if (link) {
+                    link.addEventListener('click', (e) => {
                         e.preventDefault();
-                        showPage(linkObj.page);
-                        closeMobileMenu();
+                        mobileMenu.classList.add('hidden');
+                        mobileMenu.classList.remove('flex');
+                        const targetId = link.id.replace('mob-nav-', '');
+                        showPage(targetId);
                     });
                 }
             });
+
+
+
 
             // --- INGREDIENT PAGE ELEMENTS ---
             const ingredientListDiv = document.getElementById('ingredient-list');
@@ -1662,6 +1980,17 @@
             const importDataBtn = document.getElementById('import-data-btn');
             const importFileInput = document.getElementById('import-file-input');
             const resetDataBtn = document.getElementById('reset-data-btn');
+
+            // --- SUPPLIER DASHBOARD ELEMENTS ---
+            const navSupplier = document.getElementById('nav-supplier');
+            const mobNavSupplier = document.getElementById('mob-nav-supplier');
+            const supplierDashboardPage = document.getElementById('supplier-dashboard-page');
+            const supplierMatrixBody = document.getElementById('supplier-matrix-body');
+            const supplierSearchInput = document.getElementById('supplier-search-input');
+            const totalSuppliersCount = document.getElementById('total-suppliers-count');
+            const ingredientsCheckedCount = document.getElementById('ingredients-checked-count');
+            const optimizeShoppingListBtn = document.getElementById('optimize-shopping-list-btn');
+            const supplierEmptyState = document.getElementById('supplier-empty-state');
 
             // --- DATA & STATE ---
             let ingredients = JSON.parse(localStorage.getItem('ingredients')) || [];
@@ -4818,35 +5147,473 @@
             recipeBookSortSelect.addEventListener('change', () => renderRecipeBook());
 
 
+            // --- SUPPLIER DASHBOARD LOGIC ---
+            const getNormalizedPrice = (price, weight, unit) => {
+                if (!price || !weight || weight === 0) return 0;
+                // Standardize to per gram or per unit (simplification)
+                return price / weight;
+            };
+
+            const renderSupplierDashboard = () => {
+                supplierMatrixBody.innerHTML = '';
+                const searchTerm = supplierSearchInput.value.toLowerCase();
+                let visibleCount = 0;
+                let totalSuppliers = new Set();
+                let minMaxDiff = 0;
+                let totalPotentialSavings = 0;
+
+                const filteredIngredients = ingredients.filter(ing => ing.name.toLowerCase().includes(searchTerm));
+
+                if (filteredIngredients.length === 0) {
+                    supplierEmptyState.classList.remove('hidden');
+                    supplierMatrixBody.parentElement.classList.add('hidden');
+                } else {
+                    supplierEmptyState.classList.add('hidden');
+                    supplierMatrixBody.parentElement.classList.remove('hidden');
+                }
+
+                filteredIngredients.forEach(ing => {
+                    const suppliers = ing.suppliers || [{
+                        supplierName: ing.supplier || 'Unknown',
+                        price: ing.price,
+                        weight: ing.weight,
+                        unit: ing.unit,
+                        active: true
+                    }];
+
+                    // Collect stats
+                    suppliers.forEach(s => {
+                        if (s.supplierName) totalSuppliers.add(s.supplierName);
+                    });
+
+                    // Calculate Best Price, Highest Price, and variance
+                    let bestPrice = Infinity;
+                    let highestPrice = 0;
+                    let bestSupplier = null;
+                    let activeSupplierData = null;
+
+                    suppliers.forEach(s => {
+                        const normPrice = getNormalizedPrice(s.price, s.weight, s.unit);
+                        if (normPrice > 0) {
+                            if (normPrice < bestPrice) {
+                                bestPrice = normPrice;
+                                bestSupplier = s;
+                            }
+                            if (normPrice > highestPrice) {
+                                highestPrice = normPrice;
+                            }
+                        }
+                        if (s.active) {
+                            activeSupplierData = s;
+                        }
+                    });
+
+                    if (!activeSupplierData) activeSupplierData = suppliers[0];
+                    const activeNormPrice = getNormalizedPrice(activeSupplierData.price, activeSupplierData.weight, activeSupplierData.unit);
+
+                    // Calculate savings potential and variance
+                    const savingsRM = activeNormPrice > bestPrice ? (activeNormPrice - bestPrice) * activeSupplierData.weight : 0;
+                    const savingsPercent = activeNormPrice > 0 && activeNormPrice > bestPrice ? ((activeNormPrice - bestPrice) / activeNormPrice) * 100 : 0;
+                    const priceVariance = highestPrice > 0 && bestPrice < Infinity ? ((highestPrice - bestPrice) / bestPrice) * 100 : 0;
+
+                    if (bestPrice !== Infinity && activeNormPrice > bestPrice) {
+                        minMaxDiff += savingsRM;
+                        totalPotentialSavings += savingsRM;
+                    }
+
+                    visibleCount++;
+
+                    // Render Row
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 transition-colors';
+
+                    const isOptimal = activeSupplierData === bestSupplier || Math.abs(activeNormPrice - bestPrice) < 0.0001;
+
+                    const supplierBadges = suppliers.map(s => {
+                        const norm = getNormalizedPrice(s.price, s.weight, s.unit);
+                        const isBest = Math.abs(norm - bestPrice) < 0.0001;
+                        const isActive = s.active;
+                        let color = 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 hover:border-gray-300';
+                        if (isBest && isActive) {
+                            color = 'bg-green-100 text-green-700 border-green-300 ring-2 ring-green-400/30';
+                        } else if (isBest) {
+                            color = 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:border-green-300 hover:ring-2 hover:ring-green-400/20';
+                        } else if (isActive) {
+                            color = 'bg-brand-pink-50 text-brand-pink-600 border-brand-pink-200';
+                        }
+                        const activeIcon = isActive ? '✓ ' : '';
+                        const bestIcon = isBest ? '★ ' : '';
+                        const cursorClass = isActive ? 'cursor-default' : 'cursor-pointer';
+                        const hoverTitle = isActive ? 'Currently active' : `Click to switch to ${s.supplierName}`;
+                        return `<button class="supplier-badge-btn inline-block text-sm px-2.5 py-1.5 rounded-md border ${color} mr-1 mb-1 whitespace-nowrap transition-all ${cursorClass} ${!isActive ? 'hover:shadow-sm hover:scale-[1.02]' : ''}" 
+                                data-ingredient-id="${ing.id}" 
+                                data-supplier-name="${s.supplierName}"
+                                data-is-active="${isActive}"
+                                title="${hoverTitle}">
+                            ${bestIcon}${activeIcon}${s.supplierName} <span class="font-semibold">(RM${norm.toFixed(2)}/u)</span>
+                         </button>`;
+                    }).join('');
+
+                    const categoryBadge = ing.category
+                        ? `<span class="text-[9px] px-1.5 py-0.5 bg-purple-50 text-purple-600 rounded-full border border-purple-100">${ing.category}</span>`
+                        : '';
+
+                    row.innerHTML = `
+                        <td class="p-3 border-b text-center text-gray-400">${visibleCount}</td>
+                        <td class="p-3 border-b">
+                            <div class="font-semibold text-gray-800 text-base">${ing.name}</div>
+                            <div class="flex items-center gap-2 mt-1">
+                                ${categoryBadge}
+                                <span class="text-[10px] text-gray-400">${suppliers.length} supplier${suppliers.length > 1 ? 's' : ''}</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-2 border-b whitespace-nowrap">
+                            <span class="font-bold text-gray-700 text-sm">${activeSupplierData.supplierName}</span>
+                            <div class="text-[11px] text-brand-pink-500">RM${activeSupplierData.price.toFixed(2)}/${activeSupplierData.weight}${activeSupplierData.unit}</div>
+                        </td>
+                        <td class="px-2 py-2 border-b whitespace-nowrap">
+                            <span class="font-bold text-green-600 text-sm">${bestSupplier ? bestSupplier.supplierName : '-'}</span>
+                            <div class="text-[11px] text-green-500">${bestSupplier ? `RM${bestSupplier.price.toFixed(2)}/${bestSupplier.weight}${bestSupplier.unit}` : ''}</div>
+                        </td>
+                        <td class="px-2 py-2 border-b text-center whitespace-nowrap">
+                            ${isOptimal
+                            ? `<span class="px-2.5 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase">✓ Best</span>`
+                            : `<div class="flex flex-col items-center">
+                                <span class="px-2.5 py-1 bg-amber-50 text-amber-600 text-[10px] font-bold rounded-full uppercase border border-amber-200">Overpay</span>
+                                <span class="text-[10px] font-bold text-red-500">-RM${savingsRM.toFixed(2)}</span>
+                               </div>`}
+                        </td>
+                        <td class="px-2 py-2 border-b align-middle text-center">
+                            <div class="flex flex-wrap gap-1 items-center justify-center">
+                                ${supplierBadges}
+                            </div>
+                        </td>
+                    `;
+                    supplierMatrixBody.appendChild(row);
+                });
+
+                totalSuppliersCount.textContent = totalSuppliers.size;
+                ingredientsCheckedCount.textContent = visibleCount;
+            };
+
+            supplierMatrixBody.addEventListener('click', (e) => {
+                // Handle the main switch button in the Action column
+                if (e.target.classList.contains('switch-supplier-btn')) {
+                    const ingId = parseInt(e.target.dataset.id);
+                    const targetSupplierName = e.target.dataset.supplier;
+                    const ing = ingredients.find(i => i.id === ingId);
+
+                    if (ing && ing.suppliers) {
+                        ing.suppliers.forEach(s => {
+                            s.active = s.supplierName === targetSupplierName;
+                        });
+                        const newActive = ing.suppliers.find(s => s.active);
+                        if (newActive) {
+                            ing.price = newActive.price;
+                            ing.weight = newActive.weight;
+                            ing.unit = newActive.unit;
+                            ing.supplier = newActive.supplierName;
+                        }
+                        saveIngredients();
+                        rerenderAll(); // Update ingredients list with new prices
+                        renderSupplierDashboard();
+                        showFeedbackModal({
+                            type: 'success',
+                            title: 'Supplier Switched',
+                            message: `Active supplier switched to ${targetSupplierName}. Recipes updated.`
+                        });
+                    }
+                }
+
+                // Handle clicks on supplier badge buttons
+                const badgeBtn = e.target.closest('.supplier-badge-btn');
+                if (badgeBtn && badgeBtn.dataset.isActive !== 'true') {
+                    const ingId = parseInt(badgeBtn.dataset.ingredientId);
+                    const targetSupplierName = badgeBtn.dataset.supplierName;
+                    const ing = ingredients.find(i => i.id === ingId);
+
+                    if (ing && ing.suppliers) {
+                        ing.suppliers.forEach(s => {
+                            s.active = s.supplierName === targetSupplierName;
+                        });
+                        const newActive = ing.suppliers.find(s => s.active);
+                        if (newActive) {
+                            ing.price = newActive.price;
+                            ing.weight = newActive.weight;
+                            ing.unit = newActive.unit;
+                            ing.supplier = newActive.supplierName;
+                        }
+                        saveIngredients();
+                        rerenderAll(); // Update ingredients list with new prices
+                        renderSupplierDashboard();
+                        showFeedbackModal({
+                            type: 'success',
+                            title: 'Supplier Switched',
+                            message: `Switched ${ing.name} to ${targetSupplierName}. Recipes updated.`
+                        });
+                    }
+                }
+            });
+
+            const runShoppingListOptimizer = () => {
+                // DOM references for optimizer modal
+                const optimizerModal = document.getElementById('optimizer-modal');
+                const optimizerTableBody = document.getElementById('optimizer-table-body');
+                const optimizerEmptyState = document.getElementById('optimizer-empty-state');
+                const optTotalSavings = document.getElementById('opt-total-savings');
+                const optAvgSavings = document.getElementById('opt-avg-savings');
+                const optItemsCount = document.getElementById('opt-items-count');
+                const optSuppliersCount = document.getElementById('opt-suppliers-count');
+                const applyAllBtn = document.getElementById('apply-all-optimizations-btn');
+                const closeOptimizerBtn = document.getElementById('close-optimizer-btn');
+                const closeOptimizerBtnFooter = document.getElementById('close-optimizer-btn-footer');
+
+                let optimizations = [];
+                let totalSavingsRM = 0;
+                const targetSuppliers = new Set();
+
+                ingredients.forEach(ing => {
+                    const suppliers = ing.suppliers || [];
+                    if (suppliers.length < 2) return;
+
+                    let bestSupplier = null;
+                    let bestPrice = Infinity;
+                    let bestNorm = Infinity;
+                    let currentActive = null;
+
+                    suppliers.forEach(s => {
+                        const norm = getNormalizedPrice(s.price, s.weight, s.unit);
+                        if (norm > 0 && norm < bestNorm) {
+                            bestNorm = norm;
+                            bestPrice = s.price;
+                            bestSupplier = s;
+                        }
+                        if (s.active) currentActive = s;
+                    });
+                    if (!currentActive) currentActive = suppliers[0];
+
+                    if (bestSupplier && currentActive && bestSupplier.supplierName !== currentActive.supplierName) {
+                        const currentNorm = getNormalizedPrice(currentActive.price, currentActive.weight, currentActive.unit);
+                        const savingsPercent = ((currentNorm - bestNorm) / currentNorm) * 100;
+                        // Estimate savings in RM based on per-unit difference (simplified)
+                        const savingsRM = Math.abs(currentActive.price - bestSupplier.price);
+
+                        if (savingsPercent > 0) {
+                            targetSuppliers.add(bestSupplier.supplierName);
+                            totalSavingsRM += savingsRM;
+                            optimizations.push({
+                                ingredientName: ing.name,
+                                ingredientId: ing.id,
+                                category: ing.category || 'Uncategorized',
+                                currentSupplier: currentActive.supplierName,
+                                currentPrice: currentActive.price,
+                                currentWeight: currentActive.weight,
+                                currentUnit: currentActive.unit,
+                                currentNorm: currentNorm,
+                                bestSupplier: bestSupplier.supplierName,
+                                bestPrice: bestSupplier.price,
+                                bestWeight: bestSupplier.weight,
+                                bestUnit: bestSupplier.unit,
+                                bestNorm: bestNorm,
+                                savingsPercent: savingsPercent,
+                                savingsRM: savingsRM
+                            });
+                        }
+                    }
+                });
+
+                // Calculate average savings
+                const avgSavings = optimizations.length > 0
+                    ? optimizations.reduce((sum, o) => sum + o.savingsPercent, 0) / optimizations.length
+                    : 0;
+
+                // Update stats
+                optTotalSavings.textContent = `RM ${totalSavingsRM.toFixed(2)}`;
+                optAvgSavings.textContent = `${avgSavings.toFixed(1)}%`;
+                optItemsCount.textContent = optimizations.length;
+                optSuppliersCount.textContent = targetSuppliers.size;
+
+                // Clear and populate table
+                optimizerTableBody.innerHTML = '';
+
+                if (optimizations.length > 0) {
+                    optimizerEmptyState.classList.add('hidden');
+                    optimizerTableBody.parentElement.classList.remove('hidden');
+                    applyAllBtn.classList.remove('hidden');
+
+                    optimizations.forEach((opt, index) => {
+                        const row = document.createElement('tr');
+                        row.className = 'optimizer-table-row text-xs';
+                        row.innerHTML = `
+                            <td class="px-3 py-2">
+                                <div class="font-semibold text-gray-800 text-sm">${opt.ingredientName}</div>
+                                <span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded-full">${opt.category}</span>
+                            </td>
+                            <td class="px-3 py-2">
+                                <div class="font-medium text-gray-700 text-xs">${opt.currentSupplier}</div>
+                                <div class="text-[10px] text-gray-400">RM${opt.currentPrice.toFixed(2)}/${opt.currentWeight}${opt.currentUnit}</div>
+                            </td>
+                            <td class="px-2 py-2 text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    <span class="text-red-500 font-medium line-through text-[11px]">RM${opt.currentNorm.toFixed(2)}/u</span>
+                                    <svg class="price-compare-arrow h-3 w-3 text-brand-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                    <span class="text-green-600 font-semibold text-[11px]">RM${opt.bestNorm.toFixed(2)}/u</span>
+                                </div>
+                            </td>
+                            <td class="px-3 py-2">
+                                <div class="font-medium text-green-700 text-xs">${opt.bestSupplier}</div>
+                                <div class="text-[10px] text-gray-400">RM${opt.bestPrice.toFixed(2)}/${opt.bestWeight}${opt.bestUnit}</div>
+                            </td>
+                            <td class="px-2 py-2 text-right">
+                                <div class="savings-badge inline-flex items-center gap-0.5 px-2 py-1 rounded-full text-white text-[11px] font-bold">
+                                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                    </svg>
+                                    ${opt.savingsPercent.toFixed(1)}%
+                                </div>
+                                <div class="text-[9px] text-gray-400 mt-0.5">Save RM${opt.savingsRM.toFixed(2)}</div>
+                            </td>
+                            <td class="px-2 py-2 text-center align-middle">
+                                <button class="switch-btn-row px-3 py-1.5 bg-brand-pink-500 text-white text-[11px] font-semibold rounded-md hover:bg-brand-pink-600" 
+                                        data-ingredient-id="${opt.ingredientId}" 
+                                        data-target-supplier="${opt.bestSupplier}">
+                                    Switch
+                                </button>
+                            </td>
+                        `;
+                        optimizerTableBody.appendChild(row);
+                    });
+                } else {
+                    optimizerEmptyState.classList.remove('hidden');
+                    optimizerTableBody.parentElement.classList.add('hidden');
+                    applyAllBtn.classList.add('hidden');
+                }
+
+                // Show modal
+                optimizerModal.classList.remove('hidden');
+
+                // Close modal handlers
+                const closeModal = () => optimizerModal.classList.add('hidden');
+                closeOptimizerBtn.onclick = closeModal;
+                closeOptimizerBtnFooter.onclick = closeModal;
+                optimizerModal.onclick = (e) => {
+                    if (e.target === optimizerModal) closeModal();
+                };
+
+                // Individual switch button handler
+                optimizerTableBody.onclick = (e) => {
+                    const switchBtn = e.target.closest('.switch-btn-row');
+                    if (switchBtn) {
+                        const ingredientId = parseInt(switchBtn.dataset.ingredientId, 10);
+                        const targetSupplierName = switchBtn.dataset.targetSupplier;
+
+                        const ing = ingredients.find(i => i.id === ingredientId);
+                        if (ing && ing.suppliers) {
+                            ing.suppliers.forEach(s => s.active = false);
+                            const newActive = ing.suppliers.find(s => s.supplierName === targetSupplierName);
+                            if (newActive) {
+                                newActive.active = true;
+                                ing.price = newActive.price;
+                                ing.weight = newActive.weight;
+                                ing.unit = newActive.unit;
+                                ing.supplier = newActive.supplierName;
+                            }
+                            saveIngredients();
+                            renderSupplierDashboard();
+
+                            // Remove this row from the table and update stats
+                            switchBtn.closest('tr').remove();
+                            const remainingRows = optimizerTableBody.querySelectorAll('tr').length;
+                            optItemsCount.textContent = remainingRows;
+
+                            if (remainingRows === 0) {
+                                closeModal();
+                                showFeedbackModal({
+                                    type: 'success',
+                                    title: 'All Optimized!',
+                                    message: 'All ingredients have been switched to their best prices.'
+                                });
+                            }
+                        }
+                    }
+                };
+
+                // Apply all optimizations
+                applyAllBtn.onclick = () => {
+                    optimizations.forEach(opt => {
+                        const ing = ingredients.find(i => i.id === opt.ingredientId);
+                        if (ing && ing.suppliers) {
+                            ing.suppliers.forEach(s => s.active = false);
+                            const newActive = ing.suppliers.find(s => s.supplierName === opt.bestSupplier);
+                            if (newActive) {
+                                newActive.active = true;
+                                ing.price = newActive.price;
+                                ing.weight = newActive.weight;
+                                ing.unit = newActive.unit;
+                                ing.supplier = newActive.supplierName;
+                            }
+                        }
+                    });
+                    saveIngredients();
+                    renderSupplierDashboard();
+                    closeModal();
+                    showFeedbackModal({
+                        type: 'success',
+                        title: 'Optimization Complete!',
+                        message: `Successfully switched ${optimizations.length} ingredients to their best prices. Total estimated savings: RM${totalSavingsRM.toFixed(2)}`
+                    });
+                };
+            };
+
+            supplierSearchInput.addEventListener('input', renderSupplierDashboard);
+            if (optimizeShoppingListBtn) optimizeShoppingListBtn.addEventListener('click', runShoppingListOptimizer);
+
             // --- Page Navigation & Initial Render ---
             const showPage = (pageToShow) => {
                 const activeClasses = ['bg-white/10', 'font-semibold'];
 
                 // Hides all pages first
-                [homePage, ingredientsPage, recipesPage, budgetPage, settingsPage, recipeBookPage].forEach(page => page && page.classList.add('hidden'));
+                [homePage, ingredientsPage, recipesPage, budgetPage, settingsPage, recipeBookPage, supplierDashboardPage].forEach(page => {
+                    if (page) {
+                        page.classList.add('hidden');
+                        page.classList.remove('fade-in');
+                    }
+                });
 
                 // Deactivates all nav links
-                [navHome, navIngredients, navRecipes, navBudget, navSettings].forEach(nav => nav.classList.remove(...activeClasses));
+                [navHome, navIngredients, navRecipes, navBudget, navSettings, navSupplier].forEach(nav => nav.classList.remove(...activeClasses));
 
                 // Shows the correct page and activates the correct nav link
+                let targetPage = null;
                 if (pageToShow === 'home') {
-                    homePage.classList.remove('hidden');
+                    targetPage = homePage;
                     navHome.classList.add(...activeClasses);
                 } else if (pageToShow === 'ingredients') {
-                    ingredientsPage.classList.remove('hidden');
+                    targetPage = ingredientsPage;
                     navIngredients.classList.add(...activeClasses);
                 } else if (pageToShow === 'recipes') {
-                    recipesPage.classList.remove('hidden');
+                    targetPage = recipesPage;
                     navRecipes.classList.add(...activeClasses);
                 } else if (pageToShow === 'budget') {
-                    budgetPage.classList.remove('hidden');
+                    targetPage = budgetPage;
                     navBudget.classList.add(...activeClasses);
                     plannerDate = new Date();
                     renderFullProductionCalendar();
                     renderTeams();
                 } else if (pageToShow === 'settings') {
-                    settingsPage.classList.remove('hidden');
+                    targetPage = settingsPage;
                     navSettings.classList.add(...activeClasses);
+                } else if (pageToShow === 'supplier') {
+                    targetPage = supplierDashboardPage;
+                    navSupplier.classList.add(...activeClasses);
+                    renderSupplierDashboard();
+                }
+
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    targetPage.classList.add('fade-in');
                 }
             };
 
@@ -4856,6 +5623,7 @@
             navRecipes.addEventListener('click', (e) => { e.preventDefault(); showPage('recipes'); });
             navBudget.addEventListener('click', (e) => { e.preventDefault(); showPage('budget'); });
             navSettings.addEventListener('click', (e) => { e.preventDefault(); showPage('settings'); });
+            navSupplier.addEventListener('click', (e) => { e.preventDefault(); showPage('supplier'); });
 
             // New listeners for buttons on Home page
             homeToRecipesBtn.addEventListener('click', (e) => { e.preventDefault(); showPage('recipes'); });
@@ -5028,6 +5796,170 @@
         };
         */
     </script>
+    <!-- Shopping List Optimizer Modal -->
+    <div id="optimizer-modal"
+        class="fixed inset-0 bg-gray-900/70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center backdrop-blur-md">
+        <div
+            class="optimizer-modal-content relative mx-4 w-full max-w-5xl shadow-2xl rounded-3xl bg-white overflow-hidden">
+            <!-- Gradient Header -->
+            <div class="optimizer-header-gradient px-8 py-6 text-white relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <defs>
+                            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" stroke-width="0.5" />
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+                    </svg>
+                </div>
+                <div class="relative flex justify-between items-start">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold">Shopping List Optimizer</h2>
+                        </div>
+                        <p class="text-white/80 text-sm">Optimize your ingredient sourcing for maximum savings</p>
+                    </div>
+                    <button id="close-optimizer-btn"
+                        class="close-optimizer-btn p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-gradient-to-b from-gray-50 to-white">
+                <div class="optimizer-stat-card rounded-2xl p-4 text-center">
+                    <div class="flex justify-center mb-2">
+                        <div class="p-2 bg-green-100 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Total Savings</p>
+                    <p id="opt-total-savings" class="optimizer-stat-value text-2xl font-bold text-green-600">RM 0.00</p>
+                </div>
+                <div class="optimizer-stat-card rounded-2xl p-4 text-center">
+                    <div class="flex justify-center mb-2">
+                        <div class="p-2 bg-brand-pink-100 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-pink-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Avg Savings</p>
+                    <p id="opt-avg-savings" class="optimizer-stat-value text-2xl font-bold text-brand-pink-600">0%</p>
+                </div>
+                <div class="optimizer-stat-card rounded-2xl p-4 text-center">
+                    <div class="flex justify-center mb-2">
+                        <div class="p-2 bg-blue-100 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Items to Switch</p>
+                    <p id="opt-items-count" class="optimizer-stat-value text-2xl font-bold text-blue-600">0</p>
+                </div>
+                <div class="optimizer-stat-card rounded-2xl p-4 text-center">
+                    <div class="flex justify-center mb-2">
+                        <div class="p-2 bg-purple-100 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Suppliers</p>
+                    <p id="opt-suppliers-count" class="optimizer-stat-value text-2xl font-bold text-purple-600">0</p>
+                </div>
+            </div>
+
+            <!-- Optimization Table -->
+            <div class="px-6 pb-6">
+                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-pink-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            Optimization Opportunities
+                        </h3>
+                    </div>
+                    <div class="optimizer-scroll-container">
+                        <table class="w-full text-left">
+                            <thead
+                                class="bg-pink-100 text-gray-500 text-[10px] uppercase tracking-wider sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-3 py-2 font-semibold">Ingredient</th>
+                                    <th class="px-3 py-2 font-semibold">Current Supplier</th>
+                                    <th class="px-2 py-2 font-semibold text-center">Price Comparison</th>
+                                    <th class="px-3 py-2 font-semibold">Best Supplier</th>
+                                    <th class="px-2 py-2 font-semibold text-right">Savings</th>
+                                    <th class="px-2 py-2 font-semibold text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="optimizer-table-body" class="divide-y divide-gray-100">
+                                <!-- Rows will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Empty state -->
+                    <div id="optimizer-empty-state" class="hidden py-12 text-center">
+                        <div class="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800 mb-2">Already Optimized!</h4>
+                        <p class="text-gray-500">All your ingredients are using the best available prices.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="px-6 pb-6 flex flex-col sm:flex-row gap-3">
+                <button id="apply-all-optimizations-btn"
+                    class="apply-all-btn flex-1 py-4 px-6 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Apply All Optimizations
+                </button>
+                <button id="close-optimizer-btn-footer"
+                    class="close-optimizer-btn py-4 px-6 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Generic Feedback Modal -->
     <div id="feedback-modal"
         class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center backdrop-blur-sm">
