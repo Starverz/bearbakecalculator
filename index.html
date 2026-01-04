@@ -125,6 +125,26 @@
             padding: 0.5rem;
         }
 
+
+        /* Custom Scrollbar for Inventory History */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
         /* Custom Components */
         .recipe-item-row {
             position: relative;
@@ -741,6 +761,15 @@
                         </svg>
                         <span>Ingredients</span></a>
                 </li>
+                <li><a href="#inventory" id="nav-inventory"
+                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                        <span>Inventory</span></a>
+                </li>
                 <!-- Financial Management Section -->
                 <li class="pt-4 pb-1">
                     <span class="text-xs font-semibold text-brand-pink-200 uppercase tracking-wider px-3">Financial
@@ -814,6 +843,14 @@
                                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                         </svg>
                         Ingredients</a></li>
+                <li><a href="#inventory" id="mob-nav-inventory"
+                        class="flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                        Inventory</a></li>
                 <!-- Financial Management Section Mobile -->
                 <li class="pt-4 pb-1">
                     <span class="text-xs font-semibold text-brand-pink-200 uppercase tracking-wider">Financial
@@ -1141,6 +1178,135 @@
             </div>
         </div>
 
+        <div id="inventory-page" class="hidden">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800">Inventory Management</h2>
+                        <p class="text-gray-500 mt-1">Track stock levels for your ingredients.</p>
+                    </div>
+                </div>
+
+                <!-- Dashboard Cards -->
+                <!-- Dashboard Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-brand-pink-100 rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-pink-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Total Items</p>
+                                <p id="inventory-total-items" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Out of Stock Alerts</p>
+                                <p id="inventory-out-of-stock-count" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Low Stock Alerts</p>
+                                <p id="inventory-low-stock-count" class="text-2xl font-bold text-amber-600">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Total Stock Value</p>
+                                <p id="inventory-total-value" class="text-2xl font-bold text-green-600">RM 0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search & Filter Controls -->
+                <div class="mb-6 flex flex-wrap gap-4">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="inventory-search-input" placeholder="Search inventory..."
+                            class="w-full p-2 pl-10 border border-gray-300 rounded-lg focus-ring">
+                    </div>
+                    <select id="inventory-filter-select"
+                        class="p-2 border border-gray-300 rounded-lg focus-ring bg-white">
+                        <option value="all">Show: All Items</option>
+                        <option value="low-stock">Low Stock Only</option>
+                        <option value="in-stock">In Stock</option>
+                        <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                    <select id="inventory-sort-select"
+                        class="p-2 border border-gray-300 rounded-lg focus-ring bg-white">
+                        <option value="name-az">Name: A-Z</option>
+                        <option value="name-za">Name: Z-A</option>
+                        <option value="stock-asc">Stock: Low to High</option>
+                        <option value="stock-desc">Stock: High to Low</option>
+                        <option value="value-desc">Value: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Inventory Grid -->
+                <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Inventory items will be rendered here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="inventory-empty-state" class="hidden text-center py-16">
+                    <div class="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">No Ingredients Yet</h3>
+                    <p class="text-gray-500 mb-4">Add ingredients to your library to start tracking inventory.</p>
+                    <button id="inventory-go-to-ingredients-btn"
+                        class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-all duration-200">
+                        Go to Ingredients
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div id="recipes-page">
             <div class="max-w-6xl mx-auto">
                 <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
@@ -1339,23 +1505,25 @@
     </main>
 
     <div id="add-ingredient-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
-            <h3 class="text-xl font-bold text-gray-800 mb-6">Add New Ingredient</h3>
-            <form id="add-ingredient-form" class="space-y-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div class="px-6 pt-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Add New Ingredient</h3>
+            </div>
+            <form id="add-ingredient-form" class="px-6 space-y-3">
                 <div>
                     <label for="add-name" class="block text-sm font-medium text-gray-700 mb-1">Ingredient Name</label>
-                    <input type="text" id="add-name" required
+                    <input type="text" id="add-name" required placeholder="e.g., All Purpose Flour"
                         class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label for="add-price" class="block text-sm font-medium text-gray-700 mb-1">Price (RM)</label>
-                        <input type="number" id="add-price" step="0.01" min="0" required
+                        <input type="number" id="add-price" step="0.01" min="0" required placeholder="10.50"
                             class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
                     </div>
                     <div>
                         <label for="add-weight" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                        <input type="number" id="add-weight" step="0.01" min="0" required
+                        <input type="number" id="add-weight" step="0.01" min="0" required placeholder="1"
                             class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
                     </div>
                     <div>
@@ -1370,14 +1538,14 @@
                         </select>
                     </div>
                 </div>
-                <div class="flex justify-end items-center pt-6 mt-4 border-t space-x-4">
-                    <button type="button" id="add-ingredient-modal-cancel-btn"
-                        class="py-2 px-4 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancel</button>
-                    <button type="submit"
-                        class="py-2 px-4 bg-brand-pink-600 text-white font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700">Add
-                        Ingredient</button>
-                </div>
             </form>
+            <div class="flex justify-end items-center px-6 py-3 border-t bg-gray-50 rounded-b-xl gap-4 mt-4">
+                <button type="button" id="add-ingredient-modal-cancel-btn"
+                    class="py-2 px-4 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                <button type="submit" form="add-ingredient-form"
+                    class="py-2 px-4 bg-brand-pink-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Add
+                    Ingredient</button>
+            </div>
         </div>
     </div>
 
@@ -1446,6 +1614,44 @@
                     <button type="button" id="add-conversion-btn"
                         class="mt-2 text-sm font-semibold text-brand-pink-600 hover:text-brand-pink-800">+ Add
                         Conversion</button>
+                </div>
+                <div class="pt-4 border-t">
+                    <h4 class="font-semibold text-gray-800 mb-1">Inventory Tracking</h4>
+                    <p class="text-sm text-gray-500 mb-3">Track stock levels for this ingredient.</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="edit-stock-qty" class="block text-sm font-medium text-gray-700 mb-1">Current
+                                Stock</label>
+                            <div class="flex">
+                                <input type="number" id="edit-stock-qty" step="0.01" min="0" placeholder="0"
+                                    class="w-full p-2 border border-gray-300 rounded-l-lg focus-ring">
+                                <select id="edit-stock-unit"
+                                    class="px-2 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg text-gray-600 text-sm focus-ring">
+                                    <option value="g">g</option>
+                                    <option value="kg">kg</option>
+                                    <option value="ml">ml</option>
+                                    <option value="l">l</option>
+                                    <option value="pcs">pcs</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="edit-reorder-level" class="block text-sm font-medium text-gray-700 mb-1">Reorder
+                                Level</label>
+                            <div class="flex">
+                                <input type="number" id="edit-reorder-level" step="0.01" min="0" placeholder="0"
+                                    class="w-full p-2 border border-gray-300 rounded-l-lg focus-ring">
+                                <span id="edit-reorder-unit"
+                                    class="px-3 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg text-gray-600 text-sm flex items-center">kg</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label for="edit-stock-location" class="block text-sm font-medium text-gray-700 mb-1">Storage
+                            Location <span class="text-gray-400">(Optional)</span></label>
+                        <input type="text" id="edit-stock-location" placeholder="e.g., Chiller A, Shelf 2"
+                            class="w-full p-2 border border-gray-300 rounded-lg focus-ring">
+                    </div>
                 </div>
                 <div class="pt-4 border-t space-y-4">
                     <div><label for="edit-supplier" class="block text-sm font-medium text-gray-700 mb-1">Supplier Name
@@ -1947,9 +2153,11 @@
             const navHome = document.getElementById('nav-home');
             const navRecipes = document.getElementById('nav-recipes');
             const navIngredients = document.getElementById('nav-ingredients');
+            const navInventory = document.getElementById('nav-inventory');
             const navBudget = document.getElementById('nav-budget');
             const navSettings = document.getElementById('nav-settings');
             const ingredientsPage = document.getElementById('ingredients-page');
+            const inventoryPage = document.getElementById('inventory-page');
             const recipesPage = document.getElementById('recipes-page');
             const budgetPage = document.getElementById('budget-page');
             const settingsPage = document.getElementById('settings-page');
@@ -1968,6 +2176,7 @@
                 document.getElementById('mob-nav-home'),
                 document.getElementById('mob-nav-recipes'),
                 document.getElementById('mob-nav-ingredients'),
+                document.getElementById('mob-nav-inventory'),
                 document.getElementById('mob-nav-budget'),
                 document.getElementById('mob-nav-supplier'),
                 document.getElementById('mob-nav-settings')
@@ -2841,6 +3050,20 @@
                 }
             };
 
+            // Toggle Inventory History
+            window.toggleHistory = (id) => {
+                const content = document.getElementById(`history-content-${id}`);
+                const icon = document.getElementById(`history-icon-${id}`);
+                if (content && icon) {
+                    content.classList.toggle('hidden');
+                    if (content.classList.contains('hidden')) {
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                }
+            };
+
             // =================================================================
             // INGREDIENT PAGE FUNCTIONS
             // =================================================================
@@ -2887,6 +3110,395 @@
                 });
                 ingredientListDiv.appendChild(table);
             };
+
+            // =================================================================
+            // INVENTORY PAGE FUNCTIONS
+            // =================================================================
+            const renderInventory = () => {
+                const inventoryListDiv = document.getElementById('inventory-list');
+                const inventoryEmptyState = document.getElementById('inventory-empty-state');
+                const inventorySearchInput = document.getElementById('inventory-search-input');
+                const inventoryFilterSelect = document.getElementById('inventory-filter-select');
+                const inventorySortSelect = document.getElementById('inventory-sort-select');
+                const inventoryTotalItems = document.getElementById('inventory-total-items');
+                const inventoryOutOfStockCount = document.getElementById('inventory-out-of-stock-count');
+                const inventoryLowStockCount = document.getElementById('inventory-low-stock-count');
+                const inventoryTotalValue = document.getElementById('inventory-total-value');
+
+                if (!inventoryListDiv) return;
+
+                inventoryListDiv.innerHTML = '';
+
+                // Process ingredients for inventory display
+                let processedIngredients = [...ingredients];
+
+                // Search filter
+                const searchTerm = inventorySearchInput?.value?.toLowerCase() || '';
+                if (searchTerm) {
+                    processedIngredients = processedIngredients.filter(ing =>
+                        ing.name.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                // Stock status filter
+                const filter = inventoryFilterSelect?.value || 'all';
+                processedIngredients = processedIngredients.filter(ing => {
+                    const stockQty = ing.inventory?.stockQty || 0;
+                    const reorderLevel = ing.inventory?.reorderLevel || 0;
+
+                    switch (filter) {
+                        case 'low-stock': return stockQty > 0 && stockQty <= reorderLevel;
+                        case 'in-stock': return stockQty > reorderLevel;
+                        case 'out-of-stock': return stockQty === 0;
+                        default: return true;
+                    }
+                });
+
+                // Sorting
+                const sortBy = inventorySortSelect?.value || 'name-az';
+                processedIngredients.sort((a, b) => {
+                    const aStock = a.inventory?.stockQty || 0;
+                    const bStock = b.inventory?.stockQty || 0;
+                    // Helper to get value
+                    const getVal = (ing) => {
+                        let w = ing.weight;
+                        if (ing.unit === 'kg') w = ing.weight * 1000;
+                        if (ing.unit === 'l') w = ing.weight * 1000;
+                        const p = w > 0 ? ing.price / w : 0;
+                        return (ing.inventory?.stockQty || 0) * p;
+                    };
+                    const aValue = getVal(a);
+                    const bValue = getVal(b);
+
+                    switch (sortBy) {
+                        case 'name-az': return a.name.localeCompare(b.name);
+                        case 'name-za': return b.name.localeCompare(a.name);
+                        case 'stock-asc': return aStock - bStock;
+                        case 'stock-desc': return bStock - aStock;
+                        case 'value-desc': return bValue - aValue;
+                        default: return 0;
+                    }
+                });
+
+                // Calculate dashboard stats
+                let totalValue = 0;
+                let lowStockCount = 0;
+                let outOfStockCount = 0;
+                ingredients.forEach(ing => {
+                    const stockQty = ing.inventory?.stockQty || 0;
+                    const reorderLevel = ing.inventory?.reorderLevel || 0;
+
+                    // Convert basic reorder level for calculation
+                    let baseReorderLevel = reorderLevel;
+                    if (ing.unit === 'kg' || ing.unit === 'l') baseReorderLevel = reorderLevel * 1000;
+
+                    let weightInBase = ing.weight;
+                    if (ing.unit === 'kg') weightInBase = ing.weight * 1000;
+                    if (ing.unit === 'l') weightInBase = ing.weight * 1000;
+
+                    const pricePerBaseUnit = weightInBase > 0 ? ing.price / weightInBase : 0;
+                    totalValue += stockQty * pricePerBaseUnit;
+
+                    // Alert Counting Logic
+                    // Low Stock Alert: <= 15% of Reorder Level (includes Out of Stock 0)
+                    if (stockQty <= baseReorderLevel * 0.15) lowStockCount++;
+                    // Out of Stock Alert: Exactly 0
+                    if (stockQty === 0) outOfStockCount++;
+                });
+
+                if (inventoryTotalItems) inventoryTotalItems.textContent = ingredients.length;
+                if (inventoryOutOfStockCount) inventoryOutOfStockCount.textContent = outOfStockCount;
+                if (inventoryLowStockCount) inventoryLowStockCount.textContent = lowStockCount;
+                if (inventoryTotalValue) inventoryTotalValue.textContent = `RM ${totalValue.toFixed(2)}`;
+
+                // Show empty state if no ingredients
+                if (ingredients.length === 0) {
+                    inventoryListDiv.classList.add('hidden');
+                    inventoryEmptyState?.classList.remove('hidden');
+                    return;
+                }
+
+                inventoryListDiv.classList.remove('hidden');
+                inventoryEmptyState?.classList.add('hidden');
+
+                // Render inventory cards
+                processedIngredients.forEach(ing => {
+                    const stockQty = ing.inventory?.stockQty || 0;
+                    const reorderLevel = ing.inventory?.reorderLevel || 0;
+                    const location = ing.inventory?.location || '';
+                    const restockHistory = ing.inventory?.restockHistory || [];
+
+                    // Calculate price per base unit (e.g., per g or ml)
+                    let weightInBase = ing.weight;
+                    if (ing.unit === 'kg') weightInBase = ing.weight * 1000;
+                    if (ing.unit === 'l') weightInBase = ing.weight * 1000;
+
+                    const pricePerBaseUnit = weightInBase > 0 ? ing.price / weightInBase : 0;
+                    const stockValue = stockQty * pricePerBaseUnit;
+
+                    // 3-Tier stock status
+                    let statusColor = 'bg-green-100 text-green-700 border-green-200';
+                    let statusText = 'In Stock';
+                    let statusIcon = '✓';
+
+                    // Prepare base reorder level for comparison
+                    let baseReorderLevel = reorderLevel;
+                    if (ing.unit === 'kg' || ing.unit === 'l') baseReorderLevel = reorderLevel * 1000;
+
+                    if (stockQty === 0) {
+                        statusColor = 'bg-red-100 text-red-700 border-red-200';
+                        statusText = 'Out of Stock';
+                        statusIcon = '✕';
+                    } else if (stockQty <= baseReorderLevel * 0.15) {
+                        statusColor = 'bg-red-100 text-red-700 border-red-200';
+                        statusText = 'Low Stock';
+                        statusIcon = '!';
+                    } else if (stockQty <= baseReorderLevel) {
+                        statusColor = 'bg-amber-100 text-amber-700 border-amber-200';
+                        statusText = 'Running Low';
+                        statusIcon = '⚠';
+                    }
+
+                    // Get base unit
+                    let baseUnit = ing.unit;
+                    if (baseUnit === 'kg') baseUnit = 'g';
+                    if (baseUnit === 'l') baseUnit = 'ml';
+
+                    // Determine display unit and quantity
+                    let displayUnit = ing.inventory?.displayUnit || baseUnit;
+                    let displayStockQty = stockQty;
+
+                    if (displayUnit === 'kg' && baseUnit === 'g') displayStockQty = stockQty / 1000;
+                    if (displayUnit === 'l' && baseUnit === 'ml') displayStockQty = stockQty / 1000;
+
+                    // Build purchase history HTML (scrollable with fade)
+                    let historyContent = '';
+                    if (restockHistory.length > 0) {
+                        const listItems = restockHistory.map(h => `
+                            <div class="flex justify-between items-center bg-gray-50 rounded-md p-1.5 shrink-0">
+                                <span class="text-gray-600">${new Date(h.date).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                <span class="font-semibold text-green-600">+${h.quantity} ${h.unit || ing.unit}</span>
+                            </div>
+                        `).join('');
+
+                        historyContent = `
+                            <div class="relative">
+                                <div class="space-y-1 overflow-y-auto max-h-[100px] pr-1 custom-scrollbar">
+                                    ${listItems}
+                                </div>
+                                ${restockHistory.length > 3 ? `
+                                <div class="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                                ` : ''}
+                            </div>
+                        `;
+                    } else {
+                        historyContent = `<p class="text-gray-400 italic text-center py-1">No recent purchases</p>`;
+                    }
+
+                    const historyHTML = `
+                        <div class="mt-2 pt-2 border-t">
+                            <button onclick="window.toggleHistory('${ing.id}')" class="flex items-center justify-between w-full text-xs font-semibold text-gray-500 uppercase mb-1 hover:text-gray-700 focus:outline-none select-none">
+                                <span>Recent Purchases</span>
+                                <svg id="history-icon-${ing.id}" class="w-4 h-4 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div id="history-content-${ing.id}" class="hidden text-xs relative group">
+                                ${historyContent}
+                            </div>
+                        </div>
+                    `;
+
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-800 text-base">${ing.name}</h3>
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full border ${statusColor}">
+                                ${statusIcon} ${statusText}
+                            </span>
+                        </div>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Current Stock:</span>
+                                <span class="font-semibold text-gray-800">${displayStockQty.toLocaleString()} ${displayUnit}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Reorder Level:</span>
+                                <span class="text-gray-600">${reorderLevel.toLocaleString()} ${ing.unit}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Stock Value:</span>
+                                <span class="font-semibold text-green-600">RM ${stockValue.toFixed(2)}</span>
+                            </div>
+                            ${location ? `
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Location:</span>
+                                <span class="text-gray-600">${location}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ${historyHTML}
+                        <div class="mt-3 pt-2 border-t flex gap-2">
+                            <button class="inventory-restock-btn flex-1 py-1.5 px-3 bg-brand-pink-50 text-brand-pink-700 font-semibold rounded-lg text-sm hover:bg-brand-pink-100 transition-colors" data-id="${ing.id}">
+                                + Restock
+                            </button>
+                            <button class="inventory-edit-btn px-3 py-1.5 bg-gray-50 text-gray-600 font-medium rounded-lg text-sm hover:bg-gray-100 transition-colors" data-id="${ing.id}">
+                                Edit
+                            </button>
+                        </div>
+                    `;
+                    inventoryListDiv.appendChild(card);
+                });
+            };
+
+            // Inventory event listeners
+            document.addEventListener('click', (e) => {
+                // Restock button
+                if (e.target.closest('.inventory-restock-btn')) {
+                    const id = parseInt(e.target.closest('.inventory-restock-btn').dataset.id, 10);
+                    openRestockModal(id);
+                }
+                // Edit from inventory
+                if (e.target.closest('.inventory-edit-btn')) {
+                    const id = parseInt(e.target.closest('.inventory-edit-btn').dataset.id, 10);
+                    openEditModal(id);
+                }
+                // Go to ingredients from empty state
+                if (e.target.id === 'inventory-go-to-ingredients-btn') {
+                    window.location.hash = '#ingredients';
+                }
+            });
+
+            // Inventory search/filter event listeners
+            const inventorySearchInput = document.getElementById('inventory-search-input');
+            const inventoryFilterSelect = document.getElementById('inventory-filter-select');
+            const inventorySortSelect = document.getElementById('inventory-sort-select');
+
+            if (inventorySearchInput) inventorySearchInput.addEventListener('input', () => renderInventory());
+            if (inventoryFilterSelect) inventoryFilterSelect.addEventListener('change', () => renderInventory());
+            if (inventorySortSelect) inventorySortSelect.addEventListener('change', () => renderInventory());
+
+            // Restock modal functions
+            const restockModal = document.getElementById('restock-modal');
+            const restockForm = document.getElementById('restock-form');
+            const restockCancelBtn = document.getElementById('restock-cancel-btn');
+
+            const openRestockModal = (ingredientId) => {
+                const ingredient = ingredients.find(ing => ing.id === ingredientId);
+                if (!ingredient) return;
+
+                // Use original purchase unit (kg, l, pcs, etc.)
+                const purchaseUnit = ingredient.unit;
+
+                // Set modal values
+                document.getElementById('restock-ingredient-id').value = ingredientId;
+                document.getElementById('restock-ingredient-name').textContent = `Adding stock for: ${ingredient.name}`;
+                document.getElementById('restock-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('restock-qty').value = '';
+
+                // Populate Unit Select
+                // Populate Unit Select (g, kg, ml, l, pcs)
+                const unitSelect = document.getElementById('restock-unit-select');
+                unitSelect.innerHTML = '';
+
+                const standardUnits = ['g', 'kg', 'ml', 'l', 'pcs'];
+                // Ensure purchaseUnit is included if weird
+                const allOptions = [...new Set([...standardUnits, purchaseUnit])];
+
+                // Sort? Or keep standard order? User image: g, kg, ml, l, pcs.
+                // We'll trust the set order or force sorting if needed. 
+                // Set keeps insertion order. 'g' is first.
+
+                allOptions.forEach(opt => {
+                    const el = document.createElement('option');
+                    el.value = opt;
+                    el.textContent = opt;
+                    if (opt === purchaseUnit) el.selected = true;
+                    unitSelect.appendChild(el);
+                });
+
+                restockModal.classList.remove('hidden');
+            };
+
+            const closeRestockModal = () => {
+                restockModal.classList.add('hidden');
+                restockForm.reset();
+            };
+
+            restockCancelBtn.addEventListener('click', closeRestockModal);
+            // Click outside to close - DISABLED (only buttons can close)
+            // restockModal.addEventListener('click', (e) => {
+            //     if (e.target === restockModal) closeRestockModal();
+            // });
+
+            restockForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const ingredientId = parseInt(document.getElementById('restock-ingredient-id').value, 10);
+                const ingredient = ingredients.find(ing => ing.id === ingredientId);
+                if (!ingredient) return;
+
+                const quantity = parseFloat(document.getElementById('restock-qty').value);
+                const purchaseDate = document.getElementById('restock-date').value;
+
+                if (isNaN(quantity) || quantity <= 0) {
+                    showFeedbackModal({
+                        type: 'warning',
+                        title: 'Invalid Quantity',
+                        message: 'Please enter a valid quantity greater than 0.'
+                    });
+                    return;
+                }
+
+                // Initialize inventory if needed
+                if (!ingredient.inventory) {
+                    ingredient.inventory = { stockQty: 0, reorderLevel: 0, location: '', restockHistory: [] };
+                }
+                if (!ingredient.inventory.restockHistory) {
+                    ingredient.inventory.restockHistory = [];
+                }
+
+                // Get selected unit and convert to base unit (g/ml)
+                const selectedUnit = document.getElementById('restock-unit-select').value;
+                let stockToAddInBase = quantity;
+
+                if (selectedUnit === 'kg') stockToAddInBase = quantity * 1000;
+                else if (selectedUnit === 'l') stockToAddInBase = quantity * 1000;
+                else if (selectedUnit === 'pcs') {
+                    // Treat 'pcs' as the ingredient's defined unit size
+                    // If ingredient is 'kg', 1 pcs = 1 kg = 1000g
+                    // If ingredient is 'g', 1 pcs = 1 g
+                    if (ingredient.unit === 'kg' || ingredient.unit === 'l') stockToAddInBase = quantity * 1000;
+                    else stockToAddInBase = quantity;
+                }
+                // g, ml are basic units (factor 1)
+
+                // Update ingredient stock (stored in base unit)
+                if (!ingredient.inventory) ingredient.inventory = { stockQty: 0, reorderLevel: 0, restockHistory: [] };
+
+                ingredient.inventory.stockQty = (ingredient.inventory.stockQty || 0) + stockToAddInBase;
+
+                // Add to history (store ENTERED quantity and unit)
+                if (!ingredient.inventory.restockHistory) ingredient.inventory.restockHistory = [];
+                ingredient.inventory.restockHistory.unshift({
+                    date: purchaseDate,
+                    quantity: quantity,
+                    unit: selectedUnit, // Store the unit user selected
+                    timestamp: new Date().toISOString()
+                });
+
+                saveIngredients();
+                renderInventory();
+                closeRestockModal();
+
+                showFeedbackModal({
+                    type: 'success',
+                    title: 'Stock Updated!',
+                    message: `Added ${quantity} ${selectedUnit} to ${ingredient.name}.`
+                });
+            });
+
             const appendConversionInput = (unitName = '', grams = '', targetUnit = 'g') => {
                 const div = document.createElement('div');
                 div.className = 'flex items-center space-x-2 conversion-row w-full';
@@ -3250,6 +3862,31 @@
                 editUnitInput.value = sup.unit;
                 editSupplierInput.value = sup.supplierName;
                 editNotesInput.value = sup.notes;
+
+                // Load inventory fields with proper units
+                const editStockQty = document.getElementById('edit-stock-qty');
+                const editStockUnit = document.getElementById('edit-stock-unit');
+                const editReorderLevel = document.getElementById('edit-reorder-level');
+                const editReorderUnit = document.getElementById('edit-reorder-unit');
+                const editStockLocation = document.getElementById('edit-stock-location');
+
+                // Stock is stored in base unit (g/ml), display based on ingredient's saved display unit or default to base
+                const stockQtyBase = ingredientToEdit.inventory?.stockQty || 0;
+                const savedDisplayUnit = ingredientToEdit.inventory?.displayUnit || (ingredientToEdit.unit === 'kg' ? 'g' : (ingredientToEdit.unit === 'l' ? 'ml' : ingredientToEdit.unit));
+
+                // Convert from base to display unit
+                let displayStock = stockQtyBase;
+                if (savedDisplayUnit === 'kg' && stockQtyBase > 0) displayStock = stockQtyBase / 1000;
+                if (savedDisplayUnit === 'l' && stockQtyBase > 0) displayStock = stockQtyBase / 1000;
+
+                if (editStockQty) editStockQty.value = displayStock || '';
+                if (editStockUnit) editStockUnit.value = savedDisplayUnit;
+
+                // Reorder level is stored in purchase unit
+                if (editReorderLevel) editReorderLevel.value = ingredientToEdit.inventory?.reorderLevel || '';
+                if (editReorderUnit) editReorderUnit.textContent = ingredientToEdit.unit;
+
+                if (editStockLocation) editStockLocation.value = ingredientToEdit.inventory?.location || '';
 
                 conversionsListDiv.innerHTML = '';
                 if (ingredientToEdit.conversions && ingredientToEdit.conversions.length > 0) {
@@ -4784,6 +5421,20 @@
 
                 const ingToUpdate = ingredients.find(ing => ing.id === currentlyEditingId);
                 if (ingToUpdate) {
+                    // Get inventory field values
+                    const displayStockQty = parseFloat(document.getElementById('edit-stock-qty')?.value) || 0;
+                    const displayUnit = document.getElementById('edit-stock-unit')?.value || 'g';
+                    const reorderLevel = parseFloat(document.getElementById('edit-reorder-level')?.value) || 0;
+                    const stockLocation = document.getElementById('edit-stock-location')?.value?.trim() || '';
+
+                    // Convert display stock to base unit (g/ml) for storage
+                    let stockQtyInBaseUnit = displayStockQty;
+                    if (displayUnit === 'kg') stockQtyInBaseUnit = displayStockQty * 1000;
+                    if (displayUnit === 'l') stockQtyInBaseUnit = displayStockQty * 1000;
+
+                    // Preserve existing inventory data while updating
+                    const existingInventory = ingToUpdate.inventory || {};
+
                     Object.assign(ingToUpdate, {
                         name,
                         price: activeSup.price,
@@ -4792,11 +5443,19 @@
                         supplier: activeSup.supplierName,
                         notes: activeSup.notes,
                         suppliers: JSON.parse(JSON.stringify(currentEditSuppliers)),
-                        conversions: newConversions
+                        conversions: newConversions,
+                        inventory: {
+                            ...existingInventory,
+                            stockQty: stockQtyInBaseUnit,
+                            displayUnit: displayUnit,
+                            reorderLevel,
+                            location: stockLocation
+                        }
                     });
                 }
                 saveIngredients();
                 renderIngredients();
+                renderInventory();
                 closeEditModal();
                 showFeedbackModal({
                     type: 'success',
@@ -4823,7 +5482,8 @@
             conversionsListDiv.addEventListener('click', (e) => { if (e.target.classList.contains('remove-btn')) e.target.closest('.conversion-row').remove(); });
             ingredientSearchInput.addEventListener('input', renderIngredients);
             ingredientSortSelect.addEventListener('change', renderIngredients);
-            addIngredientModal.addEventListener('click', (e) => { if (e.target === addIngredientModal) closeAddIngredientModal(); });
+            // Click outside to close - DISABLED (only buttons can close)
+            // addIngredientModal.addEventListener('click', (e) => { if (e.target === addIngredientModal) closeAddIngredientModal(); });
 
             // --- Recipe Page Listeners ---
             addLibraryIngredientBtn.addEventListener('click', addLibraryIngredientRow);
@@ -5598,9 +6258,10 @@
                 const closeModal = () => optimizerModal.classList.add('hidden');
                 closeOptimizerBtn.onclick = closeModal;
                 closeOptimizerBtnFooter.onclick = closeModal;
-                optimizerModal.onclick = (e) => {
-                    if (e.target === optimizerModal) closeModal();
-                };
+                // Click outside to close - DISABLED (only buttons can close)
+                // optimizerModal.onclick = (e) => {
+                //     if (e.target === optimizerModal) closeModal();
+                // };
 
                 // Individual switch button handler
                 optimizerTableBody.onclick = (e) => {
@@ -5675,7 +6336,7 @@
                 const activeClasses = ['bg-white/10', 'font-semibold'];
 
                 // Hides all pages first
-                [homePage, ingredientsPage, recipesPage, budgetPage, settingsPage, recipeBookPage, supplierDashboardPage].forEach(page => {
+                [homePage, ingredientsPage, inventoryPage, recipesPage, budgetPage, settingsPage, recipeBookPage, supplierDashboardPage].forEach(page => {
                     if (page) {
                         page.classList.add('hidden');
                         page.classList.remove('fade-in');
@@ -5683,7 +6344,7 @@
                 });
 
                 // Deactivates all nav links
-                [navHome, navIngredients, navRecipes, navBudget, navSettings, navSupplier].forEach(nav => nav.classList.remove(...activeClasses));
+                [navHome, navIngredients, navInventory, navRecipes, navBudget, navSettings, navSupplier].forEach(nav => nav.classList.remove(...activeClasses));
 
                 // Shows the correct page and activates the correct nav link
                 let targetPage = null;
@@ -5705,6 +6366,10 @@
                 } else if (pageToShow === 'settings') {
                     targetPage = settingsPage;
                     navSettings.classList.add(...activeClasses);
+                } else if (pageToShow === 'inventory') {
+                    targetPage = inventoryPage;
+                    navInventory.classList.add(...activeClasses);
+                    renderInventory();
                 } else if (pageToShow === 'supplier') {
                     targetPage = supplierDashboardPage;
                     navSupplier.classList.add(...activeClasses);
@@ -5725,6 +6390,7 @@
                 switch (hash) {
                     case '#recipes': page = 'recipes'; break;
                     case '#ingredients': page = 'ingredients'; break;
+                    case '#inventory': page = 'inventory'; break;
                     case '#supplier': page = 'supplier'; break;
                     case '#budget': page = 'budget'; break;
                     case '#settings': page = 'settings'; break;
@@ -5845,10 +6511,10 @@
 
             closeShoppingListBtn.addEventListener('click', closeShoppingListModal);
 
-            // Close on background click
-            shoppingListModal.addEventListener('click', (e) => {
-                if (e.target === shoppingListModal) closeShoppingListModal();
-            });
+            // Close on background click - DISABLED (only X button can close)
+            // shoppingListModal.addEventListener('click', (e) => {
+            //     if (e.target === shoppingListModal) closeShoppingListModal();
+            // });
 
             // Event Delegation for Shopping List Button
             document.getElementById('recipe-list-display').addEventListener('click', (e) => {
@@ -6586,6 +7252,42 @@
                     </svg>
                     Close
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restock Modal -->
+    <div id="restock-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm">
+            <div class="p-4 border-b">
+                <h3 class="text-lg font-bold text-gray-800">Add Stock</h3>
+                <p id="restock-ingredient-name" class="text-xs text-gray-500 mt-0.5">Adding stock for: Flour</p>
+            </div>
+            <form id="restock-form" class="px-4 pt-2 pb-4 space-y-3">
+                <input type="hidden" id="restock-ingredient-id">
+                <div>
+                    <label for="restock-date" class="block text-xs font-medium text-gray-700 mb-0.5">Purchase
+                        Date</label>
+                    <input type="date" id="restock-date" required
+                        class="w-full p-1.5 text-sm border border-gray-300 rounded-lg focus-ring">
+                </div>
+                <div>
+                    <label for="restock-qty" class="block text-xs font-medium text-gray-700 mb-0.5">Quantity</label>
+                    <div class="flex">
+                        <input type="number" id="restock-qty" step="0.01" min="0.01" required placeholder="1"
+                            class="w-full p-1.5 text-sm border border-gray-300 rounded-l-lg focus-ring">
+                        <select id="restock-unit-select"
+                            class="px-2 py-1.5 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 text-sm font-medium focus:ring-0 focus:border-gray-300 w-16">
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <div class="flex justify-end items-center px-4 py-3 border-t bg-gray-50 rounded-b-xl gap-2">
+                <button type="button" id="restock-cancel-btn"
+                    class="py-2 px-4 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                <button type="submit" form="restock-form"
+                    class="py-2 px-4 bg-brand-pink-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Add
+                    Stock</button>
             </div>
         </div>
     </div>
