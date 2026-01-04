@@ -1766,7 +1766,8 @@
         </div>
     </div>
 
-    <div id="add-recipe-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div id="add-recipe-modal"
+        class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col">
             <div class="px-6 py-3 border-b">
                 <h3 class="text-xl font-bold text-gray-800">Create New Recipe</h3>
@@ -1893,7 +1894,8 @@
         </div>
     </div>
 
-    <div id="edit-recipe-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div id="edit-recipe-modal"
+        class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col">
             <div class="px-6 py-3 border-b">
                 <h3 class="text-xl font-bold text-gray-800">Edit Recipe</h3>
@@ -2020,7 +2022,8 @@
         </div>
     </div>
 
-    <div id="add-team-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div id="add-team-modal"
+        class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] flex flex-col">
             <div class="p-6 border-b">
                 <h3 class="text-xl font-bold text-gray-800">Add New Team</h3>
@@ -2075,9 +2078,9 @@
     </div>
 
     <div id="manage-categories-modal"
-        class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-            <div class="p-6 border-b">
+            <div class="px-6 py-3 border-b flex justify-between items-center">
                 <h3 class="text-xl font-bold text-gray-800">Manage Categories</h3>
             </div>
             <div class="p-6 space-y-6">
@@ -2092,19 +2095,45 @@
                     </div>
                 </div>
                 <div>
-                    <h4 class="text-base font-medium text-gray-800 mb-2">Registered Categories</h4>
-                    <div id="category-list-in-modal" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                    <h4 class="text-base font-medium text-gray-800 mb-3">Registered Categories</h4>
+                    <div id="category-list-in-modal"
+                        class="space-y-2 max-h-60 overflow-y-auto overflow-hidden bg-gray-50 p-3 rounded-lg"></div>
                 </div>
             </div>
-            <div class="flex justify-end items-center p-4 border-t bg-gray-50">
-                <button type="button" id="close-categories-modal-btn"
-                    class="py-2 px-5 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Done</button>
+            <div class="flex justify-end items-center p-4 border-t bg-gray-50 rounded-b-xl">
+                <div class="flex items-center gap-4">
+                    <div id="category-history-controls" class="hidden flex gap-3 mr-2 border-r pr-6 border-gray-300">
+                        <button type="button" id="category-undo-btn" disabled
+                            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            title="Undo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                        </button>
+                        <button type="button" id="category-redo-btn" disabled
+                            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            title="Redo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                            </svg>
+                        </button>
+                    </div>
+                    <button type="button" id="cancel-categories-btn"
+                        class="py-2 px-4 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="button" id="save-categories-btn"
+                        class="py-2 px-4 bg-brand-pink-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-brand-pink-700 transition-colors">Save
+                        Changes</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="preparation-editor-modal"
-        class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
             <div class="p-5 border-b">
                 <h3 class="text-xl font-bold text-gray-800">Edit Preparation Steps for <span id="editor-recipe-title"
@@ -2127,7 +2156,8 @@
     <!-- Supplier Dashboard Page -->
 
 
-    <div id="planner-day-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div id="planner-day-modal"
+        class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
             <div class="p-5 border-b flex justify-between items-center">
                 <h3 class="text-lg font-bold text-gray-800" id="planner-modal-title">Production Details</h3>
@@ -2261,7 +2291,11 @@
             const newCategoryNameInput = document.getElementById('new-category-name');
             const addCategoryBtn = document.getElementById('add-category-btn');
             const categoryListInModal = document.getElementById('category-list-in-modal');
-            const closeCategoriesModalBtn = document.getElementById('close-categories-modal-btn');
+            const cancelCategoriesBtn = document.getElementById('cancel-categories-btn');
+            const saveCategoriesBtn = document.getElementById('save-categories-btn');
+            const categoryUndoBtn = document.getElementById('category-undo-btn');
+            const categoryRedoBtn = document.getElementById('category-redo-btn');
+            const categoryHistoryControls = document.getElementById('category-history-controls');
             const recipeBookSearchInput = document.getElementById('recipe-book-search-input');
             const recipeBookSortSelect = document.getElementById('recipe-book-sort-select');
             const recipeBookPagination = document.getElementById('recipe-book-pagination');
@@ -2314,6 +2348,14 @@
             let recipeEditHistory = [];
             let recipeHistoryStep = -1;
             let isRecipeUndoingRedoing = false;
+
+            // --- CATEGORY UNDO/REDO STATE ---
+            let categoryEditHistory = [];
+            let categoryHistoryStep = -1;
+            let isCategoryUndoingRedoing = false;
+            let tempCategories = [];
+            let originalCategories = [];
+
 
             const saveIngredients = () => { try { localStorage.setItem('ingredients', JSON.stringify(ingredients)); } catch (e) { console.error('Error saving ingredients:', e); alert('Warning: Could not save ingredients. Storage might be full or restricted.'); } };
             const saveRecipes = () => { try { localStorage.setItem('recipes', JSON.stringify(recipes)); } catch (e) { console.error('Error saving recipes:', e); alert('Warning: Could not save recipes. Storage might be full or restricted.'); } };
@@ -4367,8 +4409,8 @@
                 const breakdownTbody = cardElement.querySelector('.grid > div:first-child table tbody');
                 breakdownTbody.innerHTML = calc.breakdown.map(item => `
             <tr class="border-b">
-                <td class="py-2 pr-4 text-gray-700">${item.name} <span class="text-xs text-brand-indigo-700 font-medium">(${item.detail})</span></td>
-                <td class="py-2 pl-4 text-right font-mono">${item.cost > 0 ? `RM ${item.cost.toFixed(2)}` : '-'}</td>
+                <td class="py-2 pr-4 text-gray-700 font-medium">${item.name} <span class="text-xs text-brand-indigo-700 font-normal">(${item.detail})</span></td>
+                <td class="py-2 pl-4 text-right font-mono whitespace-nowrap">${item.cost > 0 ? `RM ${item.cost.toFixed(2)}` : '-'}</td>
             </tr>`).join('');
 
                 const summaryTbody = cardElement.querySelector('.summary-table-body');
@@ -4451,7 +4493,7 @@
                         const calc = calculateRecipeCost(recipe);
                         const recipeCard = document.createElement('div');
                         recipeCard.className = 'bg-white rounded-xl shadow-sm border border-gray-200 p-6';
-                        const breakdownHTML = calc.breakdown.map(item => ` <tr class="border-b last:border-b-0 border-gray-100"> <td class="py-2 pr-4 text-gray-700">${item.name} ${item.detail ? `<span class="text-xs text-gray-500">(${item.detail})</span>` : ''}</td> <td class="py-2 pl-4 text-right font-mono">${item.cost > 0 ? `RM ${item.cost.toFixed(2)}` : '-'}</td> </tr> `).join('');
+                        const breakdownHTML = calc.breakdown.map(item => ` <tr class="border-b last:border-b-0 border-gray-100"> <td class="py-2 pr-4 text-gray-700 font-medium">${item.name} ${item.detail ? `<span class="text-xs text-gray-500 font-normal">(${item.detail})</span>` : ''}</td> <td class="py-2 pl-4 text-right font-mono whitespace-nowrap">${item.cost > 0 ? `RM ${item.cost.toFixed(2)}` : '-'}</td> </tr> `).join('');
 
                         const isPanMode = recipe.servings.type === 'size'; // Default to PAN if it's a size-based recipe
                         let yieldText = '';
@@ -5207,43 +5249,148 @@
             };
 
             const openManageCategoryModal = () => {
+                // Create backup and working copy
+                originalCategories = JSON.parse(JSON.stringify(categories));
+                tempCategories = JSON.parse(JSON.stringify(categories));
+
+                // Reset undo/redo state
+                categoryEditHistory = [JSON.parse(JSON.stringify(tempCategories))];
+                categoryHistoryStep = 0;
+                updateCategoryUndoRedoButtons();
+
                 manageCategoriesModal.classList.remove('hidden');
                 renderCategoryListInModal();
             };
 
             const renderCategoryListInModal = () => {
                 categoryListInModal.innerHTML = '';
-                categories.forEach(cat => {
+                tempCategories.forEach(cat => {
                     const div = document.createElement('div');
-                    div.className = 'flex justify-between items-center bg-gray-100 p-2 rounded';
+                    div.className = 'flex justify-between items-center bg-white border border-gray-200 p-3 rounded-lg hover:shadow-md hover:border-brand-pink-300 transition-all duration-200 group';
                     div.innerHTML = `
-                <span>${cat.name}</span>
-                <button class="remove-category-btn text-red-500 hover:text-red-700 font-bold text-lg" data-id="${cat.id}">&times;</button>
-            `;
+                <span class="font-medium text-gray-800 group-hover:text-brand-pink-600 transition-colors">${cat.name}</span>
+                <button class="remove-category-btn flex items-center justify-center w-7 h-7 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-200" data-id="${cat.id}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            `;
                     categoryListInModal.appendChild(div);
                 });
             };
 
+            const saveCategoryHistory = () => {
+                if (isCategoryUndoingRedoing) return;
+
+                // Remove any future history if we're not at the end
+                categoryEditHistory = categoryEditHistory.slice(0, categoryHistoryStep + 1);
+
+                // Add new state
+                categoryEditHistory.push(JSON.parse(JSON.stringify(tempCategories)));
+                categoryHistoryStep++;
+
+                // Limit history to 50 steps
+                if (categoryEditHistory.length > 50) {
+                    categoryEditHistory.shift();
+                    categoryHistoryStep--;
+                }
+
+                updateCategoryUndoRedoButtons();
+            };
+
+            const updateCategoryUndoRedoButtons = () => {
+                categoryUndoBtn.disabled = categoryHistoryStep <= 0;
+                categoryRedoBtn.disabled = categoryHistoryStep >= categoryEditHistory.length - 1;
+
+                // Toggle visibility based on whether there are any changes (history > 1)
+                if (categoryEditHistory.length > 1) {
+                    categoryHistoryControls.classList.remove('hidden');
+                } else {
+                    categoryHistoryControls.classList.add('hidden');
+                }
+            };
+
+            const categoryUndo = () => {
+                if (categoryHistoryStep > 0) {
+                    isCategoryUndoingRedoing = true;
+                    categoryHistoryStep--;
+                    tempCategories = JSON.parse(JSON.stringify(categoryEditHistory[categoryHistoryStep]));
+                    renderCategoryListInModal();
+                    updateCategoryUndoRedoButtons();
+                    isCategoryUndoingRedoing = false;
+                }
+            };
+
+            const categoryRedo = () => {
+                if (categoryHistoryStep < categoryEditHistory.length - 1) {
+                    isCategoryUndoingRedoing = true;
+                    categoryHistoryStep++;
+                    tempCategories = JSON.parse(JSON.stringify(categoryEditHistory[categoryHistoryStep]));
+                    renderCategoryListInModal();
+                    updateCategoryUndoRedoButtons();
+                    isCategoryUndoingRedoing = false;
+                }
+            };
+
             const addCategory = () => {
                 const name = newCategoryNameInput.value.trim();
-                if (name && !categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-                    categories.push({ id: Date.now(), name: name });
-                    saveCategories();
+                if (name && !tempCategories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+                    tempCategories.push({ id: Date.now(), name: name });
+                    saveCategoryHistory();
                     renderCategoryListInModal();
                     newCategoryNameInput.value = '';
                 }
             };
 
             const removeCategory = (categoryId) => {
-                categories = categories.filter(c => c.id !== categoryId);
+                tempCategories = tempCategories.filter(c => c.id !== categoryId);
+                saveCategoryHistory();
+                renderCategoryListInModal();
+            };
+
+            const cancelCategoryChanges = () => {
+                // Restore original categories
+                tempCategories = [];
+                originalCategories = [];
+                categoryEditHistory = [];
+                categoryHistoryStep = -1;
+                manageCategoriesModal.classList.add('hidden');
+            };
+
+            const saveCategoryChanges = () => {
+                // Apply changes to actual categories
+                categories = JSON.parse(JSON.stringify(tempCategories));
+
+                // Update recipes that reference deleted categories
+                const categoryIds = categories.map(c => c.id);
                 recipes.forEach(r => {
-                    if (r.categoryId === categoryId) {
+                    if (r.categoryId && !categoryIds.includes(r.categoryId)) {
                         r.categoryId = 0;
                     }
                 });
+
                 saveCategories();
                 saveRecipes();
-                renderCategoryListInModal();
+
+                // Show success message
+                showFeedbackModal({
+                    type: 'success',
+                    title: 'Categories Saved',
+                    message: 'Your category changes have been saved successfully!',
+                    confirmText: 'OK',
+                    onConfirm: () => {
+                        // Clean up
+                        tempCategories = [];
+                        originalCategories = [];
+                        categoryEditHistory = [];
+                        categoryHistoryStep = -1;
+
+                        manageCategoriesModal.classList.add('hidden');
+                        renderCategoryFilters();
+                        renderRecipeBook();
+                        renderRecipePageCategoryFilters();
+                    }
+                });
             };
 
             const populateCategoryDropdown = (selectElement, selectedId = 0) => {
@@ -5632,8 +5779,9 @@
             });
 
             editRecipeIngredientsList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-btn')) {
-                    const row = e.target.closest('.recipe-item-row');
+                const removeBtn = e.target.closest('.remove-btn');
+                if (removeBtn) {
+                    const row = removeBtn.closest('.recipe-item-row');
                     if (row) {
                         const rowId = row.id;
                         if (editRecipeTomSelectInstances[rowId]) {
@@ -5874,11 +6022,19 @@
 
             // --- Category Listeners ---
             manageCategoriesBtn.addEventListener('click', openManageCategoryModal);
-            closeCategoriesModalBtn.addEventListener('click', () => {
-                manageCategoriesModal.classList.add('hidden');
-                renderCategoryFilters(); // --- NEW --- Update filters when closing the modal
-                renderRecipeBook();
+
+            // Prevent closing by clicking outside
+            manageCategoriesModal.addEventListener('click', (e) => {
+                if (e.target === manageCategoriesModal) {
+                    e.stopPropagation();
+                }
             });
+
+            cancelCategoriesBtn.addEventListener('click', cancelCategoryChanges);
+            saveCategoriesBtn.addEventListener('click', saveCategoryChanges);
+            categoryUndoBtn.addEventListener('click', categoryUndo);
+            categoryRedoBtn.addEventListener('click', categoryRedo);
+
             addCategoryBtn.addEventListener('click', addCategory);
             categoryListInModal.addEventListener('click', (e) => {
                 const removeBtn = e.target.closest('.remove-category-btn');
@@ -5887,6 +6043,20 @@
                     removeCategory(categoryId);
                 }
             });
+
+            // Keyboard shortcuts for undo/redo in category modal
+            document.addEventListener('keydown', (e) => {
+                if (!manageCategoriesModal.classList.contains('hidden')) {
+                    if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+                        e.preventDefault();
+                        categoryUndo();
+                    } else if (e.ctrlKey && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                        e.preventDefault();
+                        categoryRedo();
+                    }
+                }
+            });
+
 
             // --- NEW --- Event listener for the filter buttons container
             categoryFiltersContainer.addEventListener('click', (e) => {
@@ -7094,7 +7264,7 @@
     </script>
     <!-- Shopping List Optimizer Modal -->
     <div id="optimizer-modal"
-        class="fixed inset-0 bg-gray-900/70 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center backdrop-blur-md">
+        class="fixed inset-0 bg-black/40 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center backdrop-blur-sm">
         <div
             class="optimizer-modal-content relative mx-4 w-full max-w-5xl shadow-2xl rounded-3xl bg-white overflow-hidden">
             <!-- Gradient Header -->
