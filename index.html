@@ -3312,9 +3312,9 @@
                     const card = document.createElement('div');
                     card.className = 'bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow';
                     card.innerHTML = `
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-semibold text-gray-800 text-base">${ing.name}</h3>
-                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full border ${statusColor}">
+                        <div class="flex justify-between items-start mb-2 gap-3">
+                            <h3 class="font-semibold text-gray-800 text-base pr-2 flex-1">${ing.name}</h3>
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full border ${statusColor} shrink-0">
                                 ${statusIcon} ${statusText}
                             </span>
                         </div>
